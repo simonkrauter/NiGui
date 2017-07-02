@@ -1,7 +1,7 @@
 NiGui
 =====
 
-NiGui is a cross-platform, desktop GUI toolkit written in Nim.<br>
+NiGui is a cross-platform, desktop GUI toolkit written in [Nim](https://nim-lang.org/).<br>
 NiGui provides an easy way to develop applications in Nim with a full-featured graphical user interface.
 
 Target platforms:
@@ -59,11 +59,20 @@ For Windows:
 --path:"<path_to_nigui>/src/common"
 --path:"<path_to_nigui>/src/windows"
 ```
+
+To disable the command line window under Windows, add the follwing line to your Nim configuration:
+```
+--app:gui
+```
   
 3. Try the included example programs
 
+Show cases
+----------
+* [NiCalc](https://github.com/trustable-code/NiCalc) - Simple calculator
+
 Contributing
------------
+------------
 You can help to improve NiGui by:
 * Trying to use it and giving feedback
 * Test the programs under different Windows versions or Linux distributions
