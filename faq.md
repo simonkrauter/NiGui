@@ -6,7 +6,7 @@ NiGui FAQ
 No, NiGui is intended to define your user interface by manually written Nim source code.<br>
 Using a GUI builder is maybe faster at the start of a project, but to modify an existing UI, it faster to change a few lines of code, instead of dragging around a bunch of widgets.
 
-### How big is the generated execute file?
+### How big is the generated executable?
 
 Sizes of "example_01_basic_app":<br>
 Linux x64 binary: 608 kB<br>
@@ -14,9 +14,9 @@ Windows x64 binary: 705 kB
 
 ### Does NiGui support customization?
 
-NiGui allows you to use the native controls like buttons, labels, text boxes. Typically the look of native controls can not much changed. For example Windows does not support to change the background color of a button.<br>
-As alternative to native controls, NiGui allows you to use create custom controls. Custom controls must draw their surface by it's own, therefore it can look anything you like. As example: To create a custom button, you can inherit from the type `Button` and override the method `handleDrawEvent()`. <br>
-To make it possible to adjust the look of custom controls to the look of the native controls, NiGui allows you to use the platform's default styles, for example `app.defaultBackgroundColor` and `app.defaultTextColor`.
+NiGui allows you to use the native controls like buttons, labels, and text boxes. Typically the look of native controls can't be changed much. For example Windows does not support changing the background color of a button.<br>
+As an alternative to native controls, NiGui allows you to create custom controls. Custom controls must draw their surface by it's own, therefore it can look like anything you want. As an example: To create a custom button, you can inherit from the type `Button` and override the method `handleDrawEvent()`. <br>
+To make it possible to adjust the look of custom controls to the look of native controls, NiGui allows you to use the platform's default styles, for example `app.defaultBackgroundColor` and `app.defaultTextColor`.
 
 ### How does NiGui compare to other GUI toolkits?
 
@@ -39,8 +39,8 @@ It uses a preprocessor for the C++ code, therefore it cannot be used with other 
 #### NiGui compared to wxWidgets
 
 wxWidgets is a cross-platform GUI toolkit written in C++.<br>
-Unlike to NiGui, under Windows the user has to install wxWidgets or you ship the DLL files with your application.<br>
-The wxWidgets DLL files for Windows takes about 20 MB.<br>
+Unlike NiGui, under Windows the user has to install wxWidgets, or you have to ship the DLL files with your application, or you can statically link wxWidgets into your application.<br>
+The wxWidgets DLL files for Windows takes about 20 MB (about the same overhead applies to static linking).<br>
 wxWidgets can be used in Nim (https://github.com/Araq/wxnim/).
 
 #### NiGui compared to IUP
@@ -48,6 +48,7 @@ wxWidgets can be used in Nim (https://github.com/Araq/wxnim/).
 IUP is a cross-platform GUI toolkit written in C (http://webserver2.tecgraf.puc-rio.br/iup/).<br>
 Like NiGui, IUP uses Gtk and Win32 as backends.<br>
 IUP can be used in Nim (https://github.com/nim-lang/iup).
+Using a C library in Nim is better than most languages but not perfect. For example the user has to install the library according to the instructions from the wrapper. With a pure Nim project you only need to install the package.
 
 #### NiGui compared to libui
 
@@ -55,6 +56,7 @@ libui is a cross-platform GUI toolkit written in C (https://github.com/andlabs/l
 Like NiGui, libui uses Gtk and Win32 as backends and uses native controls.<br>
 Like NiGui, libui is in the early development phase (at least no documentation is written).<br>
 libui can be used in Nim (https://github.com/nim-lang/ui).
+Using a C library in Nim is better than most languages but not perfect. For example the user has to install the library according to the instructions from the wrapper. With a pure Nim project you only need to install the package.
 
 #### NiGui compared to nimx
 
