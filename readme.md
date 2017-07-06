@@ -5,9 +5,9 @@ NiGui is a cross-platform, desktop GUI toolkit written in [Nim](https://nim-lang
 NiGui provides an easy way to develop applications in Nim with a full-featured graphical user interface.
 
 Target platforms:
-* Linux over GTK+ 3
 * Windows (Win32 API)
-* macOS (planned)
+* Linux over GTK+ 3
+* macOS over GTK+ 3 (native support planned)
 
 Design goals:
 * **Full abstraction**<br>
@@ -44,28 +44,24 @@ Planned:
 
 Getting started
 ---------------
-Recommended steps to use NiGui:
-1. Clone the NiGui repository
-2. Add the follwing two include paths to your Nim configuration:
 
-For Linux/Gtk:
-```
---path:"<path_to_nigui>/src/common"
---path:"<path_to_nigui>/src/gtk3"
-```
+### How to install NiGui manually
 
-For Windows:
-```
---path:"<path_to_nigui>/src/common"
---path:"<path_to_nigui>/src/windows"
-```
+1. Clone the NiGui repository with Git or download the source code
+2. Add this line to your Nim configuration: `--path:"<path_to_nigui>/src"`
 
-To disable the command line window under Windows, add the follwing line to your Nim configuration:
-```
---app:gui
-```
-  
-3. Try the included example programs
+### How to install NiGui with Nimble
+
+Run the Nimble install command: `$ nimble install nigui"`
+
+### Additional configuration
+
+* To disable the command line window under Windows, add this line to your Nim configuration: `--app:gui`
+* To compile a Windows binary which uses Gtk, add this line to your Nim configuration: `-d:forceGtk`
+
+### How to verify the installation
+
+Compile and run one of the included example programs.
 
 Show cases
 ----------

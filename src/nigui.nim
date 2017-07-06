@@ -2,9 +2,11 @@
 
 # This file contains all common code except extra widgets.
 # All public procedures are declared here.
-# Public types are declared here or in the platform-specific file "nigui_platform_types".
-# The platform-specific files "nigui_platform_types" and "nigui_platform_procs" will be
-# included to this file.
+# Platform-specific code will added by "include".
+
+# Templates for "include":
+template useWindows(): bool = defined(windows) and not defined(forceGtk)
+template useGtk(): bool = not useWindows()
 
 # ========================================================================================
 #
@@ -258,9 +260,9 @@ type
     data*: pointer
   TimerProc* = proc(event: TimerEvent)
 
-
 # Platform-specific extension of Window and Control:
-include nigui_platform_types1
+when useWindows(): include "nigui/private/windows/platform_types1"
+when useGtk():     include "nigui/private/gtk3/platform_types1"
 
 
 # ----------------------------------------------------------------------------------------
@@ -290,7 +292,8 @@ type
 
 
 # Platform-specific extension of basic controls:
-include nigui_platform_types2
+when useWindows(): include "nigui/private/windows/platform_types2"
+when useGtk():     include "nigui/private/gtk3/platform_types2"
 
 
 # ----------------------------------------------------------------------------------------
@@ -2247,4 +2250,5 @@ method `wrap=`(textArea: TextArea, wrap: bool) =
 #                             Platform-specific implementation
 # ----------------------------------------------------------------------------------------
 
-include nigui_platform_impl
+when useWindows(): include "nigui/private/windows/platform_impl"
+when useGtk():     include "nigui/private/gtk3/platform_impl"
