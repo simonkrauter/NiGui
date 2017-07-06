@@ -78,6 +78,11 @@ You can help to improve NiGui by:
 
 Contact: simonkrauter@openmailbox.org
 
+FAQ
+---
+
+[FAQ](faq.md)
+
 License
 -------
 
