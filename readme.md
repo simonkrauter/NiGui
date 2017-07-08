@@ -52,7 +52,7 @@ Getting started
 
 ### How to install NiGui with Nimble
 
-Run the Nimble install command: `$ nimble install nigui"`
+Run the [Nimble](https://github.com/nim-lang/nimble) install command: `$ nimble install nigui`
 
 ### Additional configuration
 
