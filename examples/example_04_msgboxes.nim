@@ -1,7 +1,7 @@
 # This example shows different methods to create message boxes.
 
 import nigui
-import msgbox
+import nigui/msgbox
 
 app.init()
 
