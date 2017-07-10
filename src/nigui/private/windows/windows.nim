@@ -324,8 +324,6 @@ proc DispatchMessageA*(lpMsg: pointer): pointer {.importc: "DispatchMessageA", l
 proc SetParent*(hWndChild, hWndNewParent: pointer): pointer {.importc: "SetParent", libUser32.}
 proc SetWindowLongA*(hWnd: pointer, nIndex, dwNewLong: int32): int32 {.importc: "SetWindowLongA", libUser32.}
 proc GetWindowLongA*(hWnd: pointer, nIndex: int32): int32 {.importc: "GetWindowLongA", libUser32.}
-proc SetWindowLongPtrW*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetWindowLongPtrW", libUser32.}
-proc GetWindowLongPtrW*(hWnd: pointer, nIndex: int32): pointer {.importc: "GetWindowLongPtrW", libUser32.}
 proc SetWindowTextA*(hWnd: pointer, lpString: cstring): bool {.importc: "SetWindowTextA", libUser32.}
 proc SetWindowTextW*(hWnd: pointer, lpString: cstring): bool {.importc: "SetWindowTextW", libUser32.}
 # proc GetWindowTextA*(hWnd: pointer, lpString: cstring, nMaxCount: int32): int32 {.importc: "GetWindowTextA", libUser32.}
@@ -344,7 +342,6 @@ proc SendMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer 
 # proc SendMessageW*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "SendMessageW", libUser32.}
 proc PostMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "PostMessageA", libUser32.}
 proc GetSysColor*(nIndex: int32): RGB32 {.importc: "GetSysColor", libUser32.}
-proc SetClassLongPtrA*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetClassLongPtrA", libUser32.}
 proc InvalidateRect*(hWnd: pointer, lpRect: ref Rect, bErase: bool): bool {.importc: "InvalidateRect", libUser32.}
 proc PostQuitMessage*(nExitCode: int32) {.importc: "PostQuitMessage", libUser32.}
 proc GetDesktopWindow*(): pointer {.importc: "GetDesktopWindow", libUser32.}
@@ -371,6 +368,17 @@ proc KillTimer*(hWnd, nIDEvent: pointer): bool {.importc: "KillTimer", libUser32
 proc FillRect*(hDC: pointer, lprc: var Rect, hbr: pointer): int32 {.importc: "FillRect", libUser32.}
 proc FrameRect*(hDC: pointer, lprc: var Rect, hbr: pointer): int32 {.importc: "FrameRect", libUser32.}
 proc GetKeyState*(nVirtKey: int32): int16 {.importc: "GetKeyState", libUser32.}
+
+proc GetWindowLongW*(hWnd: pointer, nIndex: int32): pointer {.importc: "GetWindowLongW", libUser32.}
+proc SetWindowLongW*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetWindowLongW", libUser32.}
+# proc SetClassLongA*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetClassLongA", libUser32.}
+
+when defined(cpu64):
+  # Only available on 64-bit Windows:
+  proc GetWindowLongPtrW*(hWnd: pointer, nIndex: int32): pointer {.importc: "GetWindowLongPtrW", libUser32.}
+  proc SetWindowLongPtrW*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetWindowLongPtrW", libUser32.}
+  # proc SetClassLongPtrA*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetClassLongPtrA", libUser32.}
+
 
 
 # ----------------------------------------------------------------------------------------

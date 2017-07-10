@@ -128,6 +128,18 @@ proc pCreateWindowEx(dwExStyle: int32, lpClassName, lpWindowName: cstring, dwSty
   result = CreateWindowExA(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
   if result == nil: pRaiseLastOSError()
 
+proc pGetWindowLongPtr(hWnd: pointer, nIndex: int32): pointer =
+  when defined(cpu64):
+    result = GetWindowLongPtrW(hWnd, nIndex)
+  else:
+    result = GetWindowLongW(hWnd, nIndex)
+    
+proc pSetWindowLongPtr(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer =
+  when defined(cpu64):
+    result = SetWindowLongPtrW(hWnd, nIndex, dwNewLong)
+  else:
+    result = SetWindowLongW(hWnd, nIndex, dwNewLong)
+    
 # proc pGetStockObject(fnObject: int32): pointer =
   # result = GetStockObject(fnObject)
   # if result == nil: pRaiseLastOSError()
@@ -135,11 +147,11 @@ proc pCreateWindowEx(dwExStyle: int32, lpClassName, lpWindowName: cstring, dwSty
 proc pCreateWindowExWithUserdata(lpClassName: cstring, dwStyle, dwExStyle: int32, hWndParent, userdata: pointer = nil): pointer =
   result = pCreateWindowEx(dwExStyle, lpClassName, nil, dwStyle, 0, 0, 0, 0, hWndParent, nil, nil, nil)
   if userdata != nil:
-    discard SetWindowLongPtrW(result, GWLP_USERDATA, userdata)
+    discard pSetWindowLongPtr(result, GWLP_USERDATA, userdata)
   # Set default font:
   # discard SendMessageA(result, WM_SETFONT, pGetStockObject(DEFAULT_GUI_FONT), cast[pointer](true))
   # Set window proc:
-  # discard SetWindowLongPtrW(result, GWLP_WNDPROC, pCommonWndProc)
+  # discard pSetWindowLongPtr(result, GWLP_WNDPROC, pCommonWndProc)
 
 proc pEnableVisualStyles() =
   # Without this, controls have style of Windows 95
@@ -178,15 +190,15 @@ proc pRegisterWindowClass(className: cstring, wndProc: pointer, style: int32 = 0
   class.hIconSm = nil
   if RegisterClassExA(class) == 0: pRaiseLastOSError()
 
-proc pCommonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer =
+proc pCommonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
   case uMsg
   of WM_COMMAND:
     if wParam.hiWord == EN_CHANGE:
-      let control = cast[Control](GetWindowLongPtrW(lParam, GWLP_USERDATA))
+      let control = cast[Control](pGetWindowLongPtr(lParam, GWLP_USERDATA))
       var evt = new TextChangeEvent
       control.handleTextChangeEvent(evt)
   of WM_CTLCOLOREDIT:
-    let control = cast[Control](GetWindowLongPtrW(lParam, GWLP_USERDATA))
+    let control = cast[Control](pGetWindowLongPtr(lParam, GWLP_USERDATA))
     discard SetTextColor(wParam, control.textColor.pColorToRGB32())
     # discard SetBkColor(wParam, control.backgroundColor.pColorToRGB32())
     # does not cover complete background
@@ -289,11 +301,11 @@ proc pHandleWMKEYDOWN(window: Window, control: Control, wParam, lParam: pointer)
 proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
   case uMsg
   of WM_CLOSE:
-    let window = cast[WindowImpl](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let window = cast[WindowImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     window.dispose()
     return cast[pointer](true) # keeps the window open, else the window will be destroyed
   of WM_SIZE:
-    let window = cast[WindowImpl](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let window = cast[WindowImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if window != nil:
       var rect = pGetWindowRect(window.fHandle)
       window.width = rect.right - rect.left
@@ -303,7 +315,7 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
       window.fClientHeight = rect.bottom - rect.top
       window.triggerRelayout()
   of WM_MOVE:
-    let window = cast[WindowImpl](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let window = cast[WindowImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if window != nil:
       var rect = pGetWindowRect(window.fHandle)
       window.fX = rect.left
@@ -314,7 +326,7 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
     #echo "window WM_SETFOCUS"
     # not called?
   of WM_DROPFILES:
-    let window = cast[WindowImpl](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let window = cast[WindowImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     var files: seq[string] = @[]
     let count = DragQueryFileW(wParam, 0xFFFFFFFF.uint32, nil, 0)
     for i in 0..count - 1:
@@ -330,7 +342,7 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
   # of WM_CHAR:
     # not triggered for all key
     # echo "window WM_CHAR: "
-    # let window = cast[Window](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    # let window = cast[Window](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     # if window != nil:
       # var unicode = cast[int](wParam)
       # var event = new WindowKeyEvent
@@ -349,7 +361,7 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
 
     # echo int((cast[int](lParam) shr 8) and 0xFFFFFF00)
 
-    let window = cast[Window](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let window = cast[Window](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if window != nil:
       pHandleWMKEYDOWN(window, nil, wParam, lParam)
   else:
@@ -736,7 +748,7 @@ method `visible=`(window: WindowImpl, visible: bool) =
 
 method showModal(window, parent: WindowImpl) =
   # Set window owner, to hide it from the taskbar
-  discard SetWindowLongPtrW(window.fHandle, GWL_HWNDPARENT, parent.fHandle)
+  discard pSetWindowLongPtr(window.fHandle, GWL_HWNDPARENT, parent.fHandle)
 
   # Hide minimize and maximize buttons:
   pSetWindowLong(window.fHandle, GWL_STYLE, WS_CAPTION or WS_THICKFRAME or WS_SYSMENU)
@@ -953,32 +965,32 @@ proc pCommonControlWndProc_Scroll(origWndProc, hWnd: pointer, uMsg: int32, wPara
   const lineSize = 15
   case wParam.loWord
   of SB_THUMBPOSITION, SB_THUMBTRACK:
-    let control = cast[ControlImpl](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let control = cast[ControlImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if control != nil:
       if uMsg == WM_HSCROLL:
         control.xScrollPos = wParam.hiWord
       else:
         control.yScrollPos = wParam.hiWord
   of SB_LINELEFT:
-    let control = cast[ControlImpl](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let control = cast[ControlImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if uMsg == WM_HSCROLL:
       control.xScrollPos = control.xScrollPos - lineSize
     else:
       control.yScrollPos = control.yScrollPos - lineSize
   of SB_PAGELEFT:
-    let control = cast[ControlImpl](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let control = cast[ControlImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if uMsg == WM_HSCROLL:
       control.xScrollPos = control.xScrollPos - control.width
     else:
       control.yScrollPos = control.yScrollPos - control.height
   of SB_LINERIGHT:
-    let control = cast[ControlImpl](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let control = cast[ControlImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if uMsg == WM_HSCROLL:
       control.xScrollPos = control.xScrollPos + lineSize
     else:
       control.yScrollPos = control.yScrollPos + lineSize
   of SB_PAGERIGHT:
-    let control = cast[ControlImpl](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let control = cast[ControlImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if uMsg == WM_HSCROLL:
       control.xScrollPos = control.xScrollPos + control.width
     else:
@@ -989,7 +1001,7 @@ proc pCommonControlWndProc_Scroll(origWndProc, hWnd: pointer, uMsg: int32, wPara
 proc pCommonControlWndProc(origWndProc, hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer =
   case uMsg
   of WM_KEYDOWN:
-    let control = cast[Control](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if control != nil:
       # echo "control WM_KEYDOWN"
       pHandleWMKEYDOWN(control.parentWindow, control, wParam, lParam)
@@ -998,7 +1010,7 @@ proc pCommonControlWndProc(origWndProc, hWnd: pointer, uMsg: int32, wParam, lPar
     # return nil # key is still inserted in text area
 
   of WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN:
-    let control = cast[Control](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if control != nil:
       discard SetFocus(control.parentWindow.fHandle)
       # TODO: request if is focusable
@@ -1020,7 +1032,7 @@ proc pCommonControlWndProc(origWndProc, hWnd: pointer, uMsg: int32, wParam, lPar
       pLastMouseButtonDownControlX = x
       pLastMouseButtonDownControlY = y
   of WM_LBUTTONUP, WM_RBUTTONUP, WM_MBUTTONUP:
-    let control = cast[Control](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if control != nil:
       var button: MouseButton
       var x = loWord(lParam)
@@ -1051,7 +1063,7 @@ proc pCommonControlWndProc(origWndProc, hWnd: pointer, uMsg: int32, wParam, lPar
 proc pCustomControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer =
   case uMsg
   of WM_PAINT:
-    let control = cast[ControlImpl](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let control = cast[ControlImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if control != nil:
       var ps: PaintStruct
       var dc = BeginPaint(hWnd, ps)
@@ -1091,7 +1103,7 @@ proc pCustomControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
 proc pContainerWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer =
   case uMsg
   of WM_ERASEBKGND:
-    let control = cast[ControlImpl](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let control = cast[ControlImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if control != nil:
       var brush = CreateSolidBrush(control.backgroundColor.pColorToRGB32)
       var rect = pGetClientRect(control.fHandle)
@@ -1181,7 +1193,7 @@ var pButtonOrigWndProc: pointer
 proc pButtonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
   case uMsg
   of WM_KEYDOWN:
-    let button = cast[Button](GetWindowLongPtrW(hWnd, GWLP_USERDATA))
+    let button = cast[Button](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     # if button != nil and (cast[int](wParam) == 13 or cast[int](wParam) == 32):
     if button != nil and cast[int](wParam) == 13:
       var event = new ClickEvent
@@ -1194,7 +1206,7 @@ proc pButtonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
 proc init(button: NativeButton) =
   button.fHandle = pCreateWindowExWithUserdata("BUTTON", WS_CHILD or WS_TABSTOP, 0, pDefaultParentWindow, cast[pointer](button))
   # WS_TABSTOP does not work, why?
-  pButtonOrigWndProc = SetWindowLongPtrW(button.fHandle, GWLP_WNDPROC, pButtonWndProc)
+  pButtonOrigWndProc = pSetWindowLongPtr(button.fHandle, GWLP_WNDPROC, pButtonWndProc)
   button.Button.init()
 
 method `text=`(button: NativeButton, text: string) =
@@ -1226,7 +1238,7 @@ proc pTextBoxWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): point
 
 proc init(textBox: NativeTextBox) =
   textBox.fHandle = pCreateWindowExWithUserdata("EDIT", WS_CHILD, WS_EX_CLIENTEDGE, pDefaultParentWindow, cast[pointer](textBox))
-  pTextBoxOrigWndProc = SetWindowLongPtrW(textBox.fHandle, GWLP_WNDPROC, pTextBoxWndProc)
+  pTextBoxOrigWndProc = pSetWindowLongPtr(textBox.fHandle, GWLP_WNDPROC, pTextBoxWndProc)
   textBox.TextBox.init()
 
 method text(textBox: NativeTextBox): string = pGetWindowText(textBox.fHandle)
@@ -1255,7 +1267,7 @@ proc init(textArea: NativeTextArea) =
   # var dwStyle: int32 = WS_CHILD or ES_MULTILINE or WS_VSCROLL or WS_HSCROLL # no wrap
   var dwExStyle: int32 = WS_EX_CLIENTEDGE
   textArea.fHandle = pCreateWindowExWithUserdata("EDIT", dwStyle, dwExStyle, pDefaultParentWindow, cast[pointer](textArea))
-  pTextAreaOrigWndProc = SetWindowLongPtrW(textArea.fHandle, GWLP_WNDPROC, pTextAreaWndProc)
+  pTextAreaOrigWndProc = pSetWindowLongPtr(textArea.fHandle, GWLP_WNDPROC, pTextAreaWndProc)
   textArea.TextArea.init()
 
 method text(textArea: NativeTextArea): string = pGetWindowText(textArea.fHandle)
