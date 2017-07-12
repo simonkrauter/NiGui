@@ -12,7 +12,7 @@ app.init()
 genui:
   Window[width = 800, height = 600, show]:
     LayoutContainer(Layout_vertical):
-      {buttons["button_1"] = @result}Button("Hello world")
+      {buttons["button_1"] = @r}Button("Hello world")
       {buttons["button_2"] = @result}Button("Second button")
   [width = 800, height = 800, show]{(var exported* = @result)}("Test")Window:
     Button

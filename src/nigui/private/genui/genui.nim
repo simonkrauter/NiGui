@@ -102,7 +102,7 @@ proc createWidget(widget: ParsedWidget, parent: NimNode = nil): NimNode =
     for i in 0 .. n.high:
       let child = n[i]
       if child.kind == nnkPrefix and child[0].kind == nnkIdent and child[1].kind == nnkIdent and
-        child[0].ident == !"@" and child[1].ident == !"result":
+        child[0].ident == !"@" and (child[1].ident == !"result" or child[1].ident == !"r"):
           n[i] = widget.generatedSym
           return true
       let done = child.replacePlaceholder()

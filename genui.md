@@ -40,13 +40,13 @@ Now our window shows up with two empty buttons one below the other. But user int
 ## Running code
 Previous version of genui (for wxwidgets and libui) used a % notation in which an identifier could be assigned to the widget for later use. The % symbol was chosen as the assignment didn't directly convert to the Nimassignment as to avoid confusion. But this format proved a bit weird, and for data structures like a list or a table you would need to create these variables simply to use them once, something genui was created to avoid.
 
-So this version of genui introduces a new concept. It's still a bit of a work in progress but it shows promise. By using the "{}" brackets arbitrary code can be executed. In these blocks the special symbol `@result` can be used, and will be replaced by the temporary variable name for the widget. This means that anything from simple assignment to adding to complex data structures is possible. So for example adding our two buttons to a table of buttons would be:
+So this version of genui introduces a new concept. It's still a bit of a work in progress but it shows promise. By using the "{}" brackets arbitrary code can be executed. In these blocks the special symbol `@result` can be used, and will be replaced by the temporary variable name for the widget (a shorthand `@r` also exists as `@result` can get a bit terse). This means that anything from simple assignment to adding to complex data structures is possible. So for example adding our two buttons to a table of buttons would be:
 
 ```
 Window[width = 800, height = 600, show]:
   LayoutContainer(Layout_vertical):
     {buttons["button_1"] = @result} Button
-    {buttons["button_2"] = @result} Button
+    {buttons["button_2"] = @r} Button
 ``` 
 
 As mentioned this is still a bit of a work in progress and not all code works, this has to do with how Nim parses curly brackets. There are two workarounds for this, the simplest is to add regular parenthesis around your code (which Nim silently ignores when converting to code). Or, should that not work either you can wrap code in a string. So converting the above code statements to these two workaround would look like this:
@@ -55,7 +55,7 @@ As mentioned this is still a bit of a work in progress and not all code works, t
 Window[width = 800, height = 600, show]:
   LayoutContainer(Layout_vertical):
     {(buttons["button_1"] = @result)} Button
-    {"buttons[\"button_2\"] = @result"} Button
+    {"buttons[\"button_2\"] = @r"} Button
 ```
 
 
