@@ -1,4 +1,4 @@
-import nigui, genui
+import nigui#, genui
 import tables
 
 var buttons = initTable[string, Button]()
@@ -8,6 +8,7 @@ proc clickHandler(event: ClickEvent) =
 
 app.init()
 
+## TODO: Write a more functional and interesting example, maybe copy the wxNim genui threads example?
 genui:
   Window[width = 800, height = 600, show]:
     LayoutContainer(Layout_vertical):
