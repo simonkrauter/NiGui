@@ -49,13 +49,13 @@ Window[width = 800, height = 600, show]:
     {buttons["button_2"] = @result} Button
 ``` 
 
-As mentioned this is still a bit of a work in progress and not all code works. As a workaround for this you can wrap codde that doesn't work in a string. So for example exported symbols (which doesn't work when used normally) could be used like this:
+As mentioned this is still a bit of a work in progress and not all code works, this has to do with how Nim parses curly brackets. There are two workarounds for this, the simplest is to add regular parenthesis around your code (which Nim silently ignores when converting to code). Or, should that not work either you can wrap code in a string. So converting the above code statements to these two workaround would look like this:
 
 ```
-{"var exported* = @result"} Window[width = 800, height = 600, show]:
+Window[width = 800, height = 600, show]:
   LayoutContainer(Layout_vertical):
-    {buttons["button_1"] = @result} Button
-    {buttons["button_2"] = @result} Button
+    {(buttons["button_1"] = @result)} Button
+    {"buttons[\"button_2\"] = @result"} Button
 ```
 
 

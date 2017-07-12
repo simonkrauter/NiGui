@@ -14,7 +14,7 @@ genui:
     LayoutContainer(Layout_vertical):
       {buttons["button_1"] = @result}Button("Hello world")
       {buttons["button_2"] = @result}Button("Second button")
-  [width = 800, height = 800, show]{"var exported* = @result"}("Test")Window:
+  [width = 800, height = 800, show]{(var exported* = @result)}("Test")Window:
     Button
 
 app.run()
