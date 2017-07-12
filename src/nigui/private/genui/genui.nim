@@ -115,7 +115,10 @@ proc createWidget(widget: ParsedWidget, parent: NimNode = nil): NimNode =
     let callExpr = call.parseExpr
     discard replacePlaceholder(callExpr)
     result.add callExpr
+
   if widget.pureCode != nil:
+    if widget.pureCode.kind == nnkStrLit:
+      widget.pureCode = widget.pureCode.strVal.parseExpr
     widget.pureCode = widget.pureCode.repr.parseExpr
     discard replacePlaceholder(widget.pureCode)
     result.add(widget.pureCode)
