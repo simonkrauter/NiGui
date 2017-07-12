@@ -49,6 +49,16 @@ Window[width = 800, height = 600, show]:
     {buttons["button_2"] = @result} Button
 ``` 
 
+As mentioned this is still a bit of a work in progress and not all code works. As a workaround for this you can wrap codde that doesn't work in a string. So for example exported symbols (which doesn't work when used normally) could be used like this:
+
+```
+{"var exported* = @result"} Window[width = 800, height = 600, show]:
+  LayoutContainer(Layout_vertical):
+    {buttons["button_1"] = @result} Button
+    {buttons["button_2"] = @result} Button
+```
+
+
 ## A note on order
 As mentioned in the section about initialisation parameters the order of the brackets doesn't matter. So if you want to place the "{}" brackets on the end of your line, or if you want to put the "()" before the Widget name doesn't matter. But as an "official" suggestion I typically use this order:
 
@@ -77,5 +87,5 @@ Don't care about the details? Here is a quick reference to the genui format:
 | `[]`    | Dot-expressions           | `Window[height = 300, show]` | `window.height = 300; window.show` |
 | `{}`    | Pure code insertion       | `{var b = @result} Button`   | `var b = newButton()`              |
 
-`genui` creates new code, addElements creates the same code but with `add` statements for top-level widgets.
+`genui` creates new code, addElements creates the same code but with `add` statements for top-level widgets. `{}` is still a work in progress, code that doesn't parse in it can be added as a string instead.
 
