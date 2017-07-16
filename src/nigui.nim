@@ -139,10 +139,17 @@ type
     fX, fY: int
     fControl: Control
     fIconPath: string
+    fShowOnce: bool
+    fHideOnce: bool
     fOnDispose: WindowDisposeProc
     fOnResize: ResizeProc
     fOnDropFiles: DropFilesProc
     fOnKeyDown: WindowKeyProc
+    fOnShow: WindowVisibleProc
+    fOnHide: WindowVisibleProc
+    fOnShowOnce: WindowVisibleProc
+    fOnHideOnce: WindowVisibleProc
+    fOnVisibleChanged: WindowVisibleProc
 
   # Control base type:
 
@@ -216,6 +223,8 @@ type
     unicode*: int
     character*: string # UTF-8 character
   WindowKeyProc* = proc(event: WindowKeyEvent)
+  
+  WindowVisibleProc* = proc()
 
   # Control events:
 
@@ -524,6 +533,8 @@ method handleResizeEvent*(window: Window, event: ResizeEvent)
 
 method handleKeyDownEvent*(window: Window, event: WindowKeyEvent)
 
+method handleVisibleEvent*(window: Window)
+
 method handleDropFilesEvent*(window: Window, event: DropFilesEvent)
 
 method onDispose*(window: Window): WindowDisposeProc
@@ -537,6 +548,25 @@ method `onDropFiles=`*(window: Window, callback: DropFilesProc)
 
 method onKeyDown*(window: Window): WindowKeyProc
 method `onKeyDown=`*(window: Window, callback: WindowKeyProc)
+
+method showOnce*(window: Window): bool
+
+method hideOnce*(window: Window): bool
+
+method onShow*(window: Window): WindowVisibleProc
+method `onShow=`*(window: Window, callback: WindowVisibleProc)
+
+method onHide*(window: Window): WindowVisibleProc
+method `onHide=`*(window: Window, callback: WindowVisibleProc)
+
+method onShowOnce*(window: Window): WindowVisibleProc
+method `onShowOnce=`*(window: Window, callback: WindowVisibleProc)
+
+method onHideOnce*(window: Window): WindowVisibleProc
+method `onHideOnce=`*(window: Window, callback: WindowVisibleProc)
+
+method onVisibleChanged*(window: Window): WindowVisibleProc
+method `onVisibleChanged=`*(window: Window, callback: WindowVisibleProc)
 
 
 # ----------------------------------------------------------------------------------------
@@ -1060,7 +1090,7 @@ method fill(canvas: Canvas) = canvas.drawRectArea(0, 0, canvas.width, canvas.hei
 
 
 # ----------------------------------------------------------------------------------------
-#                                        Image
+#                                        ImageonKeyDown
 # ----------------------------------------------------------------------------------------
 
 proc newImage(): Image =
@@ -1233,6 +1263,40 @@ method handleKeyDownEvent(window: Window, event: WindowKeyEvent) =
   if callback != nil:
     callback(event)
 
+method handleVisibleEvent(window: Window) =
+  # can be overriden by custom window
+  var callback: WindowVisibleProc
+
+  if window.visible == true:
+    if window.showOnce == false:
+      callback = window.onShowOnce
+      if callback != nil:
+        callback()
+        window.fShowOnce = true
+
+    callback = window.onShow
+    if callback != nil:
+      callback()
+  else:
+    if window.hideOnce == false:
+      callback = window.onHideOnce
+      if callback != nil:
+        callback()
+        window.fHideOnce = true
+
+    callback = window.onHide
+    if callback != nil:
+      callback()
+
+
+  callback = window.onVisibleChanged
+  if callback != nil:
+    callback()
+
+method showOnce*(window: Window): bool = window.fShowOnce
+
+method hideOnce*(window: Window): bool = window.fHideOnce
+
 method onDispose(window: Window): WindowDisposeProc = window.fOnDispose
 method `onDispose=`(window: Window, callback: WindowDisposeProc) = window.fOnDispose = callback
 
@@ -1244,6 +1308,21 @@ method `onDropFiles=`(window: Window, callback: DropFilesProc) = window.fOnDropF
 
 method onKeyDown(window: Window): WindowKeyProc = window.fOnKeyDown
 method `onKeyDown=`(window: Window, callback: WindowKeyProc) = window.fOnKeyDown = callback
+
+method onShow*(window: Window): WindowVisibleProc = window.fOnShow
+method `onShow=`*(window: Window, callback: WindowVisibleProc) = window.fOnShow = callback
+
+method onHide*(window: Window): WindowVisibleProc = window.fOnHide
+method `onHide=`*(window: Window, callback: WindowVisibleProc) = window.fOnHide = callback
+
+method onShowOnce*(window: Window): WindowVisibleProc = window.fOnShowOnce
+method `onShowOnce=`*(window: Window, callback: WindowVisibleProc) = window.fOnShowOnce = callback
+
+method onHideOnce*(window: Window): WindowVisibleProc = window.fOnHideOnce
+method `onHideOnce=`*(window: Window, callback: WindowVisibleProc) = window.fOnHideOnce = callback
+
+method onVisibleChanged*(window: Window): WindowVisibleProc = window.fOnVisibleChanged
+method `onVisibleChanged=`*(window: Window, callback: WindowVisibleProc) = window.fOnVisibleChanged = callback
 
 
 

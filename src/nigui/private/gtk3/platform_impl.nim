@@ -165,6 +165,13 @@ proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointe
   except:
     handleException()
 
+proc pWindowVisibleSignal(widget: pointer, data: pointer): bool {.cdecl.} =
+  let window = cast[WindowImpl](data)
+  try:
+    window.handleVisibleEvent()
+  except:
+    handleException()
+
 proc pControlKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
 
   # echo "control keyPressCallback"
@@ -628,6 +635,8 @@ proc init(window: WindowImpl) =
   discard g_signal_connect_data(window.fHandle, "delete-event", pWindowDeleteSignal, cast[pointer](window))
   discard g_signal_connect_data(window.fHandle, "configure-event", pWindowConfigureSignal, cast[pointer](window))
   discard g_signal_connect_data(window.fHandle, "key-press-event", pWindowKeyPressSignal, cast[pointer](window))
+  discard g_signal_connect_data(window.fHandle, "show", pWindowVisibleSignal, cast[pointer](window))
+  discard g_signal_connect_data(window.fHandle, "hide", pWindowVisibleSignal, cast[pointer](window))
 
   # Enable drag and drop of files:
   pSetDragDest(window.fHandle)

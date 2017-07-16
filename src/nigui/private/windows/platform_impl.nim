@@ -364,6 +364,11 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
     let window = cast[Window](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if window != nil:
       pHandleWMKEYDOWN(window, nil, wParam, lParam)
+
+  of WM_SHOWWINDOW:
+    let window = cast[WindowImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+    window.handleVisibleEvent()
+
   else:
     discard
   result = pCommonWndProc(hWnd, uMsg, wParam, lParam)
