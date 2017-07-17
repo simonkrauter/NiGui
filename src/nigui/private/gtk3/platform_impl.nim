@@ -568,6 +568,8 @@ method loadFromFile(image: Image, filePath: string) =
   let canvas = cast[CanvasImpl](image.fCanvas)
   if canvas.fSurface != nil:
     cairo_surface_destroy(canvas.fSurface)
+  image.canvas.fWidth = 0
+  image.canvas.fHeight = 0
   var error: ptr GError
   var pixbuf = gdk_pixbuf_new_from_file(filePath, error.addr)
   if pixbuf == nil:
