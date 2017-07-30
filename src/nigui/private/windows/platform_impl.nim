@@ -133,13 +133,13 @@ proc pGetWindowLongPtr(hWnd: pointer, nIndex: int32): pointer =
     result = GetWindowLongPtrW(hWnd, nIndex)
   else:
     result = GetWindowLongW(hWnd, nIndex)
-    
+
 proc pSetWindowLongPtr(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer =
   when defined(cpu64):
     result = SetWindowLongPtrW(hWnd, nIndex, dwNewLong)
   else:
     result = SetWindowLongW(hWnd, nIndex, dwNewLong)
-    
+
 # proc pGetStockObject(fnObject: int32): pointer =
   # result = GetStockObject(fnObject)
   # if result == nil: pRaiseLastOSError()
@@ -699,6 +699,8 @@ method loadFromFile(image: Image, filePath: string) =
     pCheckGdiplusStatus(GdipDeleteGraphics(canvas.fGraphics))
     canvas.fBitmap = nil
     canvas.fGraphics = nil
+  image.canvas.fWidth = 0
+  image.canvas.fHeight = 0
   pCheckGdiplusStatus(GdipCreateBitmapFromFile(filePath.pUtf8ToUtf16(), canvas.fBitmap), false)
   pCheckGdiplusStatus(GdipGetImageGraphicsContext(canvas.fBitmap, canvas.fGraphics))
   var width, height: int32

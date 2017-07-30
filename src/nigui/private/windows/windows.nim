@@ -370,16 +370,16 @@ proc FillRect*(hDC: pointer, lprc: var Rect, hbr: pointer): int32 {.importc: "Fi
 proc FrameRect*(hDC: pointer, lprc: var Rect, hbr: pointer): int32 {.importc: "FrameRect", libUser32.}
 proc GetKeyState*(nVirtKey: int32): int16 {.importc: "GetKeyState", libUser32.}
 
-proc GetWindowLongW*(hWnd: pointer, nIndex: int32): pointer {.importc: "GetWindowLongW", libUser32.}
-proc SetWindowLongW*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetWindowLongW", libUser32.}
-# proc SetClassLongA*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetClassLongA", libUser32.}
-
 when defined(cpu64):
   # Only available on 64-bit Windows:
   proc GetWindowLongPtrW*(hWnd: pointer, nIndex: int32): pointer {.importc: "GetWindowLongPtrW", libUser32.}
   proc SetWindowLongPtrW*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetWindowLongPtrW", libUser32.}
   # proc SetClassLongPtrA*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetClassLongPtrA", libUser32.}
-
+else:
+  # Should only be used on 32-bit Windows:
+  proc GetWindowLongW*(hWnd: pointer, nIndex: int32): pointer {.importc: "GetWindowLongW", libUser32.}
+  proc SetWindowLongW*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetWindowLongW", libUser32.}
+  # proc SetClassLongA*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetClassLongA", libUser32.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -432,7 +432,7 @@ proc GdipDrawRectangleI*(graphics, pen: pointer, x, y, width, height: int32): in
 proc GdipDrawLineI*(graphics, pen: pointer, x1, y1, x2, y2: int32): int32 {.importc: "GdipDrawLineI", libGdiplus.}
 proc GdipCreateSolidFill*(color: ARGB, brush: var pointer): int32 {.importc: "GdipCreateSolidFill", libGdiplus.}
 proc GdipDeleteBrush*(brush: pointer): int32 {.importc: "GdipDeleteBrush", libGdiplus.}
-proc GdipCreatePen1*(color: ARGB, width: float, unit: int32, pen: var pointer): int32 {.importc: "GdipCreatePen1", libGdiplus.}
+proc GdipCreatePen1*(color: ARGB, width: cfloat, unit: int32, pen: var pointer): int32 {.importc: "GdipCreatePen1", libGdiplus.}
 proc GdipDeletePen*(pen: pointer): int32 {.importc: "GdipDeletePen", libGdiplus.}
 proc GdipDrawString*(graphics: pointer, `string`: cstring, length: int32, font: pointer, layoutRect: var RectF, stringFormat, brush: pointer): int32 {.importc: "GdipDrawString", libGdiplus.}
 proc GdipMeasureString*(graphics: pointer, `string`: cstring, length: int32, font: pointer, layoutRect: var RectF, stringFormat: pointer, boundingBox: var RectF, codepointsFitted, linesFilled: pointer): int32 {.importc: "GdipMeasureString", libGdiplus.}
