@@ -350,6 +350,9 @@ proc `defaultFontFamily=`*(app: App, fontFamily: string)
 proc defaultFontSize*(app: App): int
 proc `defaultFontSize=`*(app: App, fontSize: int)
 
+proc clipboardText*(app: App): string
+proc `clipboardText=`*(app: App, text: string)
+
 proc rgb*(red, green, blue: byte, alpha: byte = 255): Color
 
 

@@ -20,6 +20,9 @@ var pLastMouseButtonDownControl: ControlImpl
 var pLastMouseButtonDownControlX: int
 var pLastMouseButtonDownControlY: int
 
+var pClipboardPtr: pointer
+var pClipboardText: string
+
 proc pRaiseGError(error: ptr GError) =
   if error == nil:
     raiseError("Unkown error")
@@ -278,6 +281,8 @@ proc pSetDragDest(widget: pointer) =
 proc init(app: App) =
   gtk_init(nil, nil)
 
+  pClipboardPtr = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD)
+
   # Determine default styles:
   var window = gtk_window_new(GTK_WINDOW_TOPLEVEL)
   var context = gtk_widget_get_style_context(window)
@@ -293,6 +298,21 @@ proc runMainLoop() = gtk_main()
 proc processEvents(app: App) =
   while gtk_events_pending() == 1:
     discard gtk_main_iteration()
+
+proc pClipboardTextReceivedFunc(clipboard: pointer, text: cstring, data: pointer): bool {.cdecl.} =
+  pClipboardText = $text
+  if pClipboardText == nil:
+    pClipboardText = ""
+
+proc clipboardText(app: App): string =
+  pClipboardText = nil
+  gtk_clipboard_request_text(pClipboardPtr, pClipboardTextReceivedFunc, nil)
+  while pClipboardText == nil:
+    discard gtk_main_iteration()
+  result = pClipboardText
+
+proc `clipboardText=`(app: App, text: string) =
+  gtk_clipboard_set_text(pClipboardPtr, text, text.len.cint)
 
 
 # ----------------------------------------------------------------------------------------

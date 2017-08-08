@@ -180,6 +180,10 @@ const
   GTK_RESPONSE_APPLY*        = -10
   GTK_RESPONSE_HELP*         = -11
 
+  # Selection:
+  GDK_SELECTION_CLIPBOARD* = cast[pointer](69)
+
+
 # ----------------------------------------------------------------------------------------
 #                                   General Gtk Procs
 # ----------------------------------------------------------------------------------------
@@ -371,6 +375,10 @@ proc gtk_adjustment_new*(value, lower, upper, step_increment, page_increment, pa
 
 proc gtk_selection_data_get_uris*(selection_data: pointer): ptr cstring {.importc: "gtk_selection_data_get_uris", libgtk3.}
 proc g_filename_from_uri*(uri: pointer): cstring {.importc: "g_filename_from_uri", libgtk3.}
+
+proc gtk_clipboard_get*(selection: pointer): pointer {.importc: "gtk_clipboard_get", libgtk3.}
+proc gtk_clipboard_set_text*(clipboard: pointer, text: cstring, len: cint) {.importc: "gtk_clipboard_set_text", libgtk3.}
+proc gtk_clipboard_request_text*(clipboard, callback, user_data: pointer) {.importc: "gtk_clipboard_request_text", libgtk3.}
 
 
 # ----------------------------------------------------------------------------------------

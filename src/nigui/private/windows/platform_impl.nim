@@ -414,6 +414,36 @@ proc processEvents(app: App) =
     discard TranslateMessage(msg.addr)
     discard DispatchMessageA(msg.addr)
 
+proc clipboardText(app: App): string =
+  result = ""
+  if not OpenClipboard(nil):
+    return
+  let data = GetClipboardData(CF_TEXT)
+  if data == nil:
+    return
+  let text = cast[cstring](GlobalLock(data))
+  if text == nil:
+    return
+  result = $text
+  discard GlobalUnlock(data)
+  discard CloseClipboard()
+  
+proc `clipboardText=`(app: App, text: string) =
+  if not OpenClipboard(nil):
+    return
+  let size = text.len + 1
+  let data = GlobalAlloc(GMEM_MOVEABLE, size.int32)
+  if data == nil:
+    return
+  let mem = GlobalLock(data)
+  if mem == nil:
+    return
+  copyMem(mem, text.cstring, size)
+  discard GlobalUnlock(data)
+  discard EmptyClipboard()
+  discard SetClipboardData(CF_TEXT, data)
+  discard CloseClipboard()
+
 
 # ----------------------------------------------------------------------------------------
 #                                       Dialogs

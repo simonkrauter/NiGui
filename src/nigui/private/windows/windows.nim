@@ -37,6 +37,7 @@ const
   BN_CLICKED* = 0
   BM_SETIMAGE* = 247
   BS_GROUPBOX* = 0x00000007
+  CF_TEXT* = 1
   COLOR_BTNFACE* = 15
   COLOR_WINDOWTEXT* = 8
   CP_UTF8* = 65001
@@ -153,6 +154,8 @@ const
   # UnitInch* = 4
   # UnitDocument* = 5
   # UnitMillimeter* = 6
+  GMEM_MOVEABLE* = 2
+  
 
 # ----------------------------------------------------------------------------------------
 #                                       Types
@@ -307,10 +310,17 @@ proc ActivateActCtx*(pActCtx, lpCookie: pointer): bool {.importc: "ActivateActCt
 proc GetSystemDirectoryA*(lpBuffer: pointer, uSize: int32): int32 {.importc: "GetSystemDirectoryA", libKernel32.}
 proc MultiByteToWideChar*(CodePage, dwFlags: int32, lpMultiByteStr: cstring, cbMultiByte: int32, lpWideCharStr: cstring, cchWideChar: int32): int32 {.importc: "MultiByteToWideChar", libKernel32.}
 proc WideCharToMultiByte*(CodePage, dwFlags: int32, lpWideCharStr: cstring, cchWideChar: int32, lpMultiByteStr: cstring, cbMultiByte: int32, lpDefaultChar: cstring, lpUsedDefaultChar: pointer): int32 {.importc: "WideCharToMultiByte", libKernel32.}
+proc GlobalLock*(hMem: pointer): pointer {.importc: "GlobalLock", libKernel32.}
+proc GlobalUnlock*(hMem: pointer): bool {.importc: "GlobalUnlock", libKernel32.}
+proc GlobalAlloc*(uFlags, dwBytes: int32): pointer {.importc: "GlobalAlloc", libKernel32.}
+
+
+# ----------------------------------------------------------------------------------------
+#                                      User32 Procs
+# ----------------------------------------------------------------------------------------
 
 proc MessageBoxA*(hWnd: pointer, lpText, lpCaption: cstring, uType: int) {.importc: "MessageBoxA", libUser32.}
 proc MessageBoxW*(hWnd: pointer, lpText, lpCaption: cstring, uType: int) {.importc: "MessageBoxW", libUser32.}
-
 proc RegisterClassExA*(lpwcx: var WndClassEx): int16 {.importc: "RegisterClassExA", libUser32.}
 proc CreateWindowExA*(dwExStyle: int32, lpClassName, lpWindowName: cstring, dwStyle: int32, x, y, nWidth, nHeight: int, hWndParent, hMenu, hInstance, lpParam: pointer): pointer {.importc: "CreateWindowExA", libUser32.}
 proc DestroyWindow*(hWnd: pointer): bool {.importc: "DestroyWindow", libUser32.}
@@ -368,6 +378,11 @@ proc KillTimer*(hWnd, nIDEvent: pointer): bool {.importc: "KillTimer", libUser32
 proc FillRect*(hDC: pointer, lprc: var Rect, hbr: pointer): int32 {.importc: "FillRect", libUser32.}
 proc FrameRect*(hDC: pointer, lprc: var Rect, hbr: pointer): int32 {.importc: "FrameRect", libUser32.}
 proc GetKeyState*(nVirtKey: int32): int16 {.importc: "GetKeyState", libUser32.}
+proc OpenClipboard*(hWndNewOwner: pointer): bool {.importc: "OpenClipboard", libUser32.}
+proc CloseClipboard*(): bool {.importc: "CloseClipboard", libUser32.}
+proc GetClipboardData*(uFormat: int32): pointer {.importc: "GetClipboardData", libUser32.}
+proc SetClipboardData*(uFormat: int32, hMem: pointer): pointer {.importc: "SetClipboardData", libUser32.}
+proc EmptyClipboard*(): bool {.importc: "EmptyClipboard", libUser32.}
 
 when defined(cpu64):
   # Only available on 64-bit Windows:
