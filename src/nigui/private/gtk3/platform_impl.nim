@@ -174,6 +174,7 @@ proc pControlKeyPressSignal(widget: pointer, event: var GdkEventKey, data: point
 
   # echo $gdk_keyval_to_unicode(event.keyval)
   var unicode = gdk_keyval_to_unicode(event.keyval)
+
   # if unicode == 0:
     # unicode = event.keyval
 
@@ -313,6 +314,7 @@ proc clipboardText(app: App): string =
 
 proc `clipboardText=`(app: App, text: string) =
   gtk_clipboard_set_text(pClipboardPtr, text, text.len.cint)
+  gtk_clipboard_store(pClipboardPtr)
 
 
 # ----------------------------------------------------------------------------------------
@@ -1120,8 +1122,24 @@ method pAddButtonPressEvent(control: NativeLabel) =
 #                                       TextBox
 # ----------------------------------------------------------------------------------------
 
+proc pTextBoxKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
+  result = pControlKeyPressSignal(widget, event, data)
+
+  # Implement own "copy to clipboard", because by default the clipboard is non-persistent
+  if not result:
+    let modifiers = gtk_accelerator_get_default_mod_mask()
+    if event.keyval == 'c'.ord and (event.state and modifiers) == GDK_CONTROL_MASK:
+      let textBox = cast[NativeTextBox](data)
+      var startPos: cint
+      var endPos: cint
+      discard gtk_editable_get_selection_bounds(textBox.fHandle, startPos, endPos)
+      if startPos != endPos:
+        app.clipboardText = $gtk_editable_get_chars(textBox.fHandle, startPos, endPos)
+        return true # prevent default "copy to clipboard"
+
 proc init(textBox: NativeTextBox) =
   textBox.fHandle = gtk_entry_new()
+  discard g_signal_connect_data(textBox.fHandle, "key-press-event", pTextBoxKeyPressSignal, cast[pointer](textBox))
   discard g_signal_connect_data(textBox.fHandle, "changed", pControlChangedSignal, cast[pointer](textBox))
   textBox.TextBox.init()
 
@@ -1146,6 +1164,20 @@ method pAddButtonPressEvent(control: NativeTextBox) =
 #                                      TextArea
 # ----------------------------------------------------------------------------------------
 
+proc pTextAreaKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
+  result = pControlKeyPressSignal(widget, event, data)
+
+  # Implement own "copy to clipboard", because by default the clipboard is non-persistent
+  if not result:
+    let modifiers = gtk_accelerator_get_default_mod_mask()
+    if event.keyval == 'c'.ord and (event.state and modifiers) == GDK_CONTROL_MASK:
+      let textArea = cast[NativeTextArea](data)
+      var startIter: GtkTextIter
+      var endIter: GtkTextIter
+      discard gtk_text_buffer_get_selection_bounds(textArea.fBufferHandle, startIter, endIter)
+      app.clipboardText = $gtk_text_buffer_get_text(textArea.fBufferHandle, startIter, endIter, true)
+      return true # prevent default "copy to clipboard"
+
 proc init(textArea: NativeTextArea) =
   textArea.fHandle = gtk_scrolled_window_new(nil, nil)
   # gtk_scrolled_window_set_policy(textArea.fHandle, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC)
@@ -1157,7 +1189,7 @@ proc init(textArea: NativeTextArea) =
   gtk_text_view_set_bottom_margin(textArea.fTextViewHandle, 5)
   gtk_container_add(textArea.fHandle, textArea.fTextViewHandle)
   gtk_widget_show(textArea.fTextViewHandle)
-  discard g_signal_connect_data(textArea.fTextViewHandle, "key-press-event", pControlKeyPressSignal, cast[pointer](textArea))
+  discard g_signal_connect_data(textArea.fTextViewHandle, "key-press-event", pTextAreaKeyPressSignal, cast[pointer](textArea))
   textArea.fBufferHandle = gtk_text_view_get_buffer(textArea.fTextViewHandle)
   discard g_signal_connect_data(textArea.fBufferHandle, "changed", pControlChangedSignal, cast[pointer](textArea))
   textArea.TextArea.init()
@@ -1166,7 +1198,7 @@ method text(textArea: NativeTextArea): string =
   var startIter, endIter: GtkTextIter
   gtk_text_buffer_get_start_iter(textArea.fBufferHandle, startIter)
   gtk_text_buffer_get_end_iter(textArea.fBufferHandle, endIter)
-  result = $gtk_text_buffer_get_text(textArea.fBufferHandle, startIter, endIter, 1)
+  result = $gtk_text_buffer_get_text(textArea.fBufferHandle, startIter, endIter, true)
 
 method `text=`(textArea: NativeTextArea, text: string) =
   gtk_text_buffer_set_text(textArea.fBufferHandle, text, text.len.cint)

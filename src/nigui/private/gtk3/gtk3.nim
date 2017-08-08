@@ -183,6 +183,9 @@ const
   # Selection:
   GDK_SELECTION_CLIPBOARD* = cast[pointer](69)
 
+  # Key modifier masks:
+  GDK_CONTROL_MASK* = 1 shl 2
+
 
 # ----------------------------------------------------------------------------------------
 #                                   General Gtk Procs
@@ -298,6 +301,8 @@ proc gtk_entry_new*(): pointer {.importc: "gtk_entry_new", libgtk3.}
 proc gtk_entry_set_text*(entry: pointer, text: cstring) {.importc: "gtk_entry_set_text", libgtk3.}
 proc gtk_entry_get_text*(entry: pointer): cstring {.importc: "gtk_entry_get_text", libgtk3.}
 proc gtk_entry_set_width_chars*(entry: pointer, n_chars: cint) {.importc: "gtk_entry_set_width_chars", libgtk3.}
+proc gtk_editable_get_selection_bounds*(editable: pointer, start_pos, end_pos: var cint): bool {.importc: "gtk_editable_get_selection_bounds", libgtk3.}
+proc gtk_editable_get_chars*(editable: pointer, start_pos, end_pos: cint): cstring {.importc: "gtk_editable_get_chars", libgtk3.}
 
 proc gtk_text_view_new*(): pointer {.importc: "gtk_text_view_new", libgtk3.}
 proc gtk_text_view_set_buffer*(text_view, buffer: pointer) {.importc: "gtk_text_view_set_buffer", libgtk3.}
@@ -315,13 +320,14 @@ proc gtk_text_view_scroll_to_iter*(text_view: pointer, iter: var GtkTextIter, wi
 
 # proc gtk_text_buffer_new*(table: pointer): pointer {.importc: "gtk_text_buffer_new", libgtk3.}
 proc gtk_text_buffer_set_text*(text_buffer: pointer, text: cstring, len: cint) {.importc: "gtk_text_buffer_set_text", libgtk3.}
-proc gtk_text_buffer_get_text*(text_buffer: pointer, start, `end`: var GtkTextIter, include_hidden_chars: cint): cstring {.importc: "gtk_text_buffer_get_text", libgtk3.}
+proc gtk_text_buffer_get_text*(text_buffer: pointer, start, `end`: var GtkTextIter, include_hidden_chars: bool): cstring {.importc: "gtk_text_buffer_get_text", libgtk3.}
 proc gtk_text_buffer_get_start_iter*(text_buffer: pointer, iter: var GtkTextIter) {.importc: "gtk_text_buffer_get_start_iter", libgtk3.}
 proc gtk_text_buffer_get_end_iter*(text_buffer: pointer, iter: var GtkTextIter) {.importc: "gtk_text_buffer_get_end_iter", libgtk3.}
 # proc gtk_text_buffer_add_mark*(buffer, mark: pointer, where: var GtkTextIter) {.importc: "gtk_text_buffer_add_mark", libgtk3.}
 # proc gtk_text_buffer_get_insert*(buffer: pointer): pointer {.importc: "gtk_text_buffer_get_insert", libgtk3.}
 # proc gtk_text_buffer_get_iter_at_line*(buffer: pointer, iter: var GtkTextIter, line_number: cint) {.importc: "gtk_text_buffer_get_iter_at_line", libgtk3.}
 proc gtk_text_buffer_insert*(buffer: pointer, iter: var GtkTextIter, text: cstring, len: cint) {.importc: "gtk_text_buffer_insert", libgtk3.}
+proc gtk_text_buffer_get_selection_bounds*(buffer: pointer, start, `end`: var GtkTextIter): bool {.importc: "gtk_text_buffer_get_selection_bounds", libgtk3.}
 
 proc gtk_scrolled_window_new*(hadjustment, vadjustment: pointer): pointer {.importc: "gtk_scrolled_window_new", libgtk3.}
 proc gtk_scrolled_window_set_policy*(scrolled_window: pointer, hscrollbar_policy, vscrollbar_policy: cint) {.importc: "gtk_scrolled_window_set_policy", libgtk3.}
@@ -379,6 +385,9 @@ proc g_filename_from_uri*(uri: pointer): cstring {.importc: "g_filename_from_uri
 proc gtk_clipboard_get*(selection: pointer): pointer {.importc: "gtk_clipboard_get", libgtk3.}
 proc gtk_clipboard_set_text*(clipboard: pointer, text: cstring, len: cint) {.importc: "gtk_clipboard_set_text", libgtk3.}
 proc gtk_clipboard_request_text*(clipboard, callback, user_data: pointer) {.importc: "gtk_clipboard_request_text", libgtk3.}
+proc gtk_clipboard_store*(clipboard: pointer) {.importc: "gtk_clipboard_store", libgtk3.}
+
+proc gtk_accelerator_get_default_mod_mask*(): cint {.importc: "gtk_accelerator_get_default_mod_mask", libgtk3.}
 
 
 # ----------------------------------------------------------------------------------------
