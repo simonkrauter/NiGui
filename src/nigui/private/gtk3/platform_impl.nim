@@ -787,9 +787,8 @@ proc init(control: ControlImpl) =
     # Direct instance of ControlImpl:
     control.fHandle = gtk_layout_new(nil, nil)
     discard g_signal_connect_data(control.fHandle, "draw", pControlDrawSignal, cast[pointer](control))
-
-  gtk_widget_add_events(control.fHandle, GDK_KEY_PRESS_MASK)
-  discard g_signal_connect_data(control.fHandle, "key-press-event", pControlKeyPressSignal, cast[pointer](control))
+    gtk_widget_add_events(control.fHandle, GDK_KEY_PRESS_MASK)
+    discard g_signal_connect_data(control.fHandle, "key-press-event", pControlKeyPressSignal, cast[pointer](control))
 
   control.pAddButtonPressEvent()
 
