@@ -207,51 +207,8 @@ proc pCommonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
     discard
   result = DefWindowProcA(hWnd, uMsg, wParam, lParam)
 
-proc pKeyvalToKey(keyval: int): Key =
+proc pVirtualKeyToKey(keyval: int): Key =
   case keyval
-  of 48: Key_Number0
-  of 49: Key_Number1
-  of 50: Key_Number2
-  of 51: Key_Number3
-  of 52: Key_Number4
-  of 53: Key_Number5
-  of 54: Key_Number6
-  of 55: Key_Number7
-  of 56: Key_Number8
-  of 57: Key_Number9
-  of 65: Key_A
-  of 66: Key_B
-  of 67: Key_C
-  of 68: Key_D
-  of 69: Key_E
-  of 70: Key_F
-  of 71: Key_G
-  of 72: Key_H
-  of 73: Key_I
-  of 74: Key_J
-  of 75: Key_K
-  of 76: Key_L
-  of 77: Key_M
-  of 78: Key_N
-  of 79: Key_O
-  of 80: Key_P
-  of 81: Key_Q
-  of 82: Key_R
-  of 83: Key_S
-  of 84: Key_T
-  of 85: Key_U
-  of 86: Key_V
-  of 87: Key_W
-  of 88: Key_X
-  of 89: Key_Y
-  of 90: Key_Z
-  of 32: Key_Space
-  of 9: Key_Tab
-  of 13: Key_Return
-  of 27: Key_Escape
-  of 45: Key_Insert
-  of 46: Key_Delete
-  of 8: Key_Backspace
   of 37: Key_Left
   of 38: Key_Up
   of 39: Key_Right
@@ -260,32 +217,20 @@ proc pKeyvalToKey(keyval: int): Key =
   of 36: Key_Home
   of 33: Key_PageUp
   of 34: Key_PageDown
-  else: Key_None
+  else: cast[Key](keyval.unicodeToUpper)
 
-proc pHandleWMKEYDOWN(window: Window, control: Control, wParam, lParam: pointer) =
+proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int, key: Key): bool =
   var windowEvent = new WindowKeyEvent
   windowEvent.window = window
-  windowEvent.key = pKeyvalToKey(cast[int](wParam))
+  windowEvent.key = key
   if windowEvent.key == Key_None:
-    echo "Unkown key value: ", cast[int](wParam)
+    echo "WM_CHAR: Unkown key value: ", unicode
     return
-  if not GetKeyboardState(pKeyState): pRaiseLastOSError()
-  var widestring = newString(2)
-  let scancode = int32((cast[int](lParam) shr 8) and 0xFFFFFF00)
-  let ret = ToUnicode(cast[int](wParam).int32, scancode, pKeyState, widestring, 1, 0)
-  if ret == 1:
-    windowEvent.unicode = widestring.pUtf16ToUnicode
-    windowEvent.character = windowEvent.unicode.pUnicodeCharToUtf8
-  else:
-    windowEvent.character = ""
+
+  windowEvent.unicode = unicode
+  windowEvent.character = unicode.pUnicodeCharToUtf8
+
   window.handleKeyDownEvent(windowEvent)
-
-
-  # var windowEvent = new WindowKeyEvent
-  # windowEvent.window = window
-  # windowEvent.character = $chr(cast[int](wParam))
-  # windowEvent.key = pKeyvalToKey(cast[int](wParam))
-  # window.handleKeyDownEvent(windowEvent)
 
   if control != nil:
     var controlEvent = new ControlKeyEvent
@@ -294,9 +239,20 @@ proc pHandleWMKEYDOWN(window: Window, control: Control, wParam, lParam: pointer)
     controlEvent.unicode = windowEvent.unicode
     controlEvent.character = windowEvent.character
     control.handleKeyDownEvent(controlEvent)
-    # if controlEvent.cancel:
-      # return nil # key is still inserted in text area
+    result = controlEvent.cancel
 
+proc pHandleWMKEYDOWN(window: Window, control: Control, wParam, lParam: pointer): bool =
+  if not GetKeyboardState(pKeyState): pRaiseLastOSError()
+  var widestring = newString(2)
+  let scancode = int32((cast[int](lParam) shr 8) and 0xFFFFFF00)
+  let ret = ToUnicode(cast[int](wParam).int32, scancode, pKeyState, widestring, 1, 0)
+  if ret == 1:
+    return # Unicode characters are handled by WM_CHAR
+  result = pHandleWMKEYDOWNOrWMCHAR(window, control, 0, pVirtualKeyToKey(cast[int](wParam)))
+
+proc pHandleWMCHAR(window: Window, control: Control, wParam, lParam: pointer): bool =
+  let unicode = cast[int](wParam)
+  result = pHandleWMKEYDOWNOrWMCHAR(window, control, unicode, cast[Key](unicode.unicodeToUpper))
 
 proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
   case uMsg
@@ -339,31 +295,14 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
     event.window = window
     event.files = files
     window.handleDropFilesEvent(event)
-  # of WM_CHAR:
-    # not triggered for all key
-    # echo "window WM_CHAR: "
-    # let window = cast[Window](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
-    # if window != nil:
-      # var unicode = cast[int](wParam)
-      # var event = new WindowKeyEvent
-      # event.window = window
-      # event.unicode = unicode
-      # event.character = unicode.pUnicodeCharToUtf8
-      # echo event.character[0].ord
-      # window.handleKeyDownEvent(event)
   of WM_KEYDOWN:
-    # echo "window WM_KEYDOWN"
-
-    # if (cast[int](lParam) and 0x40000000) != 0x40000000:
-      # echo "window WM_KEYDOWN first"
-    # else:
-      # echo "window WM_KEYDOWN"
-
-    # echo int((cast[int](lParam) shr 8) and 0xFFFFFF00)
-
     let window = cast[Window](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
-    if window != nil:
-      pHandleWMKEYDOWN(window, nil, wParam, lParam)
+    if window != nil and pHandleWMKEYDOWN(window, nil, wParam, lParam):
+      return
+  of WM_CHAR:
+    let window = cast[Window](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+    if window != nil and pHandleWMCHAR(window, nil, wParam, lParam):
+      return
   else:
     discard
   result = pCommonWndProc(hWnd, uMsg, wParam, lParam)
@@ -427,7 +366,7 @@ proc clipboardText(app: App): string =
   result = $text
   discard GlobalUnlock(data)
   discard CloseClipboard()
-  
+
 proc `clipboardText=`(app: App, text: string) =
   if not OpenClipboard(nil):
     return
@@ -1032,11 +971,21 @@ proc pCommonControlWndProc_Scroll(origWndProc, hWnd: pointer, uMsg: int32, wPara
 
 proc pCommonControlWndProc(origWndProc, hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer =
   case uMsg
+
+  # Note: A WM_KEYDOWN is sent for every key, for some (mostly visual) keys WM_CHAR is sent in addition.
+  # To discard a character in text input, WM_CHAR must return without calling the default window proc.
+  # Because we should not to trigger two events for one key press, WM_KEYDOWN must ignore all keys,
+  # which are handled by WM_CHAR.
+
   of WM_KEYDOWN:
     let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
-    if control != nil:
-      # echo "control WM_KEYDOWN"
-      pHandleWMKEYDOWN(control.parentWindow, control, wParam, lParam)
+    if control != nil and pHandleWMKEYDOWN(control.parentWindow, control, wParam, lParam):
+      return nil
+
+  of WM_CHAR:
+    let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+    if control != nil and pHandleWMCHAR(control.parentWindow, control, wParam, lParam):
+      return nil
 
   # of WM_KEYUP:
     # return nil # key is still inserted in text area
@@ -1245,6 +1194,10 @@ method `text=`(button: NativeButton, text: string) =
   procCall button.Button.`text=`(text)
   pSetWindowText(button.fHandle, text)
 
+method `enabled=`(button: NativeButton, enabled: bool) =
+  button.fEnabled = enabled
+  discard EnableWindow(button.fHandle, enabled)
+
 
 # ----------------------------------------------------------------------------------------
 #                                        Label
@@ -1279,6 +1232,36 @@ method `text=`(textBox: NativeTextBox, text: string) = pSetWindowText(textBox.fH
 
 method naturalHeight(textBox: NativeTextBox): int = textBox.getTextLineHeight() + 9 # add padding
 
+method `editable=`(textBox: NativeTextBox, editable: bool) =
+  textBox.fEditable = editable
+  discard SendMessageA(textBox.fHandle, EM_SETREADONLY, cast[pointer](not editable), nil)
+
+method cursorPos(textBox: NativeTextBox): int =
+  var startPos: int32
+  discard SendMessageA(textBox.fHandle, EM_GETSEL, startPos.addr, nil)
+  result = startPos
+  # Not really the cursor position, but the start of selection
+
+method `cursorPos=`(textBox: NativeTextBox, cursorPos: int) =
+  discard SendMessageA(textBox.fHandle, EM_SETSEL, cast[pointer](cursorPos), cast[pointer](cursorPos))
+  # Side effect: clears selection
+
+method selectionStart(textBox: NativeTextBox): int =
+  var startPos: int32
+  discard SendMessageA(textBox.fHandle, EM_GETSEL, startPos.addr, nil)
+  result = startPos
+
+method selectionEnd(textBox: NativeTextBox): int =
+  var endPos: int32
+  discard SendMessageA(textBox.fHandle, EM_GETSEL, nil, endPos.addr)
+  result = endPos
+
+method `selectionStart=`(textBox: NativeTextBox, selectionStart: int) =
+  discard SendMessageA(textBox.fHandle, EM_SETSEL, cast[pointer](selectionStart), cast[pointer](textBox.selectionEnd))
+
+method `selectionEnd=`(textBox: NativeTextBox, selectionEnd: int) =
+  discard SendMessageA(textBox.fHandle, EM_SETSEL, cast[pointer](textBox.selectionStart), cast[pointer](selectionEnd))
+
 
 # ----------------------------------------------------------------------------------------
 #                                       TextArea
@@ -1302,9 +1285,11 @@ proc init(textArea: NativeTextArea) =
   pTextAreaOrigWndProc = pSetWindowLongPtr(textArea.fHandle, GWLP_WNDPROC, pTextAreaWndProc)
   textArea.TextArea.init()
 
-method text(textArea: NativeTextArea): string = pGetWindowText(textArea.fHandle)
+# method text(textArea: NativeTextArea): string = pGetWindowText(textArea.fHandle)
+# not needed any more
 
-method `text=`(textArea: NativeTextArea, text: string) = pSetWindowText(textArea.fHandle, text)
+# method `text=`(textArea: NativeTextArea, text: string) = pSetWindowText(textArea.fHandle, text)
+# not needed any more
 
 method scrollToBottom(textArea: NativeTextArea) =
   # select all

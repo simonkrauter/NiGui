@@ -14,13 +14,13 @@ Design goals:
 NiGui provides full abstraction of the underlying platform. NiGui applications are written once and can be compiled for different platforms. Application developers don't have to care about platform-specific details.
 * **Simple and elegant**<br>
 NiGui has a clean and beginner-friendly high-level API. It is much less complex than the Win32 API, GTK+ or Qt.<br>
-NiGui profits of Nim's features and elegance in contrast to C code, for example Nim's polymorphism capabilities. 
+NiGui profits of Nim's features and elegance in contrast to C code, for example Nim's polymorphism capabilities.
 * **Powerful**<br>
 NiGui uses the native controls of the underlying platform to give a familiar use and feel for the user. In addtion, NiGui allows to create custom controls for special use cases or a themed UI. <br>
 NiGui has it's own layout manager for automatic resizing and positioning of controls.
 * **Minimal dependencies**<br>
 The NiGui source code has no dependencies except Nim's standard library. Platform bindings are included.<br>
-Generated binaries (exe files) include NiGui and do not need external libraries. 
+Generated binaries (exe files) include NiGui and do not need external libraries.
 
 Current state
 -------------
@@ -85,5 +85,6 @@ FAQ
 
 License
 -------
-
-NiGui is FLOSS (free and open-source software) licensed under the [MIT License](https://opensource.org/licenses/MIT). As a result you may use any compatible license (essentially any license) for your own programs developed with NiGui. You are explicitly permitted to develop commercial applications using NiGui.
+NiGui is FLOSS (free and open-source software).<br>
+All files in this repository are licensed under the [MIT License](https://opensource.org/licenses/MIT). As a result you may use any compatible license (essentially any license) for your own programs developed with NiGui. You are explicitly permitted to develop commercial applications using NiGui.<br>
+Copyright 2017 Simon Krauter

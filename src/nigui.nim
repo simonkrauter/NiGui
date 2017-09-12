@@ -67,50 +67,61 @@ type
   Timer* = distinct int
 
   Key* = enum
-    Key_None
-    Key_Number0
-    Key_Number1
-    Key_Number2
-    Key_Number3
-    Key_Number4
-    Key_Number5
-    Key_Number6
-    Key_Number7
-    Key_Number8
-    Key_Number9
-    Key_A
-    Key_B
-    Key_C
-    Key_D
-    Key_E
-    Key_F
-    Key_G
-    Key_H
-    Key_I
-    Key_J
-    Key_K
-    Key_L
-    Key_M
-    Key_N
-    Key_O
-    Key_P
-    Key_Q
-    Key_R
-    Key_S
-    Key_T
-    Key_U
-    Key_V
-    Key_W
-    Key_X
-    Key_Y
-    Key_Z
-    Key_Space
-    Key_Tab
-    Key_Return
-    Key_Escape
-    Key_Insert
+    # Keys with same value than Unicode:
+    Key_None      = 0
+    Key_Backspace = 8
+    Key_Tab       = 9
+    Key_Return    = 13
+    Key_Escape    = 27
+    Key_Space     = 32
+    Key_Asterisk  = 42
+    Key_Plus      = 43
+    Key_Comma     = 44
+    Key_Minus     = 45
+    Key_Point     = 46
+    Key_Number0   = 48
+    Key_Number1   = 49
+    Key_Number2   = 50
+    Key_Number3   = 51
+    Key_Number4   = 52
+    Key_Number5   = 53
+    Key_Number6   = 54
+    Key_Number7   = 55
+    Key_Number8   = 56
+    Key_Number9   = 57
+    Key_A         = 65
+    Key_B         = 66
+    Key_C         = 67
+    Key_D         = 68
+    Key_E         = 69
+    Key_F         = 70
+    Key_G         = 71
+    Key_H         = 72
+    Key_I         = 73
+    Key_J         = 74
+    Key_K         = 75
+    Key_L         = 76
+    Key_M         = 77
+    Key_N         = 78
+    Key_O         = 79
+    Key_P         = 80
+    Key_Q         = 81
+    Key_R         = 82
+    Key_S         = 83
+    Key_T         = 84
+    Key_U         = 85
+    Key_V         = 86
+    Key_W         = 87
+    Key_X         = 88
+    Key_Y         = 89
+    Key_Z         = 90
+    Key_AE        = 196
+    Key_OE        = 214
+    Key_UE        = 220
+    Key_SharpS    = 223
+    # Not part of Unicode:
+    Key_Insert    = 1000
     Key_Delete
-    Key_Backspace
     Key_Left
     Key_Right
     Key_Up
@@ -120,7 +131,8 @@ type
     Key_PageUp
     Key_PageDown
 
-const inactiveTimer* = 0
+const
+  inactiveTimer* = 0
 
 
 # ----------------------------------------------------------------------------------------
@@ -281,17 +293,15 @@ type
 
   Button* = ref object of ControlImpl
     fText: string
+    fEnabled: bool
 
   Label* = ref object of ControlImpl
     fText: string
 
   TextBox* = ref object of ControlImpl
+    fEditable: bool
 
-  TextArea* = ref object of ControlImpl
-    fWrap: bool
-
-
-# Platform-specific extension of basic controls:
+# Platform-specific extension:
 when useWindows(): include "nigui/private/windows/platform_types2"
 when useGtk():     include "nigui/private/gtk3/platform_types2"
 
@@ -307,6 +317,13 @@ type
     fYAlign: YAlign
     fPadding: int
     fSpacing: int
+
+  TextArea* = ref object of NativeTextBox
+    fWrap: bool
+
+# Platform-specific extension:
+when useWindows(): include "nigui/private/windows/platform_types3"
+when useGtk():     include "nigui/private/gtk3/platform_types3"
 
 
 # ----------------------------------------------------------------------------------------
@@ -766,6 +783,9 @@ proc init*(button: NativeButton)
 method text*(button: Button): string
 method `text=`*(button: Button, text: string)
 
+method enabled*(button: Button): bool
+method `enabled=`*(button: Button, enabled: bool)
+
 
 # ----------------------------------------------------------------------------------------
 #                                        Label
@@ -792,6 +812,21 @@ proc init*(textBox: NativeTextBox)
 method text*(textBox: TextBox): string
 method `text=`*(textBox: TextBox, text: string)
 
+method editable*(textBox: TextBox): bool
+method `editable=`*(textBox: TextBox, editable: bool)
+
+method cursorPos*(textBox: TextBox): int
+method `cursorPos=`*(textBox: TextBox, cursorPos: int)
+
+method selectionStart*(textBox: TextBox): int
+method `selectionStart=`*(textBox: TextBox, selectionStart: int)
+
+method selectionEnd*(textBox: TextBox): int
+method `selectionEnd=`*(textBox: TextBox, selectionEnd: int)
+
+method selectedText*(textBox: TextBox): string
+method `selectedText=`*(textBox: TextBox, text: string)
+
 
 # ----------------------------------------------------------------------------------------
 #                                      TextArea
@@ -802,8 +837,6 @@ proc newTextArea*(text = ""): TextArea
 proc init*(textArea: TextArea)
 proc init*(textArea: NativeTextArea)
 
-method text*(textArea: TextArea): string
-method `text=`*(textArea: TextArea, text: string)
 method addText*(textArea: TextArea, text: string)
 method addLine*(textArea: TextArea, text = "")
 
@@ -892,7 +925,27 @@ proc rgb(red, green, blue: byte, alpha: byte = 255): Color =
   result.blue = blue
   result.alpha = alpha
 
-proc countLines(s: string): int = strutils.countLines(s) + 1
+# Should removed here, when version in strutils is fixed
+proc countLines(s: string): int =
+  result = 1
+  var i = 0
+  while i < s.len:
+    case s[i]
+    of '\c':
+      if s[i+1] == '\l': inc i
+      inc result
+    of '\l': inc result
+    else: discard
+    inc i
+
+proc unicodeToUpper(unicode: int): int =
+  if unicode < 128:
+    return cast[int](cast[char](unicode).toUpper)
+  result = case unicode:
+  of 228: 196 # Ä
+  of 246: 214 # Ö
+  of 252: 220 # Ü
+  else: unicode
 
 proc sleep(app: App, milliSeconds: float) =
   let t = epochTime() + milliSeconds / 1000
@@ -2136,6 +2189,7 @@ proc init(button: Button) =
   button.fHeightMode = HeightMode_Auto
   button.minWidth = 15
   button.minHeight = 15
+  button.enabled = true
 
 method text(button: Button): string = button.fText
 
@@ -2148,6 +2202,11 @@ method `text=`(button: Button, text: string) =
 method naturalWidth(button: Button): int = button.getTextWidth(button.text) + 20
 
 method naturalHeight(button: Button): int = button.getTextLineHeight() * button.text.countLines + 12
+
+method enabled(button: Button): bool = button.fEnabled
+
+method `enabled=`(button: Button, enabled: bool) = discard
+  # has to be implemented by NativeTextBox
 
 method `onDraw=`(container: NativeButton, callback: DrawProc) = raiseError("NativeButton does not allow onDraw.")
 
@@ -2198,6 +2257,7 @@ proc init(textBox: TextBox) =
   textBox.fHeightMode = HeightMode_Auto
   textBox.minWidth = 20
   textBox.minHeight = 20
+  textBox.editable = true
 
 method naturalHeight(textBox: TextBox): int = textBox.getTextLineHeight()
 
@@ -2208,6 +2268,38 @@ method `text=`(textBox: TextBox, text: string) = discard
   # has to be implemented by NativeTextBox
 
 method `onDraw=`(container: NativeTextBox, callback: DrawProc) = raiseError("NativeTextBox does not allow onDraw.")
+
+method editable(textBox: TextBox): bool = textBox.fEditable
+
+method `editable=`(textBox: TextBox, editable: bool) = discard
+  # has to be implemented by NativeTextBox
+
+method cursorPos(textBox: TextBox): int = discard
+  # has to be implemented by NativeTextBox
+
+method `cursorPos=`(textBox: TextBox, cursorPos: int) = discard
+  # has to be implemented by NativeTextBox
+
+method selectionStart(textBox: TextBox): int = discard
+  # has to be implemented by NativeTextBox
+
+method `selectionStart=`(textBox: TextBox, selectionStart: int) = discard
+  # has to be implemented by NativeTextBox
+
+method selectionEnd(textBox: TextBox): int = discard
+  # has to be implemented by NativeTextBox
+
+method `selectionEnd=`(textBox: TextBox, selectionEnd: int) = discard
+  # has to be implemented by NativeTextBox
+
+method selectedText(textBox: TextBox): string =
+  result = textBox.text.substr(textBox.selectionStart, textBox.selectionEnd - 1)
+
+method `selectedText=`(textBox: TextBox, text: string) =
+  let oldCursorPos = textBox.cursorPos
+  let oldText = textBox.text
+  textBox.text = oldText.substr(0, textBox.selectionStart - 1) & text & oldText.substr(textBox.selectionEnd)
+  textBox.cursorPos = oldCursorPos
 
 
 # ----------------------------------------------------------------------------------------
@@ -2226,12 +2318,7 @@ proc init(textArea: TextArea) =
   textArea.minWidth = 20
   textArea.minHeight = 20
   textArea.wrap = true
-
-method text(textArea: TextArea): string = discard
-  # has to be implemented by NativeTextBox
-
-method `text=`(textArea: TextArea, text: string) = discard
-  # has to be implemented by NativeTextBox
+  textArea.editable = true
 
 method addText(textArea: TextArea, text: string) = textArea.text = textArea.text & text
 

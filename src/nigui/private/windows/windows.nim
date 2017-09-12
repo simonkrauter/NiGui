@@ -46,7 +46,9 @@ const
   CW_USEDEFAULT* = 0x80000000.int
   DEFAULT_GUI_FONT* = 17
   EM_SCROLLCARET* = 183
+  EM_GETSEL* = 176
   EM_SETSEL* = 177
+  EM_SETREADONLY* = 207
   EN_CHANGE* = 768
   ES_MULTILINE* = 4
   GCLP_HBRBACKGROUND* = -10
@@ -155,7 +157,7 @@ const
   # UnitDocument* = 5
   # UnitMillimeter* = 6
   GMEM_MOVEABLE* = 2
-  
+
 
 # ----------------------------------------------------------------------------------------
 #                                       Types
@@ -383,6 +385,7 @@ proc CloseClipboard*(): bool {.importc: "CloseClipboard", libUser32.}
 proc GetClipboardData*(uFormat: int32): pointer {.importc: "GetClipboardData", libUser32.}
 proc SetClipboardData*(uFormat: int32, hMem: pointer): pointer {.importc: "SetClipboardData", libUser32.}
 proc EmptyClipboard*(): bool {.importc: "EmptyClipboard", libUser32.}
+# proc MapVirtualKeyW*(uCode, uMapType: int32): int32 {.importc: "MapVirtualKeyW", libUser32.}
 
 when defined(cpu64):
   # Only available on 64-bit Windows:

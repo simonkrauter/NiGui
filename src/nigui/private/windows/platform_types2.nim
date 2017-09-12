@@ -14,5 +14,3 @@ type
   NativeLabel* = ref object of Label
 
   NativeTextBox* = ref object of TextBox
-
-  NativeTextArea* = ref object of TextArea

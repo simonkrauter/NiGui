@@ -61,70 +61,7 @@ proc pWindowConfigureSignal(windowHandle, event, data: pointer): bool {.cdecl.} 
   window.triggerRelayout()
 
 proc pKeyvalToKey(keyval: cint): Key =
-  case keyval
-  of 48: Key_Number0
-  of 49: Key_Number1
-  of 50: Key_Number2
-  of 51: Key_Number3
-  of 52: Key_Number4
-  of 53: Key_Number5
-  of 54: Key_Number6
-  of 55: Key_Number7
-  of 56: Key_Number8
-  of 57: Key_Number9
-  of 65: Key_A
-  of 66: Key_B
-  of 67: Key_C
-  of 68: Key_D
-  of 69: Key_E
-  of 70: Key_F
-  of 71: Key_G
-  of 72: Key_H
-  of 73: Key_I
-  of 74: Key_J
-  of 75: Key_K
-  of 76: Key_L
-  of 77: Key_M
-  of 78: Key_N
-  of 79: Key_O
-  of 80: Key_P
-  of 81: Key_Q
-  of 82: Key_R
-  of 83: Key_S
-  of 84: Key_T
-  of 85: Key_U
-  of 86: Key_V
-  of 87: Key_W
-  of 88: Key_X
-  of 89: Key_Y
-  of 90: Key_Z
-  of 97: Key_A
-  of 98: Key_B
-  of 99: Key_C
-  of 100: Key_D
-  of 101: Key_E
-  of 102: Key_F
-  of 103: Key_G
-  of 104: Key_H
-  of 105: Key_I
-  of 106: Key_J
-  of 107: Key_K
-  of 108: Key_L
-  of 109: Key_M
-  of 110: Key_N
-  of 111: Key_O
-  of 112: Key_P
-  of 113: Key_Q
-  of 114: Key_R
-  of 115: Key_S
-  of 116: Key_T
-  of 117: Key_U
-  of 118: Key_V
-  of 119: Key_W
-  of 120: Key_X
-  of 121: Key_Y
-  of 122: Key_Z
-  of 32: Key_Space
+  result = case keyval
   of 65289: Key_Tab
   of 65293: Key_Return
   of 65307: Key_Escape
@@ -139,7 +76,7 @@ proc pKeyvalToKey(keyval: cint): Key =
   of 65367: Key_End
   of 65365: Key_PageUp
   of 65366: Key_PageDown
-  else: Key_None
+  else: cast[Key](keyval.unicodeToUpper)
 
 proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
   # echo "window keyPressCallback"
@@ -1092,6 +1029,10 @@ method pAddButtonPressEvent(control: NativeButton) =
   gtk_widget_add_events(control.fHandle, GDK_BUTTON_PRESS_MASK)
   discard g_signal_connect_data(control.fHandle, "button-press-event", pDefaultControlButtonPressSignal, cast[pointer](control))
 
+method `enabled=`(button: NativeButton, enabled: bool) =
+  button.fEnabled = enabled
+  gtk_widget_set_sensitive(button.fHandle, enabled)
+
 
 # ----------------------------------------------------------------------------------------
 #                                        Label
@@ -1129,12 +1070,8 @@ proc pTextBoxKeyPressSignal(widget: pointer, event: var GdkEventKey, data: point
     let modifiers = gtk_accelerator_get_default_mod_mask()
     if event.keyval == 'c'.ord and (event.state and modifiers) == GDK_CONTROL_MASK:
       let textBox = cast[NativeTextBox](data)
-      var startPos: cint
-      var endPos: cint
-      discard gtk_editable_get_selection_bounds(textBox.fHandle, startPos, endPos)
-      if startPos != endPos:
-        app.clipboardText = $gtk_editable_get_chars(textBox.fHandle, startPos, endPos)
-        return true # prevent default "copy to clipboard"
+      app.clipboardText = textBox.selectedText
+      return true # prevent default "copy to clipboard"
 
 proc init(textBox: NativeTextBox) =
   textBox.fHandle = gtk_entry_new()
@@ -1158,24 +1095,41 @@ method pAddButtonPressEvent(control: NativeTextBox) =
   gtk_widget_add_events(control.fHandle, GDK_BUTTON_PRESS_MASK)
   discard g_signal_connect_data(control.fHandle, "button-press-event", pDefaultControlButtonPressSignal, cast[pointer](control))
 
+method `editable=`(textBox: NativeTextBox, editable: bool) =
+  textBox.fEditable = editable
+  gtk_editable_set_editable(textBox.fHandle, editable)
+
+method cursorPos(textBox: NativeTextBox): int =
+  result = gtk_editable_get_position(textBox.fHandle)
+
+method `cursorPos=`(textBox: NativeTextBox, cursorPos: int) =
+  # side effect: clears selection
+  gtk_editable_set_position(textBox.fHandle, cursorPos.cint)
+
+method selectionStart(textBox: NativeTextBox): int =
+  var startPos: cint
+  var endPos: cint
+  discard gtk_editable_get_selection_bounds(textBox.fHandle, startPos, endPos)
+  result = startPos
+
+method selectionEnd(textBox: NativeTextBox): int =
+  var startPos: cint
+  var endPos: cint
+  discard gtk_editable_get_selection_bounds(textBox.fHandle, startPos, endPos)
+  result = endPos
+
+method `selectionStart=`(textBox: NativeTextBox, selectionStart: int) =
+  gtk_editable_select_region(textBox.fHandle, selectionStart.cint, textBox.selectionEnd.cint)
+  # side effect: sets cursor to end of selection
+
+method `selectionEnd=`(textBox: NativeTextBox, selectionEnd: int) =
+  gtk_editable_select_region(textBox.fHandle, textBox.selectionStart.cint, selectionEnd.cint)
+  # side effect: sets cursor to end of selection
+
 
 # ----------------------------------------------------------------------------------------
 #                                      TextArea
 # ----------------------------------------------------------------------------------------
-
-proc pTextAreaKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
-  result = pControlKeyPressSignal(widget, event, data)
-
-  # Implement own "copy to clipboard", because by default the clipboard is non-persistent
-  if not result:
-    let modifiers = gtk_accelerator_get_default_mod_mask()
-    if event.keyval == 'c'.ord and (event.state and modifiers) == GDK_CONTROL_MASK:
-      let textArea = cast[NativeTextArea](data)
-      var startIter: GtkTextIter
-      var endIter: GtkTextIter
-      discard gtk_text_buffer_get_selection_bounds(textArea.fBufferHandle, startIter, endIter)
-      app.clipboardText = $gtk_text_buffer_get_text(textArea.fBufferHandle, startIter, endIter, true)
-      return true # prevent default "copy to clipboard"
 
 proc init(textArea: NativeTextArea) =
   textArea.fHandle = gtk_scrolled_window_new(nil, nil)
@@ -1188,10 +1142,14 @@ proc init(textArea: NativeTextArea) =
   gtk_text_view_set_bottom_margin(textArea.fTextViewHandle, 5)
   gtk_container_add(textArea.fHandle, textArea.fTextViewHandle)
   gtk_widget_show(textArea.fTextViewHandle)
-  discard g_signal_connect_data(textArea.fTextViewHandle, "key-press-event", pTextAreaKeyPressSignal, cast[pointer](textArea))
+  discard g_signal_connect_data(textArea.fTextViewHandle, "key-press-event", pTextBoxKeyPressSignal, cast[pointer](textArea))
   textArea.fBufferHandle = gtk_text_view_get_buffer(textArea.fTextViewHandle)
   discard g_signal_connect_data(textArea.fBufferHandle, "changed", pControlChangedSignal, cast[pointer](textArea))
   textArea.TextArea.init()
+
+method setSize(textBox: NativeTextArea, width, height: int) =
+  # Need to override method of NativeTextBox
+  procCall textBox.ControlImpl.setSize(width, height)
 
 method text(textArea: NativeTextArea): string =
   var startIter, endIter: GtkTextIter
@@ -1227,3 +1185,46 @@ method `wrap=`(textArea: NativeTextArea, wrap: bool) =
   else:
     gtk_text_view_set_wrap_mode(textArea.fTextViewHandle, GTK_WRAP_NONE)
 
+method `editable=`(textArea: NativeTextArea, editable: bool) =
+  textArea.fEditable = editable
+  gtk_text_view_set_editable(textArea.fTextViewHandle, editable)
+
+method cursorPos(textArea: NativeTextArea): int =
+  let mark = gtk_text_buffer_get_insert(textArea.fBufferHandle)
+  var iter: GtkTextIter
+  gtk_text_buffer_get_iter_at_mark(textArea.fBufferHandle, iter, mark)
+  result = gtk_text_iter_get_offset(iter)
+
+method `cursorPos=`(textArea: NativeTextArea, cursorPos: int) =
+  # side effect: clears selection
+  var iter: GtkTextIter
+  gtk_text_buffer_get_iter_at_offset(textArea.fBufferHandle, iter, cursorPos.cint)
+  gtk_text_buffer_select_range(textArea.fBufferHandle, iter, iter)
+
+method selectionStart(textArea: NativeTextArea): int =
+  var startIter: GtkTextIter
+  var endIter: GtkTextIter
+  discard gtk_text_buffer_get_selection_bounds(textArea.fBufferHandle, startIter, endIter)
+  result = gtk_text_iter_get_offset(startIter)
+
+method selectionEnd(textArea: NativeTextArea): int =
+  var startIter: GtkTextIter
+  var endIter: GtkTextIter
+  discard gtk_text_buffer_get_selection_bounds(textArea.fBufferHandle, startIter, endIter)
+  result = gtk_text_iter_get_offset(endIter)
+
+method `selectionStart=`(textArea: NativeTextArea, selectionStart: int) =
+  var startIter: GtkTextIter
+  var endIter: GtkTextIter
+  gtk_text_buffer_get_iter_at_offset(textArea.fBufferHandle, startIter, selectionStart.cint)
+  gtk_text_buffer_get_iter_at_offset(textArea.fBufferHandle, endIter, textArea.selectionEnd.cint)
+  gtk_text_buffer_select_range(textArea.fBufferHandle, startIter, endIter)
+  # side effect: sets cursor to start of selection
+
+method `selectionEnd=`(textArea: NativeTextArea, selectionEnd: int) =
+  var startIter: GtkTextIter
+  var endIter: GtkTextIter
+  gtk_text_buffer_get_iter_at_offset(textArea.fBufferHandle, startIter, textArea.selectionStart.cint)
+  gtk_text_buffer_get_iter_at_offset(textArea.fBufferHandle, endIter, selectionEnd.cint)
+  gtk_text_buffer_select_range(textArea.fBufferHandle, startIter, endIter)
+  # side effect: sets cursor to start of selection
