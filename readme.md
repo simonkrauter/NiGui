@@ -48,7 +48,8 @@ Getting started
 ### How to install NiGui manually
 
 1. Clone the NiGui repository with Git or download the source code
-2. Add this line to your Nim configuration: `--path:"<path_to_nigui>/src"`
+2. Add the following line to one of your [Nim configuration files](https://nim-lang.org/docs/nimc.html#compiler-usage-configuration-files):<br>
+`--path:"<path_to_nigui>/src"`
 
 ### How to install NiGui with Nimble
 
