@@ -887,6 +887,7 @@ import math
 import os
 import strutils
 import times
+import unicode
 
 
 # ----------------------------------------------------------------------------------------
@@ -2293,12 +2294,12 @@ method `selectionEnd=`(textBox: TextBox, selectionEnd: int) = discard
   # has to be implemented by NativeTextBox
 
 method selectedText(textBox: TextBox): string =
-  result = textBox.text.substr(textBox.selectionStart, textBox.selectionEnd - 1)
+  result = textBox.text.runeSubStr(textBox.selectionStart, textBox.selectionEnd - textBox.selectionStart)
 
 method `selectedText=`(textBox: TextBox, text: string) =
   let oldCursorPos = textBox.cursorPos
   let oldText = textBox.text
-  textBox.text = oldText.substr(0, textBox.selectionStart - 1) & text & oldText.substr(textBox.selectionEnd)
+  textBox.text = oldText.runeSubStr(0, textBox.selectionStart) & text & oldText.runeSubStr(textBox.selectionEnd)
   textBox.cursorPos = oldCursorPos
 
 
