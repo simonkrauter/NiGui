@@ -581,6 +581,9 @@ proc pMainScrollbarDraw(widget: pointer, cr: pointer, data: pointer): bool {.cde
     fScrollbarSize = allocation.height
 
 proc init(window: WindowImpl) =
+  if pClipboardPtr == nil:
+    gtk_init(nil, nil)
+    raiseError("You need to call 'app.init()' at first.")
   window.fHandle = gtk_window_new(GTK_WINDOW_TOPLEVEL)
   window.fInnerHandle = gtk_scrolled_window_new(nil, nil)
   gtk_widget_show(window.fInnerHandle)
