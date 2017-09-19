@@ -1314,8 +1314,10 @@ proc newControl(): Control =
 
 proc init(control: Control) =
   control.tag = ""
-  control.fWidthMode = WidthMode_Expand
-  control.fHeightMode = HeightMode_Expand
+  control.fWidthMode = WidthMode_Static
+  control.fHeightMode = HeightMode_Static
+  control.fWidth = 50
+  control.fheight = 50
   control.fScrollableWidth = -1
   control.fScrollableHeight = -1
   control.resetFontFamily()
