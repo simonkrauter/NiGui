@@ -258,7 +258,7 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
   case uMsg
   of WM_CLOSE:
     let window = cast[WindowImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
-    window.dispose()
+    window.closeClick()
     return cast[pointer](true) # keeps the window open, else the window will be destroyed
   of WM_SIZE:
     let window = cast[WindowImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
@@ -303,6 +303,15 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
     let window = cast[Window](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if window != nil and pHandleWMCHAR(window, nil, wParam, lParam):
       return
+  of WM_SYSCOMMAND:
+    let window = cast[Window](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+    if window != nil:
+      if cast[int](wParam) == SC_MINIMIZE:
+        window.fMinimized = true
+        echo "a"
+      elif cast[int](wParam) == SC_RESTORE:
+        window.fMinimized = false
+        echo "b"
   else:
     discard
   result = pCommonWndProc(hWnd, uMsg, wParam, lParam)
@@ -715,7 +724,8 @@ method destroy(window: WindowImpl) =
 method `visible=`(window: WindowImpl, visible: bool) =
   procCall window.Window.`visible=`(visible)
   if visible:
-    pShowWindow(window.fHandle, SW_SHOW)
+    # pShowWindow(window.fHandle, SW_SHOW)
+    pShowWindow(window.fHandle, SW_RESTORE)
   else:
     pShowWindow(window.fHandle, SW_HIDE)
 
@@ -730,6 +740,10 @@ method showModal(window, parent: WindowImpl) =
   window.fModalParent = parent
   window.visible = true
   discard EnableWindow(parent.fHandle, false)
+
+method minimize(window: WindowImpl) =
+  procCall window.Window.minimize()
+  pShowWindow(window.fHandle, SW_MINIMIZE)
 
 proc pUpdatePosition(window: WindowImpl) =
   pSetWindowPos(window.fHandle, window.x, window.y, -1, -1, SWP_NOSIZE)

@@ -74,6 +74,13 @@ type
     group*: int8
     is_modifier*: int8
 
+  GdkEventWindowState* {.byCopy.} = object
+    event_type*: cint
+    window*: pointer
+    send_event*: int8
+    changed_mask*: cint
+    new_window_state*: cint
+
   GtkTextIter* {.byCopy.} = object
     dummy1: pointer
     dummy2: pointer
@@ -186,6 +193,17 @@ const
   # Key modifier masks:
   GDK_CONTROL_MASK* = 1 shl 2
 
+  # GdkWindowState:
+  GDK_WINDOW_STATE_WITHDRAWN*  = 1
+  GDK_WINDOW_STATE_ICONIFIED*  = 2
+  GDK_WINDOW_STATE_MAXIMIZED*  = 4
+  GDK_WINDOW_STATE_STICKY*     = 8
+  GDK_WINDOW_STATE_FULLSCREEN* = 16
+  GDK_WINDOW_STATE_ABOVE*      = 32
+  GDK_WINDOW_STATE_BELOW*      = 64
+  GDK_WINDOW_STATE_FOCUSED*    = 128
+  GDK_WINDOW_STATE_TILED*      = 256
+
 
 # ----------------------------------------------------------------------------------------
 #                                   General Gtk Procs
@@ -216,6 +234,9 @@ proc gtk_window_get_size*(window: pointer, width, height: var cint) {.importc: "
 proc gtk_window_get_position*(window: pointer, x, y: var cint) {.importc: "gtk_window_get_position", libgtk3.}
 proc gtk_window_move*(window: pointer, x, y: cint) {.importc: "gtk_window_move", libgtk3.}
 proc gtk_window_set_icon_from_file*(window: pointer, filename: cstring, err: pointer) {.importc: "gtk_window_set_icon_from_file", libgtk3.}
+proc gtk_window_iconify*(window: pointer) {.importc: "gtk_window_iconify", libgtk3.}
+proc gtk_window_deiconify*(window: pointer) {.importc: "gtk_window_deiconify", libgtk3.}
+proc gtk_window_present*(window: pointer) {.importc: "gtk_window_present", libgtk3.}
 
 proc gdk_window_begin_paint_rect*(window: pointer, rectangle: var GdkRectangle) {.importc: "gdk_window_begin_paint_rect", libgtk3.}
 proc gdk_window_begin_paint_region*(window: pointer, region: pointer) {.importc: "gdk_window_begin_paint_region", libgtk3.}

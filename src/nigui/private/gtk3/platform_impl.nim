@@ -42,7 +42,7 @@ proc pGdkRGBAToColor(rgba: var GdkRGBA): Color =
 
 proc pWindowDeleteSignal(widgetHandle, event, data: pointer): bool {.cdecl.} =
   let window = cast[WindowImpl](data)
-  window.dispose()
+  window.closeClick()
   return true
 
 proc pWindowConfigureSignal(windowHandle, event, data: pointer): bool {.cdecl.} =
@@ -580,6 +580,10 @@ proc pMainScrollbarDraw(widget: pointer, cr: pointer, data: pointer): bool {.cde
     gtk_scrolled_window_set_policy(widget, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC)
     fScrollbarSize = allocation.height
 
+proc pWindowStateEventSignal(widget: pointer, event: var GdkEventWindowState, user_data: pointer): bool {.cdecl.} =
+  let window = cast[WindowImpl](user_data)
+  window.fMinimized = (event.new_window_state and GDK_WINDOW_STATE_ICONIFIED) == GDK_WINDOW_STATE_ICONIFIED
+
 proc init(window: WindowImpl) =
   if pClipboardPtr == nil:
     gtk_init(nil, nil)
@@ -592,6 +596,7 @@ proc init(window: WindowImpl) =
   discard g_signal_connect_data(window.fHandle, "delete-event", pWindowDeleteSignal, cast[pointer](window))
   discard g_signal_connect_data(window.fHandle, "configure-event", pWindowConfigureSignal, cast[pointer](window))
   discard g_signal_connect_data(window.fHandle, "key-press-event", pWindowKeyPressSignal, cast[pointer](window))
+  discard g_signal_connect_data(window.fHandle, "window-state-event", pWindowStateEventSignal, cast[pointer](window))
 
   # Enable drag and drop of files:
   pSetDragDest(window.fHandle)
@@ -610,7 +615,9 @@ method destroy(window: WindowImpl) =
 method `visible=`(window: WindowImpl, visible: bool) =
   procCall window.Window.`visible=`(visible)
   if visible:
-    gtk_widget_show(window.fHandle)
+    # gtk_window_deiconify(window.fHandle)
+    # gtk_widget_show(window.fHandle)
+    gtk_window_present(window.fHandle)
     while fScrollbarSize == -1:
       discard gtk_main_iteration()
   else:
@@ -621,6 +628,10 @@ method showModal(window, parent: WindowImpl) =
   gtk_window_set_modal(window.fHandle, 1)
   gtk_window_set_transient_for(window.fHandle, parent.fHandle)
   window.visible = true
+
+method minimize(window: WindowImpl) =
+  procCall window.Window.minimize()
+  gtk_window_iconify(window.fHandle)
 
 method `width=`*(window: WindowImpl, width: int) =
   procCall window.Window.`width=`(width)

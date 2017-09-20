@@ -146,12 +146,14 @@ type
     fDisposed: bool
     fTitle: string
     fVisible: bool
+    fMinimized: bool
     fWidth, fHeight: int
     fClientWidth, fClientHeight: int
     fX, fY: int
     fControl: Control
     fIconPath: string
     fOnDispose: WindowDisposeProc
+    fOnCloseClick: CloseClickProc
     fOnResize: ResizeProc
     fOnDropFiles: DropFilesProc
     fOnKeyDown: WindowKeyProc
@@ -210,8 +212,11 @@ type
 
   WindowDisposeEvent* = ref object
     window*: Window
-    cancel*: bool
   WindowDisposeProc* = proc(event: WindowDisposeEvent)
+
+  CloseClickEvent* = ref object
+    window*: Window
+  CloseClickProc* = proc(event: CloseClickEvent)
 
   ResizeEvent* = ref object
     window*: Window
@@ -496,7 +501,7 @@ proc init*(window: WindowImpl)
 ## Only needed for own constructors.
 
 proc dispose*(window: var Window)
-proc dispose*(window: Window)
+method dispose*(window: Window)
 
 proc disposed*(window: Window): bool
 
@@ -508,6 +513,11 @@ method show*(window: Window)
 method showModal*(window: Window, parent: Window)
 
 method hide*(window: Window)
+
+method minimized*(window: Window): bool
+method `minimized=`*(window: Window, minimized: bool)
+
+method minimize*(window: Window)
 
 method control*(window: Window): Control
 method `control=`*(window: Window, control: Control)
@@ -538,7 +548,7 @@ method clientHeight*(window: Window): int
 method iconPath*(window: Window): string
 method `iconPath=`*(window: Window, iconPath: string)
 
-method handleDisposeEvent*(window: Window, event: WindowDisposeEvent)
+method closeClick*(window: Window)
 
 method handleResizeEvent*(window: Window, event: ResizeEvent)
 
@@ -548,6 +558,9 @@ method handleDropFilesEvent*(window: Window, event: DropFilesEvent)
 
 method onDispose*(window: Window): WindowDisposeProc
 method `onDispose=`*(window: Window, callback: WindowDisposeProc)
+
+method onCloseClick*(window: Window): CloseClickProc
+method `onCloseClick=`*(window: Window, callback: CloseClickProc)
 
 method onResize*(window: Window): ResizeProc
 method `onResize=`*(window: Window, callback: ResizeProc)
@@ -569,7 +582,7 @@ proc init*(control: Control)
 proc init*(control: ControlImpl)
 
 proc dispose*(control: var Control)
-proc dispose*(control: Control)
+method dispose*(control: Control)
 
 proc disposed*(control: Control): bool
 
@@ -677,8 +690,6 @@ method resetTextColor*(control: Control)
 method forceRedraw*(control: Control)
 
 method canvas*(control: Control): Canvas
-
-method handleDisposeEvent*(control: Control, event: ControlDisposeEvent)
 
 method handleDrawEvent*(control: Control, event: DrawEvent)
 
@@ -1155,32 +1166,28 @@ proc init(window: Window) =
   windowList.add(window)
   window.triggerRelayout()
 
-
 method destroy(window: Window) =
   if window.fControl != nil:
-    window.fControl.destroy()
+    window.fControl.dispose()
   # should be extended by WindowImpl
 
-proc disposeInner(window: Window): bool =
-  var event = new WindowDisposeEvent
-  event.window = window
-  window.handleDisposeEvent(event)
-  if event.cancel:
-    return false
+proc dispose(window: var Window) =
+  let w = window
+  w.dispose() # force calling "dispose(window: Window)" instead of itself
+  window = nil
+
+method dispose(window: Window) =
+  let callback = window.onDispose
+  if callback != nil:
+    var event = new WindowDisposeEvent
+    event.window = window
+    callback(event)
   window.destroy()
   let i = windowList.find(window)
   windowList.delete(i)
   if quitOnLastWindowClose and windowList.len == 0:
     quit()
   window.fDisposed = true
-  return true
-
-proc dispose(window: var Window) =
-  if window.disposeInner():
-    window = nil
-
-proc dispose(window: Window) =
-  discard window.disposeInner()
 
 proc disposed(window: Window): bool = window == nil or window.fDisposed
 
@@ -1204,8 +1211,11 @@ method visible(window: Window): bool = window.fVisible
 
 method `visible=`(window: Window, visible: bool) =
   window.fVisible = visible
+  if visible:
+    window.fMinimized = false
   if window.x == -1 or window.y == -1:
     window.centerOnScreen()
+  # should be extended by WindowImpl
 
 method show(window: Window) = window.visible = true
 
@@ -1214,6 +1224,18 @@ method showModal(window: Window, parent: Window) =
   # should be extended by WindowImpl
 
 method hide(window: Window) = window.visible = false
+
+method minimized(window: Window): bool = window.fMinimized
+
+method `minimized=`(window: Window, minimized: bool) =
+  if minimized:
+    window.minimize()
+  else:
+    window.show()
+
+method minimize(window: Window) =
+  window.fMinimized = true
+  # should be extended by WindowImpl
 
 method x(window: Window): int = window.fX
 
@@ -1266,11 +1288,15 @@ method `iconPath=`(window: Window, iconPath: string) =
   window.fIconPath = iconPath
   # should be extended by WindowImpl
 
-method handleDisposeEvent(window: Window, event: WindowDisposeEvent) =
+method closeClick(window: Window) =
   # can be overriden by custom window
-  let callback = window.onDispose
+  let callback = window.onCloseClick
   if callback != nil:
+    var event = new CloseClickEvent
+    event.window = window
     callback(event)
+  else:
+    window.dispose() # default action
 
 method handleResizeEvent(window: Window, event: ResizeEvent) =
   # can be overriden by custom window
@@ -1292,6 +1318,9 @@ method handleKeyDownEvent(window: Window, event: WindowKeyEvent) =
 
 method onDispose(window: Window): WindowDisposeProc = window.fOnDispose
 method `onDispose=`(window: Window, callback: WindowDisposeProc) = window.fOnDispose = callback
+
+method onCloseClick(window: Window): CloseClickProc = window.fOnCloseClick
+method `onCloseClick=`(window: Window, callback: CloseClickProc) = window.fOnCloseClick = callback
 
 method onResize(window: Window): ResizeProc = window.fOnResize
 method `onResize=`(window: Window, callback: ResizeProc) = window.fOnResize = callback
@@ -1332,10 +1361,16 @@ method destroy(control: Control) =
   # should be extended by WindowImpl
 
 proc dispose(control: var Control) =
-  control.destroy()
+  let c = control
+  c.dispose() # force calling "dispose(control: Control)" instead of itself
   control = nil
 
-proc dispose(control: Control) =
+method dispose(control: Control) =
+  let callback = control.onDispose
+  if callback != nil:
+    var event = new ControlDisposeEvent
+    event.control = control
+    callback(event)
   control.destroy()
   control.fDisposed = true
 
@@ -1625,12 +1660,6 @@ method forceRedraw(control: Control) =
   # should be implemented by ControlImpl
 
 method canvas(control: Control): Canvas = control.fCanvas
-
-method handleDisposeEvent(control: Control, event: ControlDisposeEvent) =
-  # can be overriden by custom window
-  let callback = control.onDispose
-  if callback != nil:
-    callback(event)
 
 method handleDrawEvent(control: Control, event: DrawEvent) =
   # can be implemented by custom control
