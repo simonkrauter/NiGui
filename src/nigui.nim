@@ -67,50 +67,61 @@ type
   Timer* = distinct int
 
   Key* = enum
-    Key_None
-    Key_Number0
-    Key_Number1
-    Key_Number2
-    Key_Number3
-    Key_Number4
-    Key_Number5
-    Key_Number6
-    Key_Number7
-    Key_Number8
-    Key_Number9
-    Key_A
-    Key_B
-    Key_C
-    Key_D
-    Key_E
-    Key_F
-    Key_G
-    Key_H
-    Key_I
-    Key_J
-    Key_K
-    Key_L
-    Key_M
-    Key_N
-    Key_O
-    Key_P
-    Key_Q
-    Key_R
-    Key_S
-    Key_T
-    Key_U
-    Key_V
-    Key_W
-    Key_X
-    Key_Y
-    Key_Z
-    Key_Space
-    Key_Tab
-    Key_Return
-    Key_Escape
-    Key_Insert
+    # Keys with same value than Unicode:
+    Key_None      = 0
+    Key_Backspace = 8
+    Key_Tab       = 9
+    Key_Return    = 13
+    Key_Escape    = 27
+    Key_Space     = 32
+    Key_Asterisk  = 42
+    Key_Plus      = 43
+    Key_Comma     = 44
+    Key_Minus     = 45
+    Key_Point     = 46
+    Key_Number0   = 48
+    Key_Number1   = 49
+    Key_Number2   = 50
+    Key_Number3   = 51
+    Key_Number4   = 52
+    Key_Number5   = 53
+    Key_Number6   = 54
+    Key_Number7   = 55
+    Key_Number8   = 56
+    Key_Number9   = 57
+    Key_A         = 65
+    Key_B         = 66
+    Key_C         = 67
+    Key_D         = 68
+    Key_E         = 69
+    Key_F         = 70
+    Key_G         = 71
+    Key_H         = 72
+    Key_I         = 73
+    Key_J         = 74
+    Key_K         = 75
+    Key_L         = 76
+    Key_M         = 77
+    Key_N         = 78
+    Key_O         = 79
+    Key_P         = 80
+    Key_Q         = 81
+    Key_R         = 82
+    Key_S         = 83
+    Key_T         = 84
+    Key_U         = 85
+    Key_V         = 86
+    Key_W         = 87
+    Key_X         = 88
+    Key_Y         = 89
+    Key_Z         = 90
+    Key_AE        = 196
+    Key_OE        = 214
+    Key_UE        = 220
+    Key_SharpS    = 223
+    # Not part of Unicode:
+    Key_Insert    = 1000
     Key_Delete
-    Key_Backspace
     Key_Left
     Key_Right
     Key_Up
@@ -120,7 +131,8 @@ type
     Key_PageUp
     Key_PageDown
 
-const inactiveTimer* = 0
+const
+  inactiveTimer* = 0
 
 
 # ----------------------------------------------------------------------------------------
@@ -134,6 +146,7 @@ type
     fDisposed: bool
     fTitle: string
     fVisible: bool
+    fMinimized: bool
     fWidth, fHeight: int
     fClientWidth, fClientHeight: int
     fX, fY: int
@@ -142,6 +155,7 @@ type
     fShowOnce: bool
     fHideOnce: bool
     fOnDispose: WindowDisposeProc
+    fOnCloseClick: CloseClickProc
     fOnResize: ResizeProc
     fOnDropFiles: DropFilesProc
     fOnKeyDown: WindowKeyProc
@@ -207,8 +221,11 @@ type
 
   WindowDisposeEvent* = ref object
     window*: Window
-    cancel*: bool
   WindowDisposeProc* = proc(event: WindowDisposeEvent)
+
+  CloseClickEvent* = ref object
+    window*: Window
+  CloseClickProc* = proc(event: CloseClickEvent)
 
   ResizeEvent* = ref object
     window*: Window
@@ -300,14 +317,13 @@ type
 
   Button* = ref object of ControlImpl
     fText: string
+    fEnabled: bool
 
   Label* = ref object of ControlImpl
     fText: string
 
   TextBox* = ref object of ControlImpl
-
-  TextArea* = ref object of ControlImpl
-    fWrap: bool
+    fEditable: bool
 
 # Platform-specific extension of basic controls:
 when useWindows(): include "nigui/private/windows/platform_types2"
@@ -325,6 +341,13 @@ type
     fYAlign: YAlign
     fPadding: int
     fSpacing: int
+
+  TextArea* = ref object of NativeTextBox
+    fWrap: bool
+
+# Platform-specific extension:
+when useWindows(): include "nigui/private/windows/platform_types3"
+when useGtk():     include "nigui/private/gtk3/platform_types3"
 
 
 # ----------------------------------------------------------------------------------------
@@ -367,6 +390,9 @@ proc `defaultFontFamily=`*(app: App, fontFamily: string)
 
 proc defaultFontSize*(app: App): int
 proc `defaultFontSize=`*(app: App, fontSize: int)
+
+proc clipboardText*(app: App): string
+proc `clipboardText=`*(app: App, text: string)
 
 proc rgb*(red, green, blue: byte, alpha: byte = 255): Color
 
@@ -494,7 +520,7 @@ proc init*(window: WindowImpl)
 ## Only needed for own constructors.
 
 proc dispose*(window: var Window)
-proc dispose*(window: Window)
+method dispose*(window: Window)
 
 proc disposed*(window: Window): bool
 
@@ -506,6 +532,11 @@ method show*(window: Window)
 method showModal*(window: Window, parent: Window)
 
 method hide*(window: Window)
+
+method minimized*(window: Window): bool
+method `minimized=`*(window: Window, minimized: bool)
+
+method minimize*(window: Window)
 
 method control*(window: Window): Control
 method `control=`*(window: Window, control: Control)
@@ -536,7 +567,7 @@ method clientHeight*(window: Window): int
 method iconPath*(window: Window): string
 method `iconPath=`*(window: Window, iconPath: string)
 
-method handleDisposeEvent*(window: Window, event: WindowDisposeEvent)
+method closeClick*(window: Window)
 
 method handleResizeEvent*(window: Window, event: ResizeEvent)
 
@@ -548,6 +579,9 @@ method handleDropFilesEvent*(window: Window, event: DropFilesEvent)
 
 method onDispose*(window: Window): WindowDisposeProc
 method `onDispose=`*(window: Window, callback: WindowDisposeProc)
+
+method onCloseClick*(window: Window): CloseClickProc
+method `onCloseClick=`*(window: Window, callback: CloseClickProc)
 
 method onResize*(window: Window): ResizeProc
 method `onResize=`*(window: Window, callback: ResizeProc)
@@ -588,7 +622,7 @@ proc init*(control: Control)
 proc init*(control: ControlImpl)
 
 proc dispose*(control: var Control)
-proc dispose*(control: Control)
+method dispose*(control: Control)
 
 proc disposed*(control: Control): bool
 
@@ -696,8 +730,6 @@ method resetTextColor*(control: Control)
 method forceRedraw*(control: Control)
 
 method canvas*(control: Control): Canvas
-
-method handleDisposeEvent*(control: Control, event: ControlDisposeEvent)
 
 method handleDrawEvent*(control: Control, event: DrawEvent)
 
@@ -812,6 +844,9 @@ proc init*(button: NativeButton)
 method text*(button: Button): string
 method `text=`*(button: Button, text: string)
 
+method enabled*(button: Button): bool
+method `enabled=`*(button: Button, enabled: bool)
+
 
 # ----------------------------------------------------------------------------------------
 #                                        Label
@@ -838,6 +873,21 @@ proc init*(textBox: NativeTextBox)
 method text*(textBox: TextBox): string
 method `text=`*(textBox: TextBox, text: string)
 
+method editable*(textBox: TextBox): bool
+method `editable=`*(textBox: TextBox, editable: bool)
+
+method cursorPos*(textBox: TextBox): int
+method `cursorPos=`*(textBox: TextBox, cursorPos: int)
+
+method selectionStart*(textBox: TextBox): int
+method `selectionStart=`*(textBox: TextBox, selectionStart: int)
+
+method selectionEnd*(textBox: TextBox): int
+method `selectionEnd=`*(textBox: TextBox, selectionEnd: int)
+
+method selectedText*(textBox: TextBox): string
+method `selectedText=`*(textBox: TextBox, text: string)
+
 
 # ----------------------------------------------------------------------------------------
 #                                      TextArea
@@ -848,8 +898,6 @@ proc newTextArea*(text = ""): TextArea
 proc init*(textArea: TextArea)
 proc init*(textArea: NativeTextArea)
 
-method text*(textArea: TextArea): string
-method `text=`*(textArea: TextArea, text: string)
 method addText*(textArea: TextArea, text: string)
 method addLine*(textArea: TextArea, text = "")
 
@@ -900,6 +948,7 @@ import math
 import os
 import strutils
 import times
+import unicode
 
 
 # ----------------------------------------------------------------------------------------
@@ -938,7 +987,27 @@ proc rgb(red, green, blue: byte, alpha: byte = 255): Color =
   result.blue = blue
   result.alpha = alpha
 
-proc countLines(s: string): int = strutils.countLines(s) + 1
+# Should removed here, when version in strutils is fixed
+proc countLines(s: string): int =
+  result = 1
+  var i = 0
+  while i < s.len:
+    case s[i]
+    of '\c':
+      if s[i+1] == '\l': inc i
+      inc result
+    of '\l': inc result
+    else: discard
+    inc i
+
+proc unicodeToUpper(unicode: int): int =
+  if unicode < 128:
+    return cast[int](cast[char](unicode).toUpper)
+  result = case unicode:
+  of 228: 196 # Ä
+  of 246: 214 # Ö
+  of 252: 220 # Ü
+  else: unicode
 
 proc sleep(app: App, milliSeconds: float) =
   let t = epochTime() + milliSeconds / 1000
@@ -1147,32 +1216,28 @@ proc init(window: Window) =
   windowList.add(window)
   window.triggerRelayout()
 
-
 method destroy(window: Window) =
   if window.fControl != nil:
-    window.fControl.destroy()
+    window.fControl.dispose()
   # should be extended by WindowImpl
 
-proc disposeInner(window: Window): bool =
-  var event = new WindowDisposeEvent
-  event.window = window
-  window.handleDisposeEvent(event)
-  if event.cancel:
-    return false
+proc dispose(window: var Window) =
+  let w = window
+  w.dispose() # force calling "dispose(window: Window)" instead of itself
+  window = nil
+
+method dispose(window: Window) =
+  let callback = window.onDispose
+  if callback != nil:
+    var event = new WindowDisposeEvent
+    event.window = window
+    callback(event)
   window.destroy()
   let i = windowList.find(window)
   windowList.delete(i)
   if quitOnLastWindowClose and windowList.len == 0:
     quit()
   window.fDisposed = true
-  return true
-
-proc dispose(window: var Window) =
-  if window.disposeInner():
-    window = nil
-
-proc dispose(window: Window) =
-  discard window.disposeInner()
 
 proc disposed(window: Window): bool = window == nil or window.fDisposed
 
@@ -1196,8 +1261,11 @@ method visible(window: Window): bool = window.fVisible
 
 method `visible=`(window: Window, visible: bool) =
   window.fVisible = visible
+  if visible:
+    window.fMinimized = false
   if window.x == -1 or window.y == -1:
     window.centerOnScreen()
+  # should be extended by WindowImpl
 
 method show(window: Window) = window.visible = true
 
@@ -1206,6 +1274,18 @@ method showModal(window: Window, parent: Window) =
   # should be extended by WindowImpl
 
 method hide(window: Window) = window.visible = false
+
+method minimized(window: Window): bool = window.fMinimized
+
+method `minimized=`(window: Window, minimized: bool) =
+  if minimized:
+    window.minimize()
+  else:
+    window.show()
+
+method minimize(window: Window) =
+  window.fMinimized = true
+  # should be extended by WindowImpl
 
 method x(window: Window): int = window.fX
 
@@ -1258,11 +1338,15 @@ method `iconPath=`(window: Window, iconPath: string) =
   window.fIconPath = iconPath
   # should be extended by WindowImpl
 
-method handleDisposeEvent(window: Window, event: WindowDisposeEvent) =
+method closeClick(window: Window) =
   # can be overriden by custom window
-  let callback = window.onDispose
+  let callback = window.onCloseClick
   if callback != nil:
+    var event = new CloseClickEvent
+    event.window = window
     callback(event)
+  else:
+    window.dispose() # default action
 
 method handleResizeEvent(window: Window, event: ResizeEvent) =
   # can be overriden by custom window
@@ -1319,6 +1403,9 @@ method hideOnce(window: Window): bool = window.fHideOnce
 method onDispose(window: Window): WindowDisposeProc = window.fOnDispose
 method `onDispose=`(window: Window, callback: WindowDisposeProc) = window.fOnDispose = callback
 
+method onCloseClick(window: Window): CloseClickProc = window.fOnCloseClick
+method `onCloseClick=`(window: Window, callback: CloseClickProc) = window.fOnCloseClick = callback
+
 method onResize(window: Window): ResizeProc = window.fOnResize
 method `onResize=`(window: Window, callback: ResizeProc) = window.fOnResize = callback
 
@@ -1355,8 +1442,10 @@ proc newControl(): Control =
 
 proc init(control: Control) =
   control.tag = ""
-  control.fWidthMode = WidthMode_Expand
-  control.fHeightMode = HeightMode_Expand
+  control.fWidthMode = WidthMode_Static
+  control.fHeightMode = HeightMode_Static
+  control.fWidth = 50
+  control.fheight = 50
   control.fScrollableWidth = -1
   control.fScrollableHeight = -1
   control.resetFontFamily()
@@ -1371,10 +1460,16 @@ method destroy(control: Control) =
   # should be extended by WindowImpl
 
 proc dispose(control: var Control) =
-  control.destroy()
+  let c = control
+  c.dispose() # force calling "dispose(control: Control)" instead of itself
   control = nil
 
-proc dispose(control: Control) =
+method dispose(control: Control) =
+  let callback = control.onDispose
+  if callback != nil:
+    var event = new ControlDisposeEvent
+    event.control = control
+    callback(event)
   control.destroy()
   control.fDisposed = true
 
@@ -1664,12 +1759,6 @@ method forceRedraw(control: Control) =
   # should be implemented by ControlImpl
 
 method canvas(control: Control): Canvas = control.fCanvas
-
-method handleDisposeEvent(control: Control, event: ControlDisposeEvent) =
-  # can be overriden by custom window
-  let callback = control.onDispose
-  if callback != nil:
-    callback(event)
 
 method handleDrawEvent(control: Control, event: DrawEvent) =
   # can be implemented by custom control
@@ -2249,6 +2338,7 @@ proc init(button: Button) =
   button.fHeightMode = HeightMode_Auto
   button.minWidth = 15
   button.minHeight = 15
+  button.enabled = true
 
 method text(button: Button): string = button.fText
 
@@ -2261,6 +2351,11 @@ method `text=`(button: Button, text: string) =
 method naturalWidth(button: Button): int = button.getTextWidth(button.text) + 20
 
 method naturalHeight(button: Button): int = button.getTextLineHeight() * button.text.countLines + 12
+
+method enabled(button: Button): bool = button.fEnabled
+
+method `enabled=`(button: Button, enabled: bool) = discard
+  # has to be implemented by NativeTextBox
 
 method `onDraw=`(container: NativeButton, callback: DrawProc) = raiseError("NativeButton does not allow onDraw.")
 
@@ -2311,6 +2406,7 @@ proc init(textBox: TextBox) =
   textBox.fHeightMode = HeightMode_Auto
   textBox.minWidth = 20
   textBox.minHeight = 20
+  textBox.editable = true
 
 method naturalHeight(textBox: TextBox): int = textBox.getTextLineHeight()
 
@@ -2321,6 +2417,38 @@ method `text=`(textBox: TextBox, text: string) = discard
   # has to be implemented by NativeTextBox
 
 method `onDraw=`(container: NativeTextBox, callback: DrawProc) = raiseError("NativeTextBox does not allow onDraw.")
+
+method editable(textBox: TextBox): bool = textBox.fEditable
+
+method `editable=`(textBox: TextBox, editable: bool) = discard
+  # has to be implemented by NativeTextBox
+
+method cursorPos(textBox: TextBox): int = discard
+  # has to be implemented by NativeTextBox
+
+method `cursorPos=`(textBox: TextBox, cursorPos: int) = discard
+  # has to be implemented by NativeTextBox
+
+method selectionStart(textBox: TextBox): int = discard
+  # has to be implemented by NativeTextBox
+
+method `selectionStart=`(textBox: TextBox, selectionStart: int) = discard
+  # has to be implemented by NativeTextBox
+
+method selectionEnd(textBox: TextBox): int = discard
+  # has to be implemented by NativeTextBox
+
+method `selectionEnd=`(textBox: TextBox, selectionEnd: int) = discard
+  # has to be implemented by NativeTextBox
+
+method selectedText(textBox: TextBox): string =
+  result = textBox.text.runeSubStr(textBox.selectionStart, textBox.selectionEnd - textBox.selectionStart)
+
+method `selectedText=`(textBox: TextBox, text: string) =
+  let oldCursorPos = textBox.cursorPos
+  let oldText = textBox.text
+  textBox.text = oldText.runeSubStr(0, textBox.selectionStart) & text & oldText.runeSubStr(textBox.selectionEnd)
+  textBox.cursorPos = oldCursorPos
 
 
 # ----------------------------------------------------------------------------------------
@@ -2339,12 +2467,7 @@ proc init(textArea: TextArea) =
   textArea.minWidth = 20
   textArea.minHeight = 20
   textArea.wrap = true
-
-method text(textArea: TextArea): string = discard
-  # has to be implemented by NativeTextBox
-
-method `text=`(textArea: TextArea, text: string) = discard
-  # has to be implemented by NativeTextBox
+  textArea.editable = true
 
 method addText(textArea: TextArea, text: string) = textArea.text = textArea.text & text
 

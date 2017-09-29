@@ -8,9 +8,12 @@ window.width = 500
 window.height = 500
 
 var control1 = newControl()
+window.add(control1)
 # Creates a drawable control
 
-window.add(control1)
+control1.widthMode = WidthMode_Fill
+control1.heightMode = HeightMode_Fill
+# Let it fill out the whole window
 
 var image1 = newImage()
 image1.loadFromFile("example_01_basic_app.png")
