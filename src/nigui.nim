@@ -179,6 +179,8 @@ type
     fCanvas: Canvas
     fOnDispose: ControlDisposeProc
     fOnDraw: DrawProc
+    fOnEnter: EnterProc
+    fOnLeave: LeaveProc
     fOnMouseButtonDown: MouseButtonProc
     fOnMouseButtonUp: MouseButtonProc
     fOnClick: ClickProc
@@ -236,6 +238,14 @@ type
   DrawEvent* = ref object
     control*: Control
   DrawProc* = proc(event: DrawEvent)
+
+  EnterEvent* = ref object
+    control*: Control
+  EnterProc* = proc(event: EnterEvent)
+
+  LeaveEvent* = ref object
+    control*: Control
+  LeaveProc* = proc(event: LeaveEvent)
 
   MouseButtonEvent* = ref object
     control*: Control
@@ -298,7 +308,6 @@ type
 
   TextArea* = ref object of ControlImpl
     fWrap: bool
-
 
 # Platform-specific extension of basic controls:
 when useWindows(): include "nigui/private/windows/platform_types2"
@@ -700,6 +709,10 @@ method handleClickEvent*(control: Control, event: ClickEvent)
 
 method handleKeyDownEvent*(control: Control, event: ControlKeyEvent)
 
+method handleEnterEvent*(control: Control, event: EnterEvent)
+
+method handleLeaveEvent*(control: Control, event: LeaveEvent)
+
 method handleTextChangeEvent*(control: Control, event: TextChangeEvent)
 
 method onDispose*(control: Control): ControlDisposeProc
@@ -707,6 +720,12 @@ method `onDispose=`*(control: Control, callback: ControlDisposeProc)
 
 method onDraw*(control: Control): DrawProc
 method `onDraw=`*(control: Control, callback: DrawProc)
+
+method onEnter*(control: Control): EnterProc
+method `onEnter=`*(control: Control, callback: EnterProc)
+
+method onLeave*(control: Control): LeaveProc
+method `onLeave=`*(control: Control, callback: LeaveProc)
 
 method onMouseButtonDown*(control: Control): MouseButtonProc
 method `onMouseButtonDown=`*(control: Control, callback: MouseButtonProc)
@@ -1293,9 +1312,9 @@ method handleVisibleEvent(window: Window) =
   if callback != nil:
     callback()
 
-method showOnce*(window: Window): bool = window.fShowOnce
+method showOnce(window: Window): bool = window.fShowOnce
 
-method hideOnce*(window: Window): bool = window.fHideOnce
+method hideOnce(window: Window): bool = window.fHideOnce
 
 method onDispose(window: Window): WindowDisposeProc = window.fOnDispose
 method `onDispose=`(window: Window, callback: WindowDisposeProc) = window.fOnDispose = callback
@@ -1309,20 +1328,20 @@ method `onDropFiles=`(window: Window, callback: DropFilesProc) = window.fOnDropF
 method onKeyDown(window: Window): WindowKeyProc = window.fOnKeyDown
 method `onKeyDown=`(window: Window, callback: WindowKeyProc) = window.fOnKeyDown = callback
 
-method onShow*(window: Window): WindowVisibleProc = window.fOnShow
-method `onShow=`*(window: Window, callback: WindowVisibleProc) = window.fOnShow = callback
+method onShow(window: Window): WindowVisibleProc = window.fOnShow
+method `onShow=`(window: Window, callback: WindowVisibleProc) = window.fOnShow = callback
 
-method onHide*(window: Window): WindowVisibleProc = window.fOnHide
-method `onHide=`*(window: Window, callback: WindowVisibleProc) = window.fOnHide = callback
+method onHide(window: Window): WindowVisibleProc = window.fOnHide
+method `onHide=`(window: Window, callback: WindowVisibleProc) = window.fOnHide = callback
 
-method onShowOnce*(window: Window): WindowVisibleProc = window.fOnShowOnce
-method `onShowOnce=`*(window: Window, callback: WindowVisibleProc) = window.fOnShowOnce = callback
+method onShowOnce(window: Window): WindowVisibleProc = window.fOnShowOnce
+method `onShowOnce=`(window: Window, callback: WindowVisibleProc) = window.fOnShowOnce = callback
 
-method onHideOnce*(window: Window): WindowVisibleProc = window.fOnHideOnce
-method `onHideOnce=`*(window: Window, callback: WindowVisibleProc) = window.fOnHideOnce = callback
+method onHideOnce(window: Window): WindowVisibleProc = window.fOnHideOnce
+method `onHideOnce=`(window: Window, callback: WindowVisibleProc) = window.fOnHideOnce = callback
 
-method onVisibleChanged*(window: Window): WindowVisibleProc = window.fOnVisibleChanged
-method `onVisibleChanged=`*(window: Window, callback: WindowVisibleProc) = window.fOnVisibleChanged = callback
+method onVisibleChanged(window: Window): WindowVisibleProc = window.fOnVisibleChanged
+method `onVisibleChanged=`(window: Window, callback: WindowVisibleProc) = window.fOnVisibleChanged = callback
 
 
 
@@ -1658,6 +1677,18 @@ method handleDrawEvent(control: Control, event: DrawEvent) =
   if callback != nil:
     callback(event)
 
+method handleEnterEvent(control: Control, event: EnterEvent) =
+  # can be implemented by custom control
+  let callback = control.onEnter
+  if callback != nil:
+    callback(event)
+
+method handleLeaveEvent(control: Control, event: LeaveEvent) =
+  # can be implemented by custom control
+  let callback = control.onLeave
+  if callback != nil:
+    callback(event)
+
 method handleMouseButtonDownEvent(control: Control, event: MouseButtonEvent) =
   # can be implemented by custom control
   let callback = control.onMouseButtonDown
@@ -1693,6 +1724,12 @@ method `onDispose=`(control: Control, callback: ControlDisposeProc) = control.fO
 
 method onDraw(control: Control): DrawProc = control.fOnDraw
 method `onDraw=`(control: Control, callback: DrawProc) = control.fOnDraw = callback
+
+method onEnter(control: Control): EnterProc = control.fOnEnter
+method `onEnter=`(control: Control, callback: EnterProc) = control.fOnEnter = callback
+
+method onLeave(control: Control): LeaveProc = control.fOnLeave
+method `onLeave=`(control: Control, callback: LeaveProc) = control.fOnLeave = callback
 
 method onMouseButtonDown(control: Control): MouseButtonProc = control.fOnMouseButtonDown
 method `onMouseButtonDown=`(control: Control, callback: MouseButtonProc) = control.fOnMouseButtonDown = callback

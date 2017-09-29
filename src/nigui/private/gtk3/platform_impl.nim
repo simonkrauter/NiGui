@@ -204,6 +204,25 @@ method focus(control: ControlImpl) =
 method focus(control: NativeTextArea) =
   gtk_widget_grab_focus(control.fTextViewHandle)
 
+
+proc pControlEnterSignal(widget: pointer, event: var GdkEventCrossing, data: pointer): bool {.cdecl.} =
+  let control = cast[ControlImpl](data)
+  var evt = new EnterEvent
+  evt.control = control
+  try:
+    control.handleEnterEvent(evt)
+  except:
+    handleException()
+
+proc pControlLeaveSignal(widget: pointer, event: var GdkEventCrossing, data: pointer): bool {.cdecl.} =
+  let control = cast[ControlImpl](data)
+  var evt = new LeaveEvent
+  evt.control = control
+  try:
+    control.handleLeaveEvent(evt)
+  except:
+    handleException()
+
 proc pDefaultControlButtonPressSignal(widget: pointer, event: var GdkEventButton, data: pointer): bool {.cdecl.} =
   let control = cast[ControlImpl](data)
   let x = event.x.int
@@ -782,6 +801,12 @@ proc init(control: ControlImpl) =
 
   gtk_widget_add_events(control.fHandle, GDK_BUTTON_RELEASE_MASK)
   discard g_signal_connect_data(control.fHandle, "button-release-event", pControlButtonReleaseSignal, cast[pointer](control))
+
+  gtk_widget_add_events(control.fHandle, GDK_ENTER_NOTIFY_MASK)
+  discard g_signal_connect_data(control.fHandle, "enter-notify-event", pControlEnterSignal, cast[pointer](control))
+
+  gtk_widget_add_events(control.fHandle, GDK_LEAVE_NOTIFY_MASK)
+  discard g_signal_connect_data(control.fHandle, "leave-notify-event", pControlLeaveSignal, cast[pointer](control))
 
   procCall control.Control.init()
 
