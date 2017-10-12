@@ -17,6 +17,10 @@ container.add(button)
 var label = newLabel("Label")
 container.add(label)
 
+# Add a Checkbox control:
+var checkbox = newCheckbox("Checkbox")
+container.add(checkbox)
+
 # Add a TextBox control:
 var textBox = newTextBox("TextBox")
 container.add(textBox)
