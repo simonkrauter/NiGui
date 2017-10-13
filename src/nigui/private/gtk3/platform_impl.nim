@@ -101,7 +101,7 @@ proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointe
   evt.unicode = unicode
 
   try:
-    window.handleKeyDownEvent(evt)
+    discard window.handleKeyDownEvent(evt)
   except:
     handleException()
 

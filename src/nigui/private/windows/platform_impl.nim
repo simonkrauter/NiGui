@@ -230,7 +230,8 @@ proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int, ke
   windowEvent.unicode = unicode
   windowEvent.character = unicode.pUnicodeCharToUtf8
 
-  window.handleKeyDownEvent(windowEvent)
+  if window.handleKeyDownEvent(windowEvent):
+    return true
 
   if control != nil:
     var controlEvent = new ControlKeyEvent
