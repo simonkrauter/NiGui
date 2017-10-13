@@ -820,6 +820,9 @@ proc init*(checkbox: NativeCheckbox)
 method text*(checkbox: Checkbox): string
 method `text=`*(checkbox: Checkbox, text: string)
 
+method onToggle*(checkbox: Checkbox): CheckboxToggleProc
+method `onToggle=`*(checkbox: Checkbox, callback: CheckboxToggleProc)
+
 method enabled*(checkbox: Checkbox): bool
 method `enabled=`*(checkbox: Checkbox, enabled: bool)
 
