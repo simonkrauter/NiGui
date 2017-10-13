@@ -1222,16 +1222,14 @@ method `enabled=`(button: NativeButton, enabled: bool) =
 var pCheckboxOrigWndProc: pointer
 
 proc pCheckboxWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
-  proc toggle(checkbox: Checkbox) =
-    checkbox.fChecked = not checkbox.fChecked
-    discard SendMessageA(checkbox.fHandle, BM_SETCHECK, cast[pointer](checkbox.fChecked), nil)
-
   case uMsg
   of WM_KEYDOWN, WM_LBUTTONUP:
     let checkbox = cast[Checkbox](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     let keyCode = if uMsg == WM_KEYDOWN: cast[int](wParam) else: 32
     if checkbox != nil and keyCode == 32:
-      checkbox.toggle()
+      checkbox.fChecked = not checkbox.fChecked
+      discard SendMessageA(checkbox.fHandle, BM_SETCHECK, cast[pointer](checkbox.fChecked), nil)
+
       var event = new CheckboxToggleEvent
       event.control = checkbox
       event.checked = checkbox.fChecked
@@ -1249,9 +1247,7 @@ proc init(checkbox: NativeCheckbox) =
     cast[pointer](checkbox)
   )
   # WS_TABSTOP does not work, why?
-  pCheckboxOrigWndProc = pSetWindowLongPtr(
-    checkbox.fHandle, GWLP_WNDPROC, pCheckboxWndProc
-  )
+  pCheckboxOrigWndProc = pSetWindowLongPtr(checkbox.fHandle, GWLP_WNDPROC, pCheckboxWndProc)
   checkbox.Checkbox.init()
 
 method `text=`(checkbox: NativeCheckbox, text: string) =
