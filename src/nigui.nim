@@ -232,7 +232,7 @@ type
     key*: Key
     unicode*: int
     character*: string # UTF-8 character
-  WindowKeyProc* = proc(event: WindowKeyEvent)
+  WindowKeyProc* = proc(event: WindowKeyEvent): bool
 
   # Control events:
 
@@ -552,7 +552,7 @@ method closeClick*(window: Window)
 
 method handleResizeEvent*(window: Window, event: ResizeEvent)
 
-method handleKeyDownEvent*(window: Window, event: WindowKeyEvent)
+method handleKeyDownEvent*(window: Window, event: WindowKeyEvent) : bool
 
 method handleDropFilesEvent*(window: Window, event: DropFilesEvent)
 
@@ -1310,11 +1310,12 @@ method handleDropFilesEvent(window: Window, event: DropFilesEvent) =
   if callback != nil:
     callback(event)
 
-method handleKeyDownEvent(window: Window, event: WindowKeyEvent) =
+method handleKeyDownEvent(window: Window, event: WindowKeyEvent): bool =
   # can be overriden by custom window
   let callback = window.onKeyDown
   if callback != nil:
-    callback(event)
+    return callback(event)
+  return false
 
 method onDispose(window: Window): WindowDisposeProc = window.fOnDispose
 method `onDispose=`(window: Window, callback: WindowDisposeProc) = window.fOnDispose = callback
