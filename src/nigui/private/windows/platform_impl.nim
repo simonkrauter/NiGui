@@ -709,8 +709,7 @@ method saveToJpegFile(image: Image, filePath: string, quality = 80) =
 proc init(window: WindowImpl) =
   if pDefaultParentWindow == nil:
     raiseError("You need to call 'app.init()' at first.")
-  # setting this to only `WS_OVERLAPPEDWINDOW` makes the window resizable
-  var dwStyle: int32 = WS_OVERLAPPEDWINDOW xor WS_THICKFRAME xor WS_MAXIMIZEBOX
+  var dwStyle: int32 = WS_OVERLAPPEDWINDOW
   window.fHandle = pCreateWindowExWithUserdata(pTopLevelWindowClass, dwStyle, 0, nil, cast[pointer](window))
   DragAcceptFiles(window.fHandle, true)
   window.Window.init()
