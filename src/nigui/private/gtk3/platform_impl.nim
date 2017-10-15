@@ -102,6 +102,7 @@ proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointe
 
   try:
     window.handleKeyDownEvent(evt)
+    result = evt.cancel
   except:
     handleException()
 
