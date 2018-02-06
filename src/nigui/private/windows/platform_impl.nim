@@ -241,7 +241,12 @@ proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int, ke
     controlEvent.unicode = windowEvent.unicode
     controlEvent.character = windowEvent.character
     control.handleKeyDownEvent(controlEvent)
-    result = controlEvent.cancel
+    if controlEvent.cancel:
+      return true
+
+    # Tabstop:
+    if windowEvent.unicode == 9:
+      discard SetFocus(GetNextDlgTabItem(cast[WindowImpl](window).fHandle, cast[ControlImpl](control).fHandle, true))
 
 proc pHandleWMKEYDOWN(window: Window, control: Control, wParam, lParam: pointer): bool =
   if not GetKeyboardState(pKeyState): pRaiseLastOSError()
@@ -1114,12 +1119,12 @@ proc pContainerWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): poi
 
 proc init(container: ContainerImpl) =
   var dwStyle: int32 = WS_CHILD
-  container.fHandle = pCreateWindowExWithUserdata(pContainerWindowClass, dwStyle, 0, pDefaultParentWindow, cast[pointer](container))
+  container.fHandle = pCreateWindowExWithUserdata(pContainerWindowClass, dwStyle, WS_EX_CONTROLPARENT, pDefaultParentWindow, cast[pointer](container))
   # ScrollWnd:
-  container.fScrollWndHandle = pCreateWindowExWithUserdata(pContainerWindowClass, dwStyle, 0, container.fHandle, cast[pointer](container))
+  container.fScrollWndHandle = pCreateWindowExWithUserdata(pContainerWindowClass, dwStyle, WS_EX_CONTROLPARENT, container.fHandle, cast[pointer](container))
   pShowWindow(container.fScrollWndHandle, SW_SHOW)
   # Inner:
-  container.fInnerHandle = pCreateWindowExWithUserdata(pContainerWindowClass, dwStyle, 0, container.fScrollWndHandle, cast[pointer](container))
+  container.fInnerHandle = pCreateWindowExWithUserdata(pContainerWindowClass, dwStyle, WS_EX_CONTROLPARENT, container.fScrollWndHandle, cast[pointer](container))
   pShowWindow(container.fInnerHandle, SW_SHOW)
   container.Container.init()
 
@@ -1240,7 +1245,7 @@ proc pTextBoxWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): point
   result = pCommonControlWndProc(pTextBoxOrigWndProc, hWnd, uMsg, wParam, lParam)
 
 proc init(textBox: NativeTextBox) =
-  textBox.fHandle = pCreateWindowExWithUserdata("EDIT", WS_CHILD, WS_EX_CLIENTEDGE, pDefaultParentWindow, cast[pointer](textBox))
+  textBox.fHandle = pCreateWindowExWithUserdata("EDIT", WS_CHILD or WS_TABSTOP, WS_EX_CLIENTEDGE, pDefaultParentWindow, cast[pointer](textBox))
   pTextBoxOrigWndProc = pSetWindowLongPtr(textBox.fHandle, GWLP_WNDPROC, pTextBoxWndProc)
   textBox.TextBox.init()
 
