@@ -2192,6 +2192,7 @@ method text(frame: Frame): string = frame.fText
 method `text=`(frame: Frame, text: string) =
   frame.fText = text
   frame.tag = text
+  frame.forceRedraw()
   # should be extended by NativeFrame
 
 method getPadding(frame: Frame): Spacing =
@@ -2229,6 +2230,7 @@ method `text=`(button: Button, text: string) =
   button.fText = text
   button.tag = text
   button.triggerRelayoutIfModeIsAuto()
+  button.forceRedraw()
   # should be extended by NativeButton
 
 method naturalWidth(button: Button): int = button.getTextWidth(button.text) + 20
@@ -2266,6 +2268,7 @@ method `text=`(label: Label, text: string) =
   label.fText = text
   label.tag = text
   label.triggerRelayoutIfModeIsAuto()
+  label.forceRedraw()
 
 method naturalWidth(label: Label): int = label.getTextWidth(label.text)
 
