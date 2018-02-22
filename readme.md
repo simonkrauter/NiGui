@@ -77,7 +77,7 @@ You can help to improve NiGui by:
 * Help improving and extending the code
 * Adding macOS support
 
-Contact: simonkrauter@openmailbox.org
+Contact: see https://github.com/trustable-code
 
 FAQ
 ---
