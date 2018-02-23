@@ -67,6 +67,7 @@ Compile and run one of the included example programs.
 Show cases
 ----------
 * [NiCalc](https://github.com/trustable-code/NiCalc) - Simple calculator
+* [Nim-IDE](https://github.com/ZvontyFlugence/Nim-IDE) - Nim Text Editor
 
 Contributing
 ------------
