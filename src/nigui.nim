@@ -119,6 +119,22 @@ type
     Key_OE        = 214
     Key_UE        = 220
     Key_SharpS    = 223
+    # To be Added Soon
+    # Key_LBrace    = ---
+    # Key_RBrace    = ---
+    # Key_LParen    = ---
+    # Key_RParen    = ---
+    # Key_LBracket  = ---
+    # Key_RBracket  = ---
+    # Key_Slash     = ---
+    # Key_Mod       = ---
+    # Key_Char      = ---
+    # Key_String    = ---
+    # Key_Equals    = ---
+    # Key_Greater   = ---
+    # Key_Less      = ---
+    # Key_GreatEq   = ---
+    # Key_LessEq    = ---
     # Not part of Unicode:
     Key_Insert    = 1000
     Key_Delete
@@ -130,6 +146,8 @@ type
     Key_End
     Key_PageUp
     Key_PageDown
+    # Key_Shift
+    # Key_Caps
 
 const
   inactiveTimer* = 0
