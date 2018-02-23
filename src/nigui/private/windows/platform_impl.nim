@@ -1089,7 +1089,7 @@ proc pCustomControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
       canvas.fGraphics = nil
   of WM_MOUSEWHEEL:
     let scrolled = wParam.hiWord div 120
-    echo "wheel: " & $scrolled
+    # echo "wheel: " & $scrolled
   # of WM_ERASEBKGND: # no effect
     # return false
   of WM_SETFOCUS:
