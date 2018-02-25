@@ -50,8 +50,8 @@ method handleKeyDownEvent*(control: Editor, event: ControlKeyEvent): void =
         Key_Number6: "6", Key_Number7: "7", Key_Number8: "8",
         Key_Number9: "9"
     }.toTable
-    var signalKeys = [Key_Backspace, Key_Delete]
-    var directionKeys = [Key_Up, Key_Down, Key_Left, Key_Right]
+    #var signalKeys = [Key_Backspace, Key_Delete]
+    #var directionKeys = [Key_Up, Key_Down, Key_Left, Key_Right]
 
     var key = event.key
     var character: string
@@ -59,7 +59,9 @@ method handleKeyDownEvent*(control: Editor, event: ControlKeyEvent): void =
         # Get key
         character = charKeys[key]
         control.addText(character)
-    elif(signalKeys.contains(key)):
+        control.forceRedraw()
+
+    #[elif(signalKeys.contains(key)):
         # Get key
         for i in low(signalKeys)..high(signalKeys):
             if(signalKeys[i] == key):
@@ -72,3 +74,11 @@ method handleKeyDownEvent*(control: Editor, event: ControlKeyEvent): void =
             if(directionKeys[i] == key):
                 # Call direction handler 
                 handleDirectionKey(directionKeys[i]) # Doesnt work
+    ]#
+
+method handleDrawEvent*(control: Editor, event: DrawEvent) =
+    let canvas = event.control.canvas
+    canvas.areaColor = rgb(40, 42, 54)
+    canvas.textColor = rgb(249, 249, 249)
+    canvas.drawRectArea(0, 0, control.width, control.height)
+    canvas.drawText(control.text)
