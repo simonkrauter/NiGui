@@ -13,7 +13,7 @@
 # WARNING: File is incomplete!
 
 import 
-    nigui, tables
+    nigui, tables, strutils
 
 type Editor* = ref object of TextArea 
 
@@ -25,30 +25,18 @@ proc newEditor*(parent: Window, text = ""): Editor =
     result.text = text
     this = result
     parent.onKeyDown = proc(event: WindowKeyEvent) =
-        var charKeys = {
-            Key_Q: "q", Key_W: "w", Key_E: "e", Key_R: "r",
-            Key_T: "t", Key_Y: "y", Key_U: "u", Key_I: "i",
-            Key_O: "o", Key_P: "p", Key_A: "a", Key_S: "s",
-            Key_D: "d", Key_F: "f", Key_G: "g", Key_H: "h",
-            Key_J: "j", Key_K: "k", Key_L: "l", Key_Z: "z",
-            Key_X: "x", Key_C: "c", Key_V: "v", Key_B: "b",
-            Key_N: "n", Key_M: "m", Key_Comma: ",", Key_Space: " ",
-            Key_Return: "\n", Key_Tab: "\t", Key_Point: ".",
-            Key_Asterisk: "*", Key_Plus: "+", Key_Minus: "/",
-            Key_Number0: "0", Key_Number1: "1", Key_Number2: "2",
-            Key_Number3: "3", Key_Number4: "4", Key_Number5: "5",
-            Key_Number6: "6", Key_Number7: "7", Key_Number8: "8",
-            Key_Number9: "9"
-        }.toTable
-
-        var key = event.key
-        var character: string
-
-        if(charKeys.hasKey(key)):
-            # Get key
-            character = charKeys[key]
-            this.addText(character)
-            this.forceRedraw()
+        if event.key == Key_Return:
+            this.addText("\n")
+        elif event.key == Key_Backspace:
+            var txt = this.text
+            var index = len(this.text)
+            delete(txt, index, index)
+            this.text = txt
+        elif event.key == Key_Tab:
+            this.addText("\t")
+        else:
+            this.addText(event.character)
+        this.forceRedraw()
 
 method handleDrawEvent*(control: Editor, event: DrawEvent) =
     let canvas = event.control.canvas
