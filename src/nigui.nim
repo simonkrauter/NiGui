@@ -76,11 +76,13 @@ type
     Key_Caps      = 20
     Key_Escape    = 27
     Key_Space     = 32
+    Key_Char      = 39
     Key_Asterisk  = 42
     Key_Plus      = 43
     Key_Comma     = 44
     Key_Minus     = 45
     Key_Point     = 46
+    Key_Slash     = 47
     Key_Number0   = 48
     Key_Number1   = 49
     Key_Number2   = 50
@@ -91,6 +93,8 @@ type
     Key_Number7   = 55
     Key_Number8   = 56
     Key_Number9   = 57
+    Key_SemiColon = 59
+    Key_Equals    = 61
     Key_A         = 65
     Key_B         = 66
     Key_C         = 67
@@ -117,16 +121,13 @@ type
     Key_X         = 88
     Key_Y         = 89
     Key_Z         = 90
+    Key_LBracket  = 91
+    Key_BackSlash = 92
+    Key_RBracket  = 93
     Key_AE        = 196
     Key_OE        = 214
     Key_UE        = 220
     Key_SharpS    = 223
-    # To be Added Soon
-    # Key_LBracket  = ---
-    # Key_RBracket  = ---
-    # Key_Slash     = ---
-    # Key_Char      = ---
-    # Key_Equals    = ---
     # Not part of Unicode:
     Key_Insert    = 1000
     Key_Delete
