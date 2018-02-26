@@ -72,6 +72,8 @@ type
     Key_Backspace = 8
     Key_Tab       = 9
     Key_Return    = 13
+    Key_Shift     = 16
+    Key_Caps      = 20
     Key_Escape    = 27
     Key_Space     = 32
     Key_Asterisk  = 42
@@ -120,21 +122,11 @@ type
     Key_UE        = 220
     Key_SharpS    = 223
     # To be Added Soon
-    # Key_LBrace    = ---
-    # Key_RBrace    = ---
-    # Key_LParen    = ---
-    # Key_RParen    = ---
     # Key_LBracket  = ---
     # Key_RBracket  = ---
     # Key_Slash     = ---
-    # Key_Mod       = ---
     # Key_Char      = ---
-    # Key_String    = ---
     # Key_Equals    = ---
-    # Key_Greater   = ---
-    # Key_Less      = ---
-    # Key_GreatEq   = ---
-    # Key_LessEq    = ---
     # Not part of Unicode:
     Key_Insert    = 1000
     Key_Delete
@@ -146,7 +138,6 @@ type
     Key_End
     Key_PageUp
     Key_PageDown
-    # Key_Shift
     # Key_Caps
 
 const
