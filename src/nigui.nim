@@ -138,7 +138,6 @@ type
     Key_End
     Key_PageUp
     Key_PageDown
-    # Key_Caps
 
 const
   inactiveTimer* = 0
