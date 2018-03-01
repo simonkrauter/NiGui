@@ -9,7 +9,6 @@
 import windows
 import tables
 
-
 # ----------------------------------------------------------------------------------------
 #                                    Internal Things
 # ----------------------------------------------------------------------------------------
@@ -815,7 +814,7 @@ method `iconPath=`(window: WindowImpl, iconPath: string) =
 #                                       Control
 # ----------------------------------------------------------------------------------------
 
-method pUpdateScrollBar(control: ControlImpl)
+method pUpdateScrollBar(control: ControlImpl) {.base.}
 
 proc init(control: ControlImpl) =
   if control.fHandle == nil:
