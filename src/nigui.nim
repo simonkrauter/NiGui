@@ -72,6 +72,8 @@ type
     Key_Backspace = 8
     Key_Tab       = 9
     Key_Return    = 13
+    Key_Shift     = 16
+    Key_Caps      = 20
     Key_Escape    = 27
     Key_Space     = 32
     Key_Asterisk  = 42
