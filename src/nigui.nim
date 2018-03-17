@@ -885,8 +885,6 @@ method realignChildControls(control: Control)
 
 method setControlPosition(container: Container, control: Control, x, y: int)
 
-proc countLines(s: string): int
-
 
 # ========================================================================================
 #
@@ -936,19 +934,6 @@ proc rgb(red, green, blue: byte, alpha: byte = 255): Color =
   result.green = green
   result.blue = blue
   result.alpha = alpha
-
-# Should removed here, when version in strutils is fixed
-proc countLines(s: string): int =
-  result = 1
-  var i = 0
-  while i < s.len:
-    case s[i]
-    of '\c':
-      if s[i+1] == '\l': inc i
-      inc result
-    of '\l': inc result
-    else: discard
-    inc i
 
 proc unicodeToUpper(unicode: int): int =
   if unicode < 128:
