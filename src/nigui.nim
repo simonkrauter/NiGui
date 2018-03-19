@@ -2012,7 +2012,7 @@ method realignChildControls(container: LayoutContainer) =
     if not control.visible:
       continue
 
-    if control.widthMode == WidthMode_Expand:
+    if control.widthMode in {WidthMode_Fill, WidthMode_Expand}:
       if container.layout == Layout_Horizontal:
         minInnerWidth.inc(control.minWidth)
         expandWidthCount.inc
@@ -2030,7 +2030,7 @@ method realignChildControls(container: LayoutContainer) =
         else:
           minInnerWidth = max(minInnerWidth, control.wantedWidth)
 
-    if control.heightMode == HeightMode_Expand:
+    if control.heightMode in {HeightMode_Fill, HeightMode_Expand}:
       if container.layout == Layout_Vertical:
         minInnerHeight.inc(control.minHeight)
         expandHeightCount.inc
@@ -2088,7 +2088,7 @@ method realignChildControls(container: LayoutContainer) =
     var width = control.width
     var height = control.height
     # echo "size old: " & $width & ", " $height
-    if control.widthMode == WidthMode_Expand or control.wantedWidth == -1:
+    if control.widthMode in {WidthMode_Fill, WidthMode_Expand} or control.wantedWidth == -1:
       if container.layout == Layout_Horizontal:
         if expandWidthCount > 0:
           width = control.minWidth + dynamicWidth div expandWidthCount
@@ -2098,15 +2098,15 @@ method realignChildControls(container: LayoutContainer) =
         width = clientWidth - container.padding * 2
     elif control.widthMode == WidthMode_Auto:
       width = control.wantedWidth
-    elif control.widthMode == WidthMode_Fill:
-      width = clientWidth - container.padding * 2
+    # elif control.widthMode == WidthMode_Fill:
+      # width = clientWidth - container.padding * 2
 
     if control.minWidth > width:
       width = control.minWidth
     if control.maxWidth > 0 and control.maxWidth < width:
       width = control.maxWidth
 
-    if control.heightMode == HeightMode_Expand or control.wantedHeight == -1:
+    if control.heightMode in {HeightMode_Fill, HeightMode_Expand} or control.wantedHeight == -1:
       if container.layout == Layout_Vertical:
         if expandHeightCount > 0:
           height = control.minHeight + dynamicHeight div expandHeightCount
@@ -2116,8 +2116,8 @@ method realignChildControls(container: LayoutContainer) =
         height = clientHeight - container.padding * 2
     elif control.heightMode == HeightMode_Auto:
       height = control.wantedHeight
-    elif control.heightMode == HeightMode_Fill:
-      height = clientHeight - container.padding * 2
+    # elif control.heightMode == HeightMode_Fill:
+      # height = clientHeight - container.padding * 2
 
     if control.minHeight > height:
       height = control.minHeight
@@ -2125,8 +2125,7 @@ method realignChildControls(container: LayoutContainer) =
       height = control.maxHeight
 
     if control.width != width or control.height != height:
-      # echo "  child: " & control.tag
-      # echo "    new size: " & $width & ", " & $height
+      # echo "  ", control.tag, "    new size: ", width, ", ", $height
       control.setSize(width, height)
 
     # Position:
@@ -2142,7 +2141,7 @@ method realignChildControls(container: LayoutContainer) =
         y = innerHeight - height - container.padding
 
     if control.x != x or control.y != y:
-      # echo "    new pos: " & $x & ", " $y
+      # echo "    new pos: ", x, ", ", $y
       control.setPosition(x, y)
 
     # Calculate next position:
