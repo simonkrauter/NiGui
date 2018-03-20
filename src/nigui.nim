@@ -920,7 +920,7 @@ var fDefaultFontSize = 15
 
 proc raiseError(msg: string, showAlert = true, title = "NiGui Error") =
   if showAlert:
-    alert(nil, msg & "\n\n" & getStackTrace(), title)
+    alert(nil, msg & "\p\p" & getStackTrace(), title)
   raise newException(Exception, msg)
 
 proc handleException() =
@@ -2341,7 +2341,7 @@ proc init(textArea: TextArea) =
 
 method addText(textArea: TextArea, text: string) = textArea.text = textArea.text & text
 
-method addLine(textArea: TextArea, text = "") = textArea.addtext(text & "\n")
+method addLine(textArea: TextArea, text = "") = textArea.addtext(text & "\p")
 
 method scrollToBottom(textArea: TextArea) = discard
   # has to be implemented by NativeTextBox
