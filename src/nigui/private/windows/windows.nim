@@ -163,6 +163,9 @@ const
   # UnitDocument* = 5
   # UnitMillimeter* = 6
   GMEM_MOVEABLE* = 2
+  PixelFormat32bppARGB* = 2498570
+  ImageLockModeWrite* = 2
+
 
 
 # ----------------------------------------------------------------------------------------
@@ -285,11 +288,19 @@ type
     # dwReserved: int32
     # FlagsEx*: int32
 
-  GUID * = object
+  GUID* = object
     Data1*: int32
     Data2*: int32
     Data3*: int32
     Data4*: int32
+
+  BitmapData* = object
+    Width*: int32
+    Height*: int32
+    Stride*: int32
+    PixelFormat*: int32
+    Scan0*: ptr UncheckedArray[byte]
+    Reserved: pointer
 
 
 # ----------------------------------------------------------------------------------------
@@ -463,6 +474,8 @@ proc GdipCreateFont*(fontFamily: pointer, emSize: cfloat, style, unit: int32, fo
 proc GdipDeleteFont*(font: pointer): int32 {.importc: "GdipDeleteFont", libGdiplus.}
 proc GdipCreateFontFamilyFromName*(name: cstring, fontCollection: pointer, fontFamily: var pointer): int32 {.importc: "GdipCreateFontFamilyFromName", libGdiplus.}
 proc GdipDeleteFontFamily*(fontFamily: pointer): int32 {.importc: "GdipDeleteFontFamily", libGdiplus.}
+proc GdipBitmapLockBits*(bitmap: pointer, rect: var Rect, flags: int32, format: int32, lockedBitmapData: var BitmapData): int32 {.importc: "GdipBitmapLockBits", libGdiplus.}
+proc GdipBitmapUnlockBits*(bitmap: pointer, lockedBitmapData: var BitmapData): int32 {.importc: "GdipBitmapUnlockBits", libGdiplus.}
 
 
 # ----------------------------------------------------------------------------------------

@@ -468,10 +468,10 @@ method setPixel(canvas: Canvas, x, y: int, color: Color) =
       raiseError("Pixel is out of range.")
     cairo_surface_flush(canvasImpl.fSurface)
     let i = y * canvasImpl.fStride + x * 4
-    canvasImpl.fData[i + 0] = color.blue.chr
-    canvasImpl.fData[i + 1] = color.green.chr
-    canvasImpl.fData[i + 2] = color.red.chr
-    canvasImpl.fData[i + 3] = 255.chr
+    canvasImpl.fData[i + 0] = color.blue
+    canvasImpl.fData[i + 1] = color.green
+    canvasImpl.fData[i + 2] = color.red
+    canvasImpl.fData[i + 3] = 255
     cairo_surface_mark_dirty(canvasImpl.fSurface)
 
 method `fontFamily=`(canvas: CanvasImpl, fontFamily: string) =
@@ -554,6 +554,14 @@ method saveToJpegFile(image: Image, filePath: string, quality = 80) =
   var error: ptr GError
   if not gdk_pixbuf_save(pixbuf, filePath, "jpeg", error.addr, "quality", $quality, nil):
     pRaiseGError(error)
+
+method beginPixelDataAccess(image: Image): ptr UncheckedArray[byte] =
+  let canvas = cast[CanvasImpl](image.canvas)
+  result = canvas.fData
+
+method endPixelDataAccess(image: Image) =
+  let canvas = cast[CanvasImpl](image.canvas)
+  cairo_surface_mark_dirty(canvas.fSurface)
 
 
 # ----------------------------------------------------------------------------------------

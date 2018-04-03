@@ -708,6 +708,24 @@ method saveToJpegFile(image: Image, filePath: string, quality = 80) =
   # TODO: pass quality
   pCheckGdiplusStatus(GdipSaveImageToFile(canvas.fBitmap, filePath.pUtf8ToUtf16(), clsidEncoder.addr, nil), false)
 
+method beginPixelDataAccess(image: Image): ptr UncheckedArray[byte] =
+  let imageImpl = cast[ImageImpl](image)
+  let canvas = cast[CanvasImpl](image.canvas)
+  var rect: Rect
+  rect.left = 0
+  rect.top = 0
+  rect.right = image.width.int32
+  rect.bottom = image.height.int32
+  pCheckGdiplusStatus(GdipBitmapLockBits(canvas.fBitmap, rect, ImageLockModeWrite, PixelFormat32bppARGB, imageImpl.bitmapDataLockBits))
+  result = imageImpl.bitmapDataLockBits.Scan0
+
+method endPixelDataAccess(image: Image) =
+  let imageImpl = cast[ImageImpl](image)
+  let canvas = cast[CanvasImpl](image.canvas)
+  pCheckGdiplusStatus(GdipBitmapUnlockBits(canvas.fBitmap, imageImpl.bitmapDataLockBits))
+
+
+
 
 # ----------------------------------------------------------------------------------------
 #                                        Window

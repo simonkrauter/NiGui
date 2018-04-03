@@ -17,7 +17,7 @@ type
 
   CanvasImpl* = ref object of Canvas
     fSurface: pointer
-    fData: cstring
+    fData: ptr UncheckedArray[byte]
     fStride: int
     fCairoContext: pointer
     fFont: pointer

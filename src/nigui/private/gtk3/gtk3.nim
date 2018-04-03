@@ -438,7 +438,7 @@ proc cairo_image_surface_create*(format: cint, width, height: cint): pointer {.i
 proc cairo_image_surface_get_width*(surface: pointer): cint {.importc: "cairo_image_surface_get_width", libgtk3.}
 proc cairo_image_surface_get_height*(surface: pointer): cint {.importc: "cairo_image_surface_get_height", libgtk3.}
 proc cairo_image_surface_get_stride*(surface: pointer): cint {.importc: "cairo_image_surface_get_stride", libgtk3.}
-proc cairo_image_surface_get_data*(surface: pointer): cstring {.importc: "cairo_image_surface_get_data", libgtk3.}
+proc cairo_image_surface_get_data*(surface: pointer): ptr UncheckedArray[byte] {.importc: "cairo_image_surface_get_data", libgtk3.}
 proc cairo_surface_flush*(surface: pointer) {.importc: "cairo_surface_flush", libgtk3.}
 proc cairo_surface_mark_dirty*(surface: pointer) {.importc: "cairo_surface_mark_dirty", libgtk3.}
 proc cairo_surface_destroy*(surface: pointer) {.importc: "cairo_surface_destroy", libgtk3.}

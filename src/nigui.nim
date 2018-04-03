@@ -487,6 +487,10 @@ method height*(image: Image): int
 
 method canvas*(image: Image): Canvas
 
+method beginPixelDataAccess*(image: Image): ptr UncheckedArray[byte]
+
+method endPixelDataAccess*(image: Image)
+
 
 # ----------------------------------------------------------------------------------------
 #                                        Window

@@ -1,3 +1,5 @@
+import windows
+
 # NiGui - Win32 platform-specific code - part 1
 
 # This file will be included in "nigui.nim".
@@ -21,3 +23,4 @@ type
     fAreaBrush: pointer
 
   ImageImpl* = ref object of Image
+    bitmapDataLockBits: BitmapData
