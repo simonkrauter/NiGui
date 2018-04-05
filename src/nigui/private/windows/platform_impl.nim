@@ -1108,8 +1108,8 @@ proc pCustomControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
   of WM_MOUSEWHEEL:
     let scrolled = wParam.hiWord div 120
     echo "wheel: " & $scrolled
-  # of WM_ERASEBKGND: # no effect
-    # return false
+  of WM_ERASEBKGND:
+    return cast[pointer](true) # Allow flicker-Free drawing
   of WM_SETFOCUS:
     # echo "control WM_SETFOCUS"
     discard
