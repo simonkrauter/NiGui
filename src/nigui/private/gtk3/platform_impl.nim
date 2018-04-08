@@ -544,13 +544,16 @@ method loadFromFile(image: Image, filePath: string) =
 method saveToPngFile(image: Image, filePath: string) =
   let canvas = cast[CanvasImpl](image.fCanvas)
   var pixbuf = gdk_pixbuf_get_from_surface(canvas.fSurface, 0, 0, image.width.cint, image.height.cint)
+  defer: g_object_unref(pixbuf)
   var error: ptr GError
   if not gdk_pixbuf_save(pixbuf, filePath, "png", error.addr, nil, nil, nil):
     pRaiseGError(error)
 
+
 method saveToJpegFile(image: Image, filePath: string, quality = 80) =
   let canvas = cast[CanvasImpl](image.fCanvas)
   var pixbuf = gdk_pixbuf_get_from_surface(canvas.fSurface, 0, 0, image.width.cint, image.height.cint)
+  defer: g_object_unref(pixbuf)
   var error: ptr GError
   if not gdk_pixbuf_save(pixbuf, filePath, "jpeg", error.addr, "quality", $quality, nil):
     pRaiseGError(error)

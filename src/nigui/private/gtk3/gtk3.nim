@@ -211,6 +211,7 @@ const
 
 proc g_slist_length*(list: pointer): int {.importc: "g_slist_length", libgtk3.}
 proc g_slist_nth_data_string*(list: pointer, n: int): cstring {.importc: "g_slist_nth_data", libgtk3.}
+proc g_object_unref*(`object`: pointer) {.importc: "g_object_unref", libgtk3.}
 
 proc gtk_init*(argc, argv: pointer) {.importc: "gtk_init", libgtk3.}
 
