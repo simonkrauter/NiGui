@@ -106,6 +106,13 @@ proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointe
   except:
     handleException()
 
+proc pWindowVisibleSignal(widget: pointer, data: pointer): bool {.cdecl.} =
+  let window = cast[WindowImpl](data)
+  try:
+    window.handleVisibleEvent()
+  except:
+    handleException()
+
 proc pControlKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
 
   # echo "control keyPressCallback"
@@ -138,6 +145,25 @@ method focus(control: ControlImpl) =
 
 method focus(control: NativeTextArea) =
   gtk_widget_grab_focus(control.fTextViewHandle)
+
+
+proc pControlEnterSignal(widget: pointer, event: var GdkEventCrossing, data: pointer): bool {.cdecl.} =
+  let control = cast[ControlImpl](data)
+  var evt = new EnterEvent
+  evt.control = control
+  try:
+    control.handleEnterEvent(evt)
+  except:
+    handleException()
+
+proc pControlLeaveSignal(widget: pointer, event: var GdkEventCrossing, data: pointer): bool {.cdecl.} =
+  let control = cast[ControlImpl](data)
+  var evt = new LeaveEvent
+  evt.control = control
+  try:
+    control.handleLeaveEvent(evt)
+  except:
+    handleException()
 
 proc pDefaultControlButtonPressSignal(widget: pointer, event: var GdkEventButton, data: pointer): bool {.cdecl.} =
   let control = cast[ControlImpl](data)
@@ -608,6 +634,8 @@ proc init(window: WindowImpl) =
   discard g_signal_connect_data(window.fHandle, "delete-event", pWindowDeleteSignal, cast[pointer](window))
   discard g_signal_connect_data(window.fHandle, "configure-event", pWindowConfigureSignal, cast[pointer](window))
   discard g_signal_connect_data(window.fHandle, "key-press-event", pWindowKeyPressSignal, cast[pointer](window))
+  discard g_signal_connect_data(window.fHandle, "show", pWindowVisibleSignal, cast[pointer](window))
+  discard g_signal_connect_data(window.fHandle, "hide", pWindowVisibleSignal, cast[pointer](window))
   discard g_signal_connect_data(window.fHandle, "window-state-event", pWindowStateEventSignal, cast[pointer](window))
 
   # Enable drag and drop of files:
@@ -757,6 +785,12 @@ proc init(control: ControlImpl) =
 
   gtk_widget_add_events(control.fHandle, GDK_BUTTON_RELEASE_MASK)
   discard g_signal_connect_data(control.fHandle, "button-release-event", pControlButtonReleaseSignal, cast[pointer](control))
+
+  gtk_widget_add_events(control.fHandle, GDK_ENTER_NOTIFY_MASK)
+  discard g_signal_connect_data(control.fHandle, "enter-notify-event", pControlEnterSignal, cast[pointer](control))
+
+  gtk_widget_add_events(control.fHandle, GDK_LEAVE_NOTIFY_MASK)
+  discard g_signal_connect_data(control.fHandle, "leave-notify-event", pControlLeaveSignal, cast[pointer](control))
 
   procCall control.Control.init()
 

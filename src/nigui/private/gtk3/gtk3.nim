@@ -74,6 +74,21 @@ type
     group*: int8
     is_modifier*: int8
 
+  GdkEventCrossing* {.byCopy.} = object
+    event_type: cint
+    window*: pointer
+    send_event: int8
+    subwindow*: pointer
+    time*: cint
+    x*: cdouble
+    y*: cdouble
+    x_root*: cdouble
+    y_root*: cdouble
+    mode*: cint
+    detail*: cint
+    focus*: bool
+    state*: cuint
+
   GdkEventWindowState* {.byCopy.} = object
     event_type*: cint
     window*: pointer
@@ -162,6 +177,8 @@ const
   GDK_BUTTON_PRESS_MASK*   = 256
   GDK_BUTTON_RELEASE_MASK* = 512
   GDK_KEY_PRESS_MASK*      = 1024
+  GDK_ENTER_NOTIFY_MASK*   = 4096
+  GDK_LEAVE_NOTIFY_MASK*   = 8192
   # [..]
 
   # cairo_format_t:
@@ -475,5 +492,4 @@ proc pango_font_description_set_size*(desc: pointer, size: cint) {.importc: "pan
 # proc pango_font_description_get_size*(desc: pointer): cint {.importc: "pango_font_description_get_size", libgtk3.}
 # proc pango_layout_set_markup*(layout: pointer, markup: cstring, length: cint) {.importc: "pango_layout_set_markup", libgtk3.}
 # proc pango_layout_new*(context: pointer): pointer {.importc: "pango_layout_new", libgtk3.}
-
 

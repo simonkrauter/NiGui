@@ -319,6 +319,9 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
       elif cast[int](wParam) == SC_RESTORE:
         window.fMinimized = false
         echo "b"
+  of WM_SHOWWINDOW:
+    let window = cast[WindowImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+    window.handleVisibleEvent()
   else:
     discard
   result = pCommonWndProc(hWnd, uMsg, wParam, lParam)
