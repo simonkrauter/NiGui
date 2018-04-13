@@ -252,6 +252,9 @@ proc pHandleWMKEYDOWN(window: Window, control: Control, wParam, lParam: pointer)
   if not GetKeyboardState(pKeyState): pRaiseLastOSError()
   var widestring = newString(2)
   let scancode = int32((cast[int](lParam) shr 8) and 0xFFFFFF00)
+  if scancode == 10496:
+    # When the dead key "^" on German keyboard is pressed, don't call ToUnicode(), because this would destroy the dead key state
+    return
   let ret = ToUnicode(cast[int](wParam).int32, scancode, pKeyState, widestring, 1, 0)
   if ret == 1:
     return # Unicode characters are handled by WM_CHAR
