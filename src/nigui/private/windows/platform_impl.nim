@@ -209,14 +209,16 @@ proc pCommonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
 
 proc pVirtualKeyToKey(keyval: int): Key =
   case keyval
+  of 33: Key_PageUp
+  of 34: Key_PageDown
+  of 35: Key_End
+  of 36: Key_Home
   of 37: Key_Left
   of 38: Key_Up
   of 39: Key_Right
   of 40: Key_Down
-  of 35: Key_End
-  of 36: Key_Home
-  of 33: Key_PageUp
-  of 34: Key_PageDown
+  of 45: Key_Insert
+  of 46: Key_Delete
   else: cast[Key](keyval.unicodeToUpper)
 
 proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int, key: Key): bool =
