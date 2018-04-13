@@ -20,6 +20,7 @@ const pCustomControlWindowClass = "3"
 
 var pDefaultParentWindow: pointer
 var pKeyState: KeyState
+var pKeyDownKey: Key
 
 # needed to calculate clicks:
 var pLastMouseButtonDownControl: Control
@@ -221,10 +222,10 @@ proc pVirtualKeyToKey(keyval: int): Key =
   of 46: Key_Delete
   else: cast[Key](keyval.unicodeToUpper)
 
-proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int, key: Key): bool =
+proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int): bool =
   var windowEvent = new WindowKeyEvent
   windowEvent.window = window
-  windowEvent.key = key
+  windowEvent.key = pKeyDownKey
   if windowEvent.key == Key_None:
     echo "WM_CHAR: Unkown key value: ", unicode
     return
@@ -252,19 +253,22 @@ proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int, ke
 
 proc pHandleWMKEYDOWN(window: Window, control: Control, wParam, lParam: pointer): bool =
   if not GetKeyboardState(pKeyState): pRaiseLastOSError()
+  pKeyDownKey = pVirtualKeyToKey(cast[int](wParam))
+  # Save the key for WM_CHAR, because WM_CHAR only gets the key combined with the dead key state
   var widestring = newString(2)
   let scancode = int32((cast[int](lParam) shr 8) and 0xFFFFFF00)
   if scancode == 10496:
     # When the dead key "^" on German keyboard is pressed, don't call ToUnicode(), because this would destroy the dead key state
-    return
+    pKeyDownKey = Key_Circumflex
+    return pHandleWMKEYDOWNOrWMCHAR(window, control, 0)
   let ret = ToUnicode(cast[int](wParam).int32, scancode, pKeyState, widestring, 1, 0)
   if ret == 1:
     return # Unicode characters are handled by WM_CHAR
-  result = pHandleWMKEYDOWNOrWMCHAR(window, control, 0, pVirtualKeyToKey(cast[int](wParam)))
+  result = pHandleWMKEYDOWNOrWMCHAR(window, control, 0)
 
 proc pHandleWMCHAR(window: Window, control: Control, wParam, lParam: pointer): bool =
   let unicode = cast[int](wParam)
-  result = pHandleWMKEYDOWNOrWMCHAR(window, control, unicode, cast[Key](unicode.unicodeToUpper))
+  result = pHandleWMKEYDOWNOrWMCHAR(window, control, unicode)
 
 proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
   case uMsg

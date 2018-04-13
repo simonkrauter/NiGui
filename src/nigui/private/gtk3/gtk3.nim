@@ -421,6 +421,9 @@ proc gtk_clipboard_store*(clipboard: pointer) {.importc: "gtk_clipboard_store", 
 
 proc gtk_accelerator_get_default_mod_mask*(): cint {.importc: "gtk_accelerator_get_default_mod_mask", libgtk3.}
 
+proc gtk_im_multicontext_new*(): pointer {.importc: "gtk_im_multicontext_new", libgtk3.}
+proc gtk_im_context_filter_keypress*(context: pointer, event: var GdkEventKey): bool {.importc: "gtk_im_context_filter_keypress", libgtk3.}
+
 
 # ----------------------------------------------------------------------------------------
 #                                   Drawing Related Procs

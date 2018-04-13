@@ -6,6 +6,8 @@ type
   WindowImpl* = ref object of Window
     fHandle: pointer
     fInnerHandle: pointer
+    fIMContext: pointer
+    fKeyPressed: Key
 
   ControlImpl* = ref object of Control
     fHandle: pointer
@@ -14,6 +16,8 @@ type
     fHAdjust: pointer
     fVAdjust: pointer
     fDeadCornerHandle: pointer
+    fIMContext: pointer
+    fKeyPressed: Key
 
   CanvasImpl* = ref object of Canvas
     fSurface: pointer

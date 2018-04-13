@@ -62,6 +62,7 @@ proc pWindowConfigureSignal(windowHandle, event, data: pointer): bool {.cdecl.} 
 
 proc pKeyvalToKey(keyval: cint): Key =
   result = case keyval
+  of 65106: Key_Circumflex
   of 65289: Key_Tab
   of 65293: Key_Return
   of 65307: Key_Escape
@@ -79,59 +80,68 @@ proc pKeyvalToKey(keyval: cint): Key =
   else: cast[Key](keyval.unicodeToUpper)
 
 proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
-  # echo "window keyPressCallback"
-
-  # echo event.keyval
-  # echo event.hardware_keycode
-
-  # echo $gdk_keyval_to_unicode(event.keyval)
-  var unicode = gdk_keyval_to_unicode(event.keyval)
-  # if unicode == 0:
-    # unicode = event.keyval
-
   let window = cast[WindowImpl](data)
+  window.fKeyPressed = pKeyvalToKey(event.keyval)
+  if gtk_im_context_filter_keypress(window.fIMContext, event) and window.fKeyPressed == Key_None:
+    return
   var evt = new WindowKeyEvent
   evt.window = window
-  evt.key = pKeyvalToKey(event.keyval)
+  evt.key = window.fKeyPressed
   if evt.key == Key_None:
     echo "Unkown key value: ", event.keyval
     return
-
   evt.character = $event.`string`
-  evt.unicode = unicode
-
+  evt.unicode = gdk_keyval_to_unicode(event.keyval)
   try:
     window.handleKeyDownEvent(evt)
-    result = evt.cancel
   except:
     handleException()
+  result = evt.cancel
 
 proc pControlKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
-
-  # echo "control keyPressCallback"
-
-  # echo $gdk_keyval_to_unicode(event.keyval)
-  var unicode = gdk_keyval_to_unicode(event.keyval)
-
-  # if unicode == 0:
-    # unicode = event.keyval
-
   let control = cast[ControlImpl](data)
+  control.fKeyPressed = pKeyvalToKey(event.keyval)
+  if gtk_im_context_filter_keypress(control.fIMContext, event) and control.fKeyPressed == Key_None:
+    return
   var evt = new ControlKeyEvent
   evt.control = control
-  evt.key = pKeyvalToKey(event.keyval)
+  evt.key = control.fKeyPressed
   if evt.key == Key_None:
     echo "Unkown key value: ", event.keyval
     return
   evt.character = $event.`string`
-  evt.unicode = unicode
-
+  evt.unicode = gdk_keyval_to_unicode(event.keyval)
   try:
     control.handleKeyDownEvent(evt)
   except:
     handleException()
+  result = evt.cancel
 
-  return evt.cancel
+proc pWindowIMContextCommitSignal(context: pointer, str: cstring, data: pointer) {.cdecl.} =
+  let window = cast[WindowImpl](data)
+  var evt = new WindowKeyEvent
+  evt.window = window
+  evt.character = $str
+  evt.unicode = evt.character.runeAt(0).toUpper().int
+  evt.key = window.fKeyPressed
+  window.fKeyPressed = Key_None
+  try:
+    window.handleKeyDownEvent(evt)
+  except:
+    handleException()
+
+proc pControlIMContextCommitSignal(context: pointer, str: cstring, data: pointer) {.cdecl.} =
+  let control = cast[ControlImpl](data)
+  var evt = new ControlKeyEvent
+  evt.control = control
+  evt.character = $str
+  evt.unicode = evt.character.runeAt(0).toUpper().int
+  evt.key = control.fKeyPressed
+  control.fKeyPressed = Key_None
+  try:
+    control.handleKeyDownEvent(evt)
+  except:
+    handleException()
 
 method focus(control: ControlImpl) =
   gtk_widget_grab_focus(control.fHandle)
@@ -618,6 +628,9 @@ proc init(window: WindowImpl) =
     gtk_scrolled_window_set_policy(window.fInnerHandle, GTK_POLICY_ALWAYS, GTK_POLICY_ALWAYS)
     discard g_signal_connect_data(window.fInnerHandle, "draw", pMainScrollbarDraw, nil)
 
+  window.fIMContext = gtk_im_multicontext_new()
+  discard g_signal_connect_data(window.fIMContext, "commit", pWindowIMContextCommitSignal, cast[pointer](window))
+
 method destroy(window: WindowImpl) =
   procCall window.Window.destroy()
   gtk_widget_destroy(window.fHandle)
@@ -757,6 +770,9 @@ proc init(control: ControlImpl) =
 
   gtk_widget_add_events(control.fHandle, GDK_BUTTON_RELEASE_MASK)
   discard g_signal_connect_data(control.fHandle, "button-release-event", pControlButtonReleaseSignal, cast[pointer](control))
+
+  control.fIMContext = gtk_im_multicontext_new()
+  discard g_signal_connect_data(control.fIMContext, "commit", pControlIMContextCommitSignal, cast[pointer](control))
 
   procCall control.Control.init()
 
