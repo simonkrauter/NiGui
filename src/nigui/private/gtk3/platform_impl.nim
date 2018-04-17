@@ -488,7 +488,7 @@ method `fontFamily=`(canvas: CanvasImpl, fontFamily: string) =
   procCall canvas.Canvas.`fontFamily=`(fontFamily)
   canvas.fFont = nil
 
-method `fontSize=`(canvas: CanvasImpl, fontSize: int) =
+method `fontSize=`(canvas: CanvasImpl, fontSize: float) =
   procCall canvas.Canvas.`fontSize=`(fontSize)
   canvas.fFont = nil
 
@@ -914,7 +914,7 @@ method setFontFamily(control: ControlImpl, fontFamily: string) =
   procCall control.Control.setFontFamily(fontFamily)
   control.pUpdateFont()
 
-method setFontSize(control: ControlImpl, fontSize: int) =
+method setFontSize(control: ControlImpl, fontSize: float) =
   procCall control.Control.setFontSize(fontSize)
   control.pUpdateFont()
 

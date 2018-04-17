@@ -535,7 +535,7 @@ proc pUpdateFont(canvas: Canvas) =
   if canvasImpl.fFont == nil:
     var fontFamily: pointer
     pCheckGdiplusStatus(GdipCreateFontFamilyFromName(canvas.fontFamily.pUtf8ToUtf16(), nil, fontFamily))
-    pCheckGdiplusStatus(GdipCreateFont(fontFamily, canvas.fontSize.float, 0, UnitPixel, canvasImpl.fFont))
+    pCheckGdiplusStatus(GdipCreateFont(fontFamily, canvas.fontSize, 0, UnitPixel, canvasImpl.fFont))
     pCheckGdiplusStatus(GdipDeleteFontFamily(fontFamily))
 
 proc pDeleteFont(canvas: CanvasImpl) =
@@ -633,7 +633,7 @@ method `fontFamily=`(canvas: CanvasImpl, fontFamily: string) =
   procCall canvas.Canvas.`fontFamily=`(fontFamily)
   canvas.pDeleteFont()
 
-method `fontSize=`(canvas: CanvasImpl, fontSize: int) =
+method `fontSize=`(canvas: CanvasImpl, fontSize: float) =
   procCall canvas.Canvas.`fontSize=`(fontSize)
   canvas.pDeleteFont()
 
@@ -960,7 +960,7 @@ method setFontFamily(control: ControlImpl, fontFamily: string) =
   procCall control.Control.setFontFamily(fontFamily)
   control.pUpdateFont()
 
-method setFontSize(control: ControlImpl, fontSize: int) =
+method setFontSize(control: ControlImpl, fontSize: float) =
   procCall control.Control.setFontSize(fontSize)
   control.pUpdateFont()
 

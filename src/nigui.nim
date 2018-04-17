@@ -177,7 +177,7 @@ type
     fXScrollPos, fYScrollPos: int
     fScrollableWidth, fScrollableHeight: int
     fFontFamily: string
-    fFontSize: int
+    fFontSize: float
     fTextColor: Color
     fBackgroundColor: Color
     fUseDefaultFontFamily: bool
@@ -201,7 +201,7 @@ type
     fWidth: int
     fHeight: int
     fFontFamily: string
-    fFontSize: int
+    fFontSize: float
     fTextColor: Color
     fLineColor: Color
     fAreaColor: Color
@@ -370,8 +370,8 @@ proc `defaultTextColor=`*(app: App, color: Color)
 proc defaultFontFamily*(app: App): string
 proc `defaultFontFamily=`*(app: App, fontFamily: string)
 
-proc defaultFontSize*(app: App): int
-proc `defaultFontSize=`*(app: App, fontSize: int)
+proc defaultFontSize*(app: App): float
+proc `defaultFontSize=`*(app: App, fontSize: float)
 
 proc clipboardText*(app: App): string
 proc `clipboardText=`*(app: App, text: string)
@@ -433,8 +433,8 @@ method height*(canvas: Canvas): int
 method fontFamily*(canvas: Canvas): string
 method `fontFamily=`*(canvas: Canvas, fontFamily: string)
 
-method fontSize*(canvas: Canvas): int
-method `fontSize=`*(canvas: Canvas, fontSize: int)
+method fontSize*(canvas: Canvas): float
+method `fontSize=`*(canvas: Canvas, fontSize: float)
 
 method textColor*(canvas: Canvas): Color
 method `textColor=`*(canvas: Canvas, color: Color)
@@ -677,9 +677,9 @@ method `fontFamily=`*(control: Control, fontFamily: string)
 method setFontFamily*(control: Control, fontFamily: string)
 method resetFontFamily*(control: Control)
 
-method fontSize*(control: Control): int
-method `fontSize=`*(control: Control, fontSize: int)
-method setFontSize*(control: Control, fontSize: int)
+method fontSize*(control: Control): float
+method `fontSize=`*(control: Control, fontSize: float)
+method setFontSize*(control: Control, fontSize: float)
 method resetFontSize*(control: Control)
 
 method backgroundColor*(control: Control): Color
@@ -916,7 +916,7 @@ var fScrollbarSize = -1
 var fDefaultBackgroundColor: Color # initialized by platform-specific init()
 var fDefaultTextColor: Color # initialized by platform-specific init()
 var fDefaultFontFamily = ""
-var fDefaultFontSize = 15
+var fDefaultFontSize = 15.float
 
 
 # ----------------------------------------------------------------------------------------
@@ -1014,7 +1014,7 @@ proc `defaultFontFamily=`(app: App, fontFamily: string) =
     if control != nil:
       control.updateFontFamily()
 
-proc defaultFontSize(app: App): int = fDefaultFontSize
+proc defaultFontSize(app: App): float = fDefaultFontSize
 
 proc updateFontSize(control: Control) =
   if control.fUseDefaultFontSize and control.fontSize != fDefaultFontSize:
@@ -1022,7 +1022,7 @@ proc updateFontSize(control: Control) =
   for child in control.childControls:
     child.updateFontSize()
 
-proc `defaultFontSize=`(app: App, fontSize: int) =
+proc `defaultFontSize=`(app: App, fontSize: float) =
   fDefaultFontSize = fontSize
   for window in windowList:
     let control = window.control
@@ -1074,9 +1074,9 @@ method fontFamily(canvas: Canvas): string = canvas.fFontFamily
 
 method `fontFamily=`(canvas: Canvas, fontFamily: string) = canvas.fFontFamily = fontFamily
 
-method fontSize(canvas: Canvas): int = canvas.fFontSize
+method fontSize(canvas: Canvas): float = canvas.fFontSize
 
-method `fontSize=`(canvas: Canvas, fontSize: int) = canvas.fFontSize = fontSize
+method `fontSize=`(canvas: Canvas, fontSize: float) = canvas.fFontSize = fontSize
 
 method textColor(canvas: Canvas): Color = canvas.fTextColor
 
@@ -1600,13 +1600,13 @@ method resetFontFamily(control: Control) =
   control.setFontFamily(fDefaultFontFamily)
   control.fUseDefaultFontFamily = true
 
-method fontSize(control: Control): int = control.fFontSize
+method fontSize(control: Control): float = control.fFontSize
 
-method `fontSize=`(control: Control, fontSize: int) =
+method `fontSize=`(control: Control, fontSize: float) =
   control.setFontSize(fontSize)
   control.fUseDefaultFontSize = false
 
-method setFontSize(control: Control, fontSize: int) =
+method setFontSize(control: Control, fontSize: float) =
   control.fFontSize = fontSize
   control.triggerRelayoutIfModeIsAuto()
   # should be extended by ControlImpl

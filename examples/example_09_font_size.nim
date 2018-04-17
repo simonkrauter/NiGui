@@ -15,10 +15,10 @@ for i in 12..20:
   container.add(innerContainer)
   innerContainer.frame = newFrame("Font size: " & $i)
   var button = newButton("Button")
-  button.fontSize = i
+  button.fontSize = i.float
   innerContainer.add(button)
   var label = newLabel("Label")
-  label.fontSize = i
+  label.fontSize = i.float
   innerContainer.add(label)
 
 window.show()
