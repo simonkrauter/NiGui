@@ -1348,7 +1348,7 @@ proc init(control: Control) =
 
 method destroy(control: Control) =
   discard # nothing to do here
-  # should be extended by WindowImpl
+  # should be extended by ControlImpl
 
 proc dispose(control: var Control) =
   let c = control
