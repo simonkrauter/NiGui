@@ -334,8 +334,6 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
 
 proc pContainerWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.}
 
-proc pCommonControlWndProc(origWndProc, hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer
-
 proc pCustomControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.}
 
 proc pInitGdiplus() =
@@ -982,7 +980,7 @@ method getTextLineWidth(control: ControlImpl, text: string): int = control.pGetT
 
 method getTextLineHeight(control: ControlImpl): int = control.pGetTextSize("a").cy
 
-proc pCommonControlWndProc_Scroll(origWndProc, hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer =
+proc pCommonControlWndProc_Scroll(hWnd: pointer, uMsg: int32, wParam, lParam: pointer) =
   const lineSize = 15
   case wParam.loWord
   of SB_THUMBPOSITION, SB_THUMBTRACK:
@@ -1019,7 +1017,12 @@ proc pCommonControlWndProc_Scroll(origWndProc, hWnd: pointer, uMsg: int32, wPara
   else:
     discard
 
-proc pCommonControlWndProc(origWndProc, hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer =
+type PWndProcResult = enum
+  PWndProcResult_CallOrigWndProc
+  PWndProcResult_False
+  PWndProcResult_True
+
+proc pCommonControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): PWndProcResult =
   case uMsg
 
   # Note: A WM_KEYDOWN is sent for every key, for some (mostly visual) keys WM_CHAR is sent in addition.
@@ -1030,12 +1033,12 @@ proc pCommonControlWndProc(origWndProc, hWnd: pointer, uMsg: int32, wParam, lPar
   of WM_KEYDOWN:
     let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if control != nil and pHandleWMKEYDOWN(control.parentWindow, control, wParam, lParam):
-      return nil
+      return PWndProcResult_False
 
   of WM_CHAR:
     let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if control != nil and pHandleWMCHAR(control.parentWindow, control, wParam, lParam):
-      return nil
+      return PWndProcResult_False
 
   # of WM_KEYUP:
     # return nil # key is still inserted in text area
@@ -1086,10 +1089,30 @@ proc pCommonControlWndProc(origWndProc, hWnd: pointer, uMsg: int32, wParam, lPar
           clickEvent.control = control
           control.handleClickEvent(clickEvent)
   of WM_HSCROLL, WM_VSCROLL:
-    result = pCommonControlWndProc_Scroll(origWndProc, hWnd, uMsg, wParam, lParam)
+    pCommonControlWndProc_Scroll(hWnd, uMsg, wParam, lParam)
   else:
     discard
-  result = CallWindowProcW(origWndProc, hWnd, uMsg, wParam, lParam)
+
+proc pTextControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): PWndProcResult =
+# Used for text box and text area
+  result = pCommonControlWndProc(hWnd, uMsg, wParam, lParam)
+  if result != PWndProcResult_CallOrigWndProc:
+    return
+
+  # Handle Ctrl+A:
+  if uMsg == WM_KEYDOWN and cast[char](wParam) == 'A' and GetKeyState(VK_CONTROL) <= -127:
+    discard SendMessageA(hwnd, EM_SETSEL, nil, cast[pointer](-1))
+    return PWndProcResult_False
+
+  # Prevent 'ding' sound when a character key together with Ctrl or Alt (but not both) is pressed:
+  if uMsg == WM_CHAR and GetKeyState(VK_CONTROL) <= -127 and GetKeyState(VK_MENU) >= 0:
+    return PWndProcResult_False
+  if uMsg == WM_SYSCOMMAND and GetKeyState(VK_MENU) <= -127 and GetKeyState(VK_CONTROL) >= 0:
+    return PWndProcResult_False
+
+  # Prevent special handling of Alt key, which produces a 'ding' sound:
+  if uMsg == WM_SYSKEYDOWN:
+    return PWndProcResult_False
 
 proc pCustomControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer =
   case uMsg
@@ -1118,13 +1141,18 @@ proc pCustomControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
     let scrolled = wParam.hiWord div 120
     echo "wheel: " & $scrolled
   of WM_ERASEBKGND:
-    return cast[pointer](true) # Allow flicker-Free drawing
+    return cast[pointer](true) # Allow flicker-free drawing
   of WM_SETFOCUS:
     # echo "control WM_SETFOCUS"
     discard
   else:
     discard
-  result = pCommonControlWndProc(pCommonWndProc, hWnd, uMsg, wParam, lParam)
+  let comProcRes = pCommonControlWndProc(hWnd, uMsg, wParam, lParam)
+  if comProcRes == PWndProcResult_False:
+    return cast[pointer](false)
+  if comProcRes == PWndProcResult_True:
+    return cast[pointer](true)
+  result = CallWindowProcW(pCommonWndProc, hWnd, uMsg, wParam, lParam)
 
 
 # ----------------------------------------------------------------------------------------
@@ -1232,7 +1260,12 @@ proc pButtonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
       button.handleClickEvent(event)
   else:
     discard
-  result = pCommonControlWndProc(pButtonOrigWndProc, hWnd, uMsg, wParam, lParam)
+  let comProcRes = pCommonControlWndProc(hWnd, uMsg, wParam, lParam)
+  if comProcRes == PWndProcResult_False:
+    return cast[pointer](false)
+  if comProcRes == PWndProcResult_True:
+    return cast[pointer](true)
+  result = CallWindowProcW(pButtonOrigWndProc, hWnd, uMsg, wParam, lParam)
 
 proc init(button: NativeButton) =
   button.fHandle = pCreateWindowExWithUserdata("BUTTON", WS_CHILD or WS_TABSTOP, 0, pDefaultParentWindow, cast[pointer](button))
@@ -1269,7 +1302,17 @@ method `text=`(label: NativeLabel, text: string) =
 var pTextBoxOrigWndProc: pointer
 
 proc pTextBoxWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
-  result = pCommonControlWndProc(pTextBoxOrigWndProc, hWnd, uMsg, wParam, lParam)
+  let comProcRes = pTextControlWndProc(hWnd, uMsg, wParam, lParam)
+  if comProcRes == PWndProcResult_False:
+    return cast[pointer](false)
+  if comProcRes == PWndProcResult_True:
+    return cast[pointer](true)
+
+  # Prevent 'ding' sound when a useless character is pressed:
+  if uMsg == WM_CHAR and cast[Key](wParam) in [Key_Tab, Key_Return, Key_Escape]:
+    return nil
+
+  result = CallWindowProcW(pTextBoxOrigWndProc, hWnd, uMsg, wParam, lParam)
 
 proc init(textBox: NativeTextBox) =
   textBox.fHandle = pCreateWindowExWithUserdata("EDIT", WS_CHILD or WS_TABSTOP, WS_EX_CLIENTEDGE, pDefaultParentWindow, cast[pointer](textBox))
@@ -1320,12 +1363,13 @@ method `selectionEnd=`(textBox: NativeTextBox, selectionEnd: int) =
 var pTextAreaOrigWndProc: pointer
 
 proc pTextAreaWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
-  # Handle Ctrl+A:
-  # TODO: Move this to handleKeyDownEvent(), so it's overridable by the control
-  if uMsg == WM_KEYDOWN and cast[char](wParam) == 'A' and GetKeyState(VK_CONTROL) <= -127:
-    discard SendMessageA(hwnd, EM_SETSEL, nil, cast[pointer](-1))
-    return nil
-  result = pCommonControlWndProc(pTextAreaOrigWndProc, hWnd, uMsg, wParam, lParam)
+  let comProcRes = pTextControlWndProc(hWnd, uMsg, wParam, lParam)
+  if comProcRes == PWndProcResult_False:
+    return cast[pointer](false)
+  if comProcRes == PWndProcResult_True:
+    return cast[pointer](true)
+
+  result = CallWindowProcW(pTextAreaOrigWndProc, hWnd, uMsg, wParam, lParam)
 
 proc init(textArea: NativeTextArea) =
   var dwStyle: int32 = WS_CHILD or ES_MULTILINE or WS_VSCROLL # with wrap
