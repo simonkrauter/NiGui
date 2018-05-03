@@ -1110,8 +1110,8 @@ proc pTextControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): P
   if uMsg == WM_SYSCOMMAND and GetKeyState(VK_MENU) <= -127 and GetKeyState(VK_CONTROL) >= 0:
     return PWndProcResult_False
 
-  # Prevent special handling of Alt key, which produces a 'ding' sound:
-  if uMsg == WM_SYSKEYDOWN:
+  # Prevent special handling of sole Alt key press, which produces a 'ding' sound on next character key press:
+  if uMsg == WM_SYSKEYDOWN and cast[int](wParam) == VK_MENU:
     return PWndProcResult_False
 
 proc pCustomControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer =
