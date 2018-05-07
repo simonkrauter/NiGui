@@ -159,7 +159,7 @@ proc pDefaultControlButtonPressSignal(widget: pointer, event: var GdkEventButton
   let control = cast[ControlImpl](data)
   let x = event.x.int
   let y = event.y.int
-  var evt = new MouseButtonEvent
+  var evt = new MouseEvent
   evt.control = control
   case event.button
   of 1: evt.button = MouseButton_Left
@@ -190,7 +190,7 @@ proc pControlButtonReleaseSignal(widget: pointer, event: var GdkEventButton, dat
   let y = event.y.int
   if not (x >= 0 and x < control.width and y >= 0 and y < control.height):
     return
-  var evt = new MouseButtonEvent
+  var evt = new MouseEvent
   evt.control = control
   case event.button
   of 1: evt.button = MouseButton_Left

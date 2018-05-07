@@ -1065,7 +1065,7 @@ proc pCommonControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
       of WM_RBUTTONDOWN: button = MouseButton_Right
       of WM_MBUTTONDOWN: button = MouseButton_Middle
       else: discard
-      var event = new MouseButtonEvent
+      var event = new MouseEvent
       event.control = control
       event.button = button
       event.x = x
@@ -1087,7 +1087,7 @@ proc pCommonControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
         of WM_RBUTTONUP: button = MouseButton_Right
         of WM_MBUTTONUP: button = MouseButton_Middle
         else: discard
-        var event = new MouseButtonEvent
+        var event = new MouseEvent
         event.control = control
         event.button = button
         event.x = x

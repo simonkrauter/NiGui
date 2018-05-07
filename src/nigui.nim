@@ -253,12 +253,12 @@ type
     control*: Control
   DrawProc* = proc(event: DrawEvent)
 
-  MouseButtonEvent* = ref object
+  MouseEvent* = ref object
     control*: Control
     button*: MouseButton
     x*: int
     y*: int
-  MouseButtonProc* = proc(event: MouseButtonEvent)
+  MouseButtonProc* = proc(event: MouseEvent)
 
   ClickEvent* = ref object
     control*: Control
@@ -697,9 +697,9 @@ method canvas*(control: Control): Canvas
 
 method handleDrawEvent*(control: Control, event: DrawEvent)
 
-method handleMouseButtonDownEvent*(control: Control, event: MouseButtonEvent)
+method handleMouseButtonDownEvent*(control: Control, event: MouseEvent)
 
-method handleMouseButtonUpEvent*(control: Control, event: MouseButtonEvent)
+method handleMouseButtonUpEvent*(control: Control, event: MouseEvent)
 
 method handleClickEvent*(control: Control, event: ClickEvent)
 
@@ -1656,13 +1656,13 @@ method handleDrawEvent(control: Control, event: DrawEvent) =
   if callback != nil:
     callback(event)
 
-method handleMouseButtonDownEvent(control: Control, event: MouseButtonEvent) =
+method handleMouseButtonDownEvent(control: Control, event: MouseEvent) =
   # can be implemented by custom control
   let callback = control.onMouseButtonDown
   if callback != nil:
     callback(event)
 
-method handleMouseButtonUpEvent(control: Control, event: MouseButtonEvent) =
+method handleMouseButtonUpEvent(control: Control, event: MouseEvent) =
   # can be implemented by custom control
   let callback = control.onMouseButtonUp
   if callback != nil:
