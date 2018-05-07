@@ -102,7 +102,7 @@ proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointe
     window.handleKeyDownEvent(evt)
   except:
     handleException()
-  result = evt.cancel
+  result = evt.handled
 
 proc pControlKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
   let control = cast[ControlImpl](data)
@@ -121,7 +121,7 @@ proc pControlKeyPressSignal(widget: pointer, event: var GdkEventKey, data: point
     control.handleKeyDownEvent(evt)
   except:
     handleException()
-  result = evt.cancel
+  result = evt.handled
 
 proc pWindowIMContextCommitSignal(context: pointer, str: cstring, data: pointer) {.cdecl.} =
   let window = cast[WindowImpl](data)

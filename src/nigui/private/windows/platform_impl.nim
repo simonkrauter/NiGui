@@ -243,7 +243,7 @@ proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int): b
   windowEvent.character = unicode.pUnicodeCharToUtf8
 
   window.handleKeyDownEvent(windowEvent)
-  if windowEvent.cancel:
+  if windowEvent.handled:
     return true
 
   if control != nil:
@@ -253,7 +253,7 @@ proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int): b
     controlEvent.unicode = windowEvent.unicode
     controlEvent.character = windowEvent.character
     control.handleKeyDownEvent(controlEvent)
-    if controlEvent.cancel:
+    if controlEvent.handled:
       return true
 
     # Tabstop:

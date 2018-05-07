@@ -240,7 +240,7 @@ type
     key*: Key
     unicode*: int
     character*: string # UTF-8 character
-    cancel*: bool
+    handled*: bool
   KeyboardProc* = proc(event: KeyboardEvent)
 
   # Control events:
