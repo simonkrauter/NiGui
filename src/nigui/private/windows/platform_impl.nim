@@ -232,7 +232,7 @@ proc pVirtualKeyToKey(keyval, scancode: int32): Key =
   else: result = cast[Key](keyval.unicodeToUpper)
 
 proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int): bool =
-  var windowEvent = new WindowKeyEvent
+  var windowEvent = new KeyboardEvent
   windowEvent.window = window
   windowEvent.key = pKeyDownKey
   if windowEvent.key == Key_None:
@@ -247,7 +247,7 @@ proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int): b
     return true
 
   if control != nil:
-    var controlEvent = new ControlKeyEvent
+    var controlEvent = new KeyboardEvent
     controlEvent.control = control
     controlEvent.key = windowEvent.key
     controlEvent.unicode = windowEvent.unicode
@@ -265,14 +265,7 @@ proc pHandleWMKEYDOWN(window: Window, control: Control, wParam, lParam: pointer)
   # Save the key for WM_CHAR, because WM_CHAR only gets the key combined with the dead key state
   var widestring = newString(2)
   let scancode = (cast[int32](lParam) and 0x00FF0000) shr 16
-
-  # echo scancode
-  # echo cast[int](wParam)
-
-
   pKeyDownKey = pVirtualKeyToKey(cast[int32](wParam), scancode)
-
-
   if cast[int](wParam) == VK_OEM_5:
     # When the dead key "^" on German keyboard is pressed, don't call ToUnicode(), because this would destroy the dead key state
     pKeyDownKey = Key_Circumflex

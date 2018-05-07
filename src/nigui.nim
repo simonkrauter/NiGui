@@ -163,7 +163,7 @@ type
     fOnCloseClick: CloseClickProc
     fOnResize: ResizeProc
     fOnDropFiles: DropFilesProc
-    fOnKeyDown: WindowKeyProc
+    fOnKeyDown: KeyboardProc
 
   # Control base type:
 
@@ -197,7 +197,7 @@ type
     fOnMouseButtonUp: MouseButtonProc
     fOnClick: ClickProc
     # fOnMouseMove: MouseMoveProc
-    fOnKeyDown: ControlKeyProc
+    fOnKeyDown: KeyboardProc
     fOnTextChange: TextChangeProc
     tag*: string
 
@@ -234,13 +234,14 @@ type
     files*: seq[string]
   DropFilesProc* = proc(event: DropFilesEvent)
 
-  WindowKeyEvent* = ref object
+  KeyboardEvent* = ref object
     window*: Window
+    control*: Control
     key*: Key
     unicode*: int
     character*: string # UTF-8 character
     cancel*: bool
-  WindowKeyProc* = proc(event: WindowKeyEvent)
+  KeyboardProc* = proc(event: KeyboardEvent)
 
   # Control events:
 
@@ -262,14 +263,6 @@ type
   ClickEvent* = ref object
     control*: Control
   ClickProc* = proc(event: ClickEvent)
-
-  ControlKeyEvent* = ref object
-    control*: Control
-    key*: Key
-    unicode*: int
-    character*: string # UTF-8 character
-    cancel*: bool
-  ControlKeyProc* = proc(event: ControlKeyEvent)
 
   TextChangeEvent* = ref object
     control*: Control
@@ -563,7 +556,7 @@ method closeClick*(window: Window)
 
 method handleResizeEvent*(window: Window, event: ResizeEvent)
 
-method handleKeyDownEvent*(window: Window, event: WindowKeyEvent)
+method handleKeyDownEvent*(window: Window, event: KeyboardEvent)
 
 method handleDropFilesEvent*(window: Window, event: DropFilesEvent)
 
@@ -579,8 +572,8 @@ method `onResize=`*(window: Window, callback: ResizeProc)
 method onDropFiles*(window: Window): DropFilesProc
 method `onDropFiles=`*(window: Window, callback: DropFilesProc)
 
-method onKeyDown*(window: Window): WindowKeyProc
-method `onKeyDown=`*(window: Window, callback: WindowKeyProc)
+method onKeyDown*(window: Window): KeyboardProc
+method `onKeyDown=`*(window: Window, callback: KeyboardProc)
 
 
 # ----------------------------------------------------------------------------------------
@@ -710,7 +703,7 @@ method handleMouseButtonUpEvent*(control: Control, event: MouseButtonEvent)
 
 method handleClickEvent*(control: Control, event: ClickEvent)
 
-method handleKeyDownEvent*(control: Control, event: ControlKeyEvent)
+method handleKeyDownEvent*(control: Control, event: KeyboardEvent)
 
 method handleTextChangeEvent*(control: Control, event: TextChangeEvent)
 
@@ -729,8 +722,8 @@ method `onMouseButtonUp=`*(control: Control, callback: MouseButtonProc)
 method onClick*(control: Control): ClickProc
 method `onClick=`*(control: Control, callback: ClickProc)
 
-method onKeyDown*(control: Control): ControlKeyProc
-method `onKeyDown=`*(control: Control, callback: ControlKeyProc)
+method onKeyDown*(control: Control): KeyboardProc
+method `onKeyDown=`*(control: Control, callback: KeyboardProc)
 
 method onTextChange*(control: Control): TextChangeProc
 method `onTextChange=`*(control: Control, callback: TextChangeProc)
@@ -1306,7 +1299,7 @@ method handleDropFilesEvent(window: Window, event: DropFilesEvent) =
   if callback != nil:
     callback(event)
 
-method handleKeyDownEvent(window: Window, event: WindowKeyEvent) =
+method handleKeyDownEvent(window: Window, event: KeyboardEvent) =
   # can be overriden by custom window
   let callback = window.onKeyDown
   if callback != nil:
@@ -1324,8 +1317,8 @@ method `onResize=`(window: Window, callback: ResizeProc) = window.fOnResize = ca
 method onDropFiles(window: Window): DropFilesProc = window.fOnDropFiles
 method `onDropFiles=`(window: Window, callback: DropFilesProc) = window.fOnDropFiles = callback
 
-method onKeyDown(window: Window): WindowKeyProc = window.fOnKeyDown
-method `onKeyDown=`(window: Window, callback: WindowKeyProc) = window.fOnKeyDown = callback
+method onKeyDown(window: Window): KeyboardProc = window.fOnKeyDown
+method `onKeyDown=`(window: Window, callback: KeyboardProc) = window.fOnKeyDown = callback
 
 
 
@@ -1681,7 +1674,7 @@ method handleClickEvent(control: Control, event: ClickEvent) =
   if callback != nil:
     callback(event)
 
-method handleKeyDownEvent(control: Control, event: ControlKeyEvent) =
+method handleKeyDownEvent(control: Control, event: KeyboardEvent) =
   # can be implemented by custom control
   let callback = control.onKeyDown
   if callback != nil:
@@ -1708,8 +1701,8 @@ method `onMouseButtonUp=`(control: Control, callback: MouseButtonProc) = control
 method onClick(control: Control): ClickProc = control.fOnClick
 method `onClick=`(control: Control, callback: ClickProc) = control.fOnClick = callback
 
-method onKeyDown(control: Control): ControlKeyProc = control.fOnKeyDown
-method `onKeyDown=`(control: Control, callback: ControlKeyProc) = control.fOnKeyDown = callback
+method onKeyDown(control: Control): KeyboardProc = control.fOnKeyDown
+method `onKeyDown=`(control: Control, callback: KeyboardProc) = control.fOnKeyDown = callback
 
 method onTextChange(control: Control): TextChangeProc = control.fOnTextChange
 method `onTextChange=`(control: Control, callback: TextChangeProc) = control.fOnTextChange = callback

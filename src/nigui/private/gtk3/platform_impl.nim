@@ -90,7 +90,7 @@ proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointe
   window.fKeyPressed = pKeyvalToKey(event.keyval)
   if gtk_im_context_filter_keypress(window.fIMContext, event) and window.fKeyPressed == Key_None:
     return
-  var evt = new WindowKeyEvent
+  var evt = new KeyboardEvent
   evt.window = window
   evt.key = window.fKeyPressed
   if evt.key == Key_None:
@@ -109,7 +109,7 @@ proc pControlKeyPressSignal(widget: pointer, event: var GdkEventKey, data: point
   control.fKeyPressed = pKeyvalToKey(event.keyval)
   if gtk_im_context_filter_keypress(control.fIMContext, event) and control.fKeyPressed == Key_None:
     return
-  var evt = new ControlKeyEvent
+  var evt = new KeyboardEvent
   evt.control = control
   evt.key = control.fKeyPressed
   if evt.key == Key_None:
@@ -125,7 +125,7 @@ proc pControlKeyPressSignal(widget: pointer, event: var GdkEventKey, data: point
 
 proc pWindowIMContextCommitSignal(context: pointer, str: cstring, data: pointer) {.cdecl.} =
   let window = cast[WindowImpl](data)
-  var evt = new WindowKeyEvent
+  var evt = new KeyboardEvent
   evt.window = window
   evt.character = $str
   evt.unicode = evt.character.runeAt(0).toUpper().int
@@ -138,7 +138,7 @@ proc pWindowIMContextCommitSignal(context: pointer, str: cstring, data: pointer)
 
 proc pControlIMContextCommitSignal(context: pointer, str: cstring, data: pointer) {.cdecl.} =
   let control = cast[ControlImpl](data)
-  var evt = new ControlKeyEvent
+  var evt = new KeyboardEvent
   evt.control = control
   evt.character = $str
   evt.unicode = evt.character.runeAt(0).toUpper().int

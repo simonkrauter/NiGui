@@ -9,7 +9,7 @@ var window = newWindow()
 var label = newLabel()
 window.add(label)
 
-window.onKeyDown = proc(event: WindowKeyEvent) =
+window.onKeyDown = proc(event: KeyboardEvent) =
   label.text = label.text & "KeyDown event: key: " & $event.key & ", unicode: " & $event.unicode & ", character: " & event.character & "\n"
 
 window.show()
