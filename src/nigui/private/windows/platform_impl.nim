@@ -231,7 +231,34 @@ proc pVirtualKeyToKey(keyval, scancode: int32): Key =
   of VK_DELETE: result = Key_Delete
   else: result = cast[Key](keyval.unicodeToUpper)
 
+proc pWMParamsToKey(wParam, lParam: pointer): Key =
+  case cast[int32](wParam)
+  of VK_CONTROL, VK_SHIFT, VK_MENU:
+    let scancode = (cast[int32](lParam) and 0x00FF0000) shr 16
+    case MapVirtualKeyW(scancode, MAPVK_VSC_TO_VK_EX)
+    of VK_LCONTROL: result = Key_ControlL
+    of VK_RCONTROL: result = Key_ControlR
+    of VK_LSHIFT: result = Key_ShiftL
+    of VK_RSHIFT: result = Key_ShiftR
+    of VK_LMENU: result = Key_AltL
+    of VK_RMENU: result = Key_AltR
+    else: discard
+  of VK_PRIOR: result = Key_PageUp
+  of VK_NEXT: result = Key_PageDown
+  of VK_END: result = Key_End
+  of VK_HOME: result = Key_Home
+  of VK_LEFT: result = Key_Left
+  of VK_UP: result = Key_Up
+  of VK_RIGHT: result = Key_Right
+  of VK_DOWN: result = Key_Down
+  of VK_INSERT: result = Key_Insert
+  of VK_DELETE: result = Key_Delete
+  of VK_OEM_5: result = Key_Circumflex
+  else: result = cast[Key](cast[int32](wParam).unicodeToUpper)
+
 proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int): bool =
+  internalKeyDown(pKeyDownKey)
+
   var windowEvent = new KeyboardEvent
   windowEvent.window = window
   windowEvent.key = pKeyDownKey
@@ -262,17 +289,17 @@ proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int): b
 
 proc pHandleWMKEYDOWN(window: Window, control: Control, wParam, lParam: pointer): bool =
   if not GetKeyboardState(pKeyState): pRaiseLastOSError()
+
+  pKeyDownKey = pWMParamsToKey(wParam, lParam)
   # Save the key for WM_CHAR, because WM_CHAR only gets the key combined with the dead key state
-  var widestring = newString(2)
-  let scancode = (cast[int32](lParam) and 0x00FF0000) shr 16
-  pKeyDownKey = pVirtualKeyToKey(cast[int32](wParam), scancode)
-  if cast[int](wParam) == VK_OEM_5:
+
+  if pKeyDownKey != Key_Circumflex:
     # When the dead key "^" on German keyboard is pressed, don't call ToUnicode(), because this would destroy the dead key state
-    pKeyDownKey = Key_Circumflex
-    return pHandleWMKEYDOWNOrWMCHAR(window, control, 0)
-  let ret = ToUnicode(cast[int](wParam).int32, scancode, pKeyState, widestring, 1, 0)
-  if ret == 1:
-    return # Unicode characters are handled by WM_CHAR
+    let scancode = (cast[int32](lParam) and 0x00FF0000) shr 16
+    var widestring = newString(2)
+    let ret = ToUnicode(cast[int](wParam).int32, scancode, pKeyState, widestring, 1, 0)
+    if ret == 1:
+      return # Unicode characters are handled by WM_CHAR
   result = pHandleWMKEYDOWNOrWMCHAR(window, control, 0)
 
 proc pHandleWMCHAR(window: Window, control: Control, wParam, lParam: pointer): bool =
@@ -324,6 +351,8 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
     let window = cast[Window](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if window != nil and pHandleWMKEYDOWN(window, nil, wParam, lParam):
       return
+  of WM_KEYUP:
+    internalKeyUp(pWMParamsToKey(wParam, lParam))
   of WM_CHAR:
     let window = cast[Window](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if window != nil and pHandleWMCHAR(window, nil, wParam, lParam):
@@ -1043,6 +1072,9 @@ proc pCommonControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
     let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if control != nil and pHandleWMKEYDOWN(control.parentWindow, control, wParam, lParam):
       return PWndProcResult_False
+
+  of WM_KEYUP:
+    internalKeyUp(pWMParamsToKey(wParam, lParam))
 
   of WM_CHAR:
     let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))

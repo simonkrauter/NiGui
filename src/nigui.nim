@@ -335,8 +335,9 @@ when useGtk():     include "nigui/private/gtk3/platform_types3"
 #                                    Global Variables
 # ----------------------------------------------------------------------------------------
 
-var quitOnLastWindowClose* = true
-var clickMaxXYMove* = 20
+var
+  quitOnLastWindowClose* = true
+  clickMaxXYMove* = 20
 
 # dummy type and object, needed to use get/set properties
 type App = object
@@ -376,6 +377,10 @@ proc clipboardText*(app: App): string
 proc `clipboardText=`*(app: App, text: string)
 
 proc rgb*(red, green, blue: byte, alpha: byte = 255): Color
+
+proc isDown*(key: Key): bool
+
+proc downKeys*(): seq[Key]
 
 
 # ----------------------------------------------------------------------------------------
@@ -907,15 +912,17 @@ import unicode
 #                                   Global Variables
 # ----------------------------------------------------------------------------------------
 
-var fErrorHandler: ErrorHandlerProc = nil
-var windowList: seq[Window] = @[]
-var fScrollbarSize = -1
+var
+  fErrorHandler: ErrorHandlerProc = nil
+  windowList: seq[Window] = @[]
+  fScrollbarSize = -1
+  fDownKeys: seq[Key] = @[]
 
-# Default style:
-var fDefaultBackgroundColor: Color # initialized by platform-specific init()
-var fDefaultTextColor: Color # initialized by platform-specific init()
-var fDefaultFontFamily = ""
-var fDefaultFontSize = 15.float
+  # Default style:
+  fDefaultBackgroundColor: Color # initialized by platform-specific init()
+  fDefaultTextColor: Color # initialized by platform-specific init()
+  fDefaultFontFamily = ""
+  fDefaultFontSize = 15.float
 
 
 # ----------------------------------------------------------------------------------------
@@ -1041,6 +1048,19 @@ proc newSaveFileDialog(): SaveFileDialog =
   result.defaultExtension = ""
   result.defaultName = ""
   result.file = ""
+
+proc isDown(key: Key): bool = fDownKeys.contains(key)
+
+proc downKeys(): seq[Key] = fDownKeys
+
+proc internalKeyDown(key: Key) =
+  if not fDownKeys.contains(key):
+    fDownKeys.add(key)
+
+proc internalKeyUp(key: Key) =
+  let i = fDownKeys.find(key)
+  if i != -1:
+    fDownKeys.delete(i)
 
 
 # ----------------------------------------------------------------------------------------

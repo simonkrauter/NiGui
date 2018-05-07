@@ -88,6 +88,7 @@ proc pKeyvalToKey(keyval: cint): Key =
 proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
   let window = cast[WindowImpl](data)
   window.fKeyPressed = pKeyvalToKey(event.keyval)
+  internalKeyDown(window.fKeyPressed)
   if gtk_im_context_filter_keypress(window.fIMContext, event) and window.fKeyPressed == Key_None:
     return
   var evt = new KeyboardEvent
@@ -103,6 +104,9 @@ proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointe
   except:
     handleException()
   result = evt.handled
+
+proc pWindowKeyReleaseSignal(widget: pointer, event: var GdkEventKey): bool {.cdecl.} =
+  internalKeyUp(pKeyvalToKey(event.keyval))
 
 proc pControlKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
   let control = cast[ControlImpl](data)
@@ -624,6 +628,7 @@ proc init(window: WindowImpl) =
   discard g_signal_connect_data(window.fHandle, "delete-event", pWindowDeleteSignal, cast[pointer](window))
   discard g_signal_connect_data(window.fHandle, "configure-event", pWindowConfigureSignal, cast[pointer](window))
   discard g_signal_connect_data(window.fHandle, "key-press-event", pWindowKeyPressSignal, cast[pointer](window))
+  discard g_signal_connect_data(window.fHandle, "key-release-event", pWindowKeyReleaseSignal, cast[pointer](window))
   discard g_signal_connect_data(window.fHandle, "window-state-event", pWindowStateEventSignal, cast[pointer](window))
 
   # Enable drag and drop of files:
