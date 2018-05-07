@@ -208,19 +208,28 @@ proc pCommonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
     discard
   result = DefWindowProcA(hWnd, uMsg, wParam, lParam)
 
-proc pVirtualKeyToKey(keyval: int): Key =
+proc pVirtualKeyToKey(keyval, scancode: int32): Key =
   case keyval
-  of 33: Key_PageUp
-  of 34: Key_PageDown
-  of 35: Key_End
-  of 36: Key_Home
-  of 37: Key_Left
-  of 38: Key_Up
-  of 39: Key_Right
-  of 40: Key_Down
-  of 45: Key_Insert
-  of 46: Key_Delete
-  else: cast[Key](keyval.unicodeToUpper)
+  of VK_CONTROL, VK_SHIFT, VK_MENU:
+    case MapVirtualKeyW(scancode, MAPVK_VSC_TO_VK_EX)
+    of VK_LCONTROL: result = Key_ControlL
+    of VK_RCONTROL: result = Key_ControlR
+    of VK_LSHIFT: result = Key_ShiftL
+    of VK_RSHIFT: result = Key_ShiftR
+    of VK_LMENU: result = Key_AltL
+    of VK_RMENU: result = Key_AltR
+    else: discard
+  of VK_PRIOR: result = Key_PageUp
+  of VK_NEXT: result = Key_PageDown
+  of VK_END: result = Key_End
+  of VK_HOME: result = Key_Home
+  of VK_LEFT: result = Key_Left
+  of VK_UP: result = Key_Up
+  of VK_RIGHT: result = Key_Right
+  of VK_DOWN: result = Key_Down
+  of VK_INSERT: result = Key_Insert
+  of VK_DELETE: result = Key_Delete
+  else: result = cast[Key](keyval.unicodeToUpper)
 
 proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int): bool =
   var windowEvent = new WindowKeyEvent
@@ -253,11 +262,18 @@ proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int): b
 
 proc pHandleWMKEYDOWN(window: Window, control: Control, wParam, lParam: pointer): bool =
   if not GetKeyboardState(pKeyState): pRaiseLastOSError()
-  pKeyDownKey = pVirtualKeyToKey(cast[int](wParam))
   # Save the key for WM_CHAR, because WM_CHAR only gets the key combined with the dead key state
   var widestring = newString(2)
-  let scancode = int32((cast[int](lParam) shr 8) and 0xFFFFFF00)
-  if scancode == 10496:
+  let scancode = (cast[int32](lParam) and 0x00FF0000) shr 16
+
+  # echo scancode
+  # echo cast[int](wParam)
+
+
+  pKeyDownKey = pVirtualKeyToKey(cast[int32](wParam), scancode)
+
+
+  if cast[int](wParam) == VK_OEM_5:
     # When the dead key "^" on German keyboard is pressed, don't call ToUnicode(), because this would destroy the dead key state
     pKeyDownKey = Key_Circumflex
     return pHandleWMKEYDOWNOrWMCHAR(window, control, 0)

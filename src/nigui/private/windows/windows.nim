@@ -89,8 +89,27 @@ const
   SW_RESTORE* = 9
   SWP_NOMOVE* = 2
   SWP_NOSIZE* = 1
+  VK_SHIFT* = 16
   VK_CONTROL* = 17
   VK_MENU* = 18
+  VK_PRIOR* = 33
+  VK_NEXT* = 34
+  VK_END* = 35
+  VK_HOME* = 36
+  VK_LEFT* = 37
+  VK_UP* = 38
+  VK_RIGHT* = 39
+  VK_DOWN* = 40
+  VK_SNAPSHOT* = 44
+  VK_INSERT* = 45
+  VK_DELETE* = 46
+  VK_LSHIFT* = 160
+  VK_RSHIFT* = 161
+  VK_LCONTROL* = 162
+  VK_RCONTROL* = 163
+  VK_LMENU* = 164
+  VK_RMENU* = 165
+  VK_OEM_5* = 220
   WM_ACTIVATE* = 0x0006
   WM_CHANGEUISTATE* = 0x0127
   WM_CHAR* = 258
@@ -165,6 +184,7 @@ const
   GMEM_MOVEABLE* = 2
   PixelFormat32bppARGB* = 2498570
   ImageLockModeWrite* = 2
+  MAPVK_VSC_TO_VK_EX* = 3
 
 
 
@@ -402,7 +422,7 @@ proc CloseClipboard*(): bool {.importc: "CloseClipboard", libUser32.}
 proc GetClipboardData*(uFormat: int32): pointer {.importc: "GetClipboardData", libUser32.}
 proc SetClipboardData*(uFormat: int32, hMem: pointer): pointer {.importc: "SetClipboardData", libUser32.}
 proc EmptyClipboard*(): bool {.importc: "EmptyClipboard", libUser32.}
-# proc MapVirtualKeyW*(uCode, uMapType: int32): int32 {.importc: "MapVirtualKeyW", libUser32.}
+proc MapVirtualKeyW*(uCode, uMapType: int32): int32 {.importc: "MapVirtualKeyW", libUser32.}
 
 when defined(cpu64):
   # Only available on 64-bit Windows:

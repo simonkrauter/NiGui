@@ -131,6 +131,12 @@ type
     Key_End
     Key_PageUp
     Key_PageDown
+    Key_ControlL
+    Key_ControlR
+    Key_AltL
+    Key_AltR
+    Key_ShiftL
+    Key_ShiftR
 
 const
   inactiveTimer* = 0

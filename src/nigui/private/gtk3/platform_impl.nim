@@ -77,6 +77,12 @@ proc pKeyvalToKey(keyval: cint): Key =
   of 65367: Key_End
   of 65365: Key_PageUp
   of 65366: Key_PageDown
+  of 65505: Key_ShiftL
+  of 65506: Key_ShiftR
+  of 65507: Key_ControlL
+  of 65508: Key_ControlR
+  of 65513: Key_AltL
+  of 65514: Key_AltR
   else: cast[Key](keyval.unicodeToUpper)
 
 proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
