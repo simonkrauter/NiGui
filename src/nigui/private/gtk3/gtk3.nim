@@ -81,6 +81,12 @@ type
     changed_mask*: cint
     new_window_state*: cint
 
+  GdkEventFocus* {.byCopy.} = object
+    event_type*: cint
+    window*: pointer
+    send_event*: int8
+    `in`*: int16
+
   GtkTextIter* {.byCopy.} = object
     dummy1: pointer
     dummy2: pointer

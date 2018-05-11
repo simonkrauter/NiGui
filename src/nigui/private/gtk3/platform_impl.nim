@@ -616,6 +616,9 @@ proc pWindowStateEventSignal(widget: pointer, event: var GdkEventWindowState, us
   let window = cast[WindowImpl](user_data)
   window.fMinimized = (event.new_window_state and GDK_WINDOW_STATE_ICONIFIED) == GDK_WINDOW_STATE_ICONIFIED
 
+proc pWindowFocusOutEventSignal(widget: pointer, event: var GdkEventFocus, user_data: pointer): bool {.cdecl.} =
+  internalAllKeysUp()
+
 proc init(window: WindowImpl) =
   if pClipboardPtr == nil:
     gtk_init(nil, nil)
@@ -630,6 +633,7 @@ proc init(window: WindowImpl) =
   discard g_signal_connect_data(window.fHandle, "key-press-event", pWindowKeyPressSignal, cast[pointer](window))
   discard g_signal_connect_data(window.fHandle, "key-release-event", pWindowKeyReleaseSignal, cast[pointer](window))
   discard g_signal_connect_data(window.fHandle, "window-state-event", pWindowStateEventSignal, cast[pointer](window))
+  discard g_signal_connect_data(window.fHandle, "focus-out-event", pWindowFocusOutEventSignal, cast[pointer](window))
 
   # Enable drag and drop of files:
   pSetDragDest(window.fHandle)

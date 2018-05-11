@@ -1062,6 +1062,9 @@ proc internalKeyUp(key: Key) =
   if i != -1:
     fDownKeys.delete(i)
 
+proc internalAllKeysUp() =
+  fDownKeys = @[]
+
 
 # ----------------------------------------------------------------------------------------
 #                                       Canvas

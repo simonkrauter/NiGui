@@ -333,6 +333,8 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
     discard
     #echo "window WM_SETFOCUS"
     # not called?
+  of WM_KILLFOCUS:
+    internalAllKeysUp()
   of WM_DROPFILES:
     let window = cast[WindowImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     var files: seq[string] = @[]
@@ -1076,14 +1078,13 @@ proc pCommonControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
   of WM_KEYUP:
     internalKeyUp(pWMParamsToKey(wParam, lParam))
 
+  # of WM_KEYUP:
+    # return nil # key is still inserted in text area
+
   of WM_CHAR:
     let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if control != nil and pHandleWMCHAR(control.parentWindow, control, wParam, lParam):
       return PWndProcResult_False
-
-  # of WM_KEYUP:
-    # return nil # key is still inserted in text area
-
   of WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN:
     let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if control != nil:
