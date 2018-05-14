@@ -364,10 +364,8 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
     if window != nil:
       if cast[int](wParam) == SC_MINIMIZE:
         window.fMinimized = true
-        echo "a"
       elif cast[int](wParam) == SC_RESTORE:
         window.fMinimized = false
-        echo "b"
   else:
     discard
   result = pCommonWndProc(hWnd, uMsg, wParam, lParam)
@@ -1077,8 +1075,6 @@ proc pCommonControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
 
   of WM_KEYUP:
     internalKeyUp(pWMParamsToKey(wParam, lParam))
-
-  # of WM_KEYUP:
     # return nil # key is still inserted in text area
 
   of WM_CHAR:
@@ -1144,6 +1140,21 @@ proc pTextControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): P
   # Handle Ctrl+A:
   if uMsg == WM_KEYDOWN and cast[char](wParam) == 'A' and GetKeyState(VK_CONTROL) <= -127:
     discard SendMessageA(hwnd, EM_SETSEL, nil, cast[pointer](-1))
+    return PWndProcResult_False
+
+  # Handle Ctrl+C:
+  if uMsg == WM_KEYDOWN and cast[char](wParam) == 'C' and GetKeyState(VK_CONTROL) <= -127:
+    discard SendMessageA(hwnd, WM_COPY, nil, nil)
+    return PWndProcResult_False
+
+  # Handle Ctrl+X:
+  if uMsg == WM_KEYDOWN and cast[char](wParam) == 'X' and GetKeyState(VK_CONTROL) <= -127:
+    discard SendMessageA(hwnd, WM_CUT, nil, nil)
+    return PWndProcResult_False
+
+  # Handle Ctrl+V:
+  if uMsg == WM_KEYDOWN and cast[char](wParam) == 'V' and GetKeyState(VK_CONTROL) <= -127:
+    discard SendMessageA(hwnd, WM_PASTE, nil, nil)
     return PWndProcResult_False
 
   # Prevent 'ding' sound when a character key together with Ctrl or Alt (but not both) is pressed:
@@ -1420,12 +1431,6 @@ proc init(textArea: NativeTextArea) =
   textArea.fHandle = pCreateWindowExWithUserdata("EDIT", dwStyle, dwExStyle, pDefaultParentWindow, cast[pointer](textArea))
   pTextAreaOrigWndProc = pSetWindowLongPtr(textArea.fHandle, GWLP_WNDPROC, pTextAreaWndProc)
   textArea.TextArea.init()
-
-# method text(textArea: NativeTextArea): string = pGetWindowText(textArea.fHandle)
-# not needed any more
-
-# method `text=`(textArea: NativeTextArea, text: string) = pSetWindowText(textArea.fHandle, text)
-# not needed any more
 
 method scrollToBottom(textArea: NativeTextArea) =
   # select all
