@@ -62,6 +62,35 @@ proc pWindowConfigureSignal(windowHandle, event, data: pointer): bool {.cdecl.} 
 
 proc pKeyvalToKey(keyval: cint): Key =
   result = case keyval
+  of 97: Key_A
+  of 98: Key_B
+  of 99: Key_C
+  of 100: Key_D
+  of 101: Key_E
+  of 102: Key_F
+  of 103: Key_G
+  of 104: Key_H
+  of 105: Key_I
+  of 106: Key_J
+  of 107: Key_K
+  of 108: Key_L
+  of 109: Key_M
+  of 110: Key_N
+  of 111: Key_O
+  of 112: Key_P
+  of 113: Key_Q
+  of 114: Key_R
+  of 115: Key_S
+  of 116: Key_T
+  of 117: Key_U
+  of 118: Key_V
+  of 119: Key_W
+  of 120: Key_X
+  of 121: Key_Y
+  of 122: Key_Z
+  of 228: Key_AE
+  of 246: Key_OE
+  of 252: Key_UE
   of 65106: Key_Circumflex
   of 65289: Key_Tab
   of 65293: Key_Return
@@ -83,7 +112,7 @@ proc pKeyvalToKey(keyval: cint): Key =
   of 65508: Key_ControlR
   of 65513: Key_AltL
   of 65514: Key_AltR
-  else: cast[Key](keyval.unicodeToUpper)
+  else: cast[Key](keyval)
 
 proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
   let window = cast[WindowImpl](data)

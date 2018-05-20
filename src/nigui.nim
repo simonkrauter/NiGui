@@ -946,15 +946,6 @@ proc rgb(red, green, blue: byte, alpha: byte = 255): Color =
   result.blue = blue
   result.alpha = alpha
 
-proc unicodeToUpper(unicode: int): int =
-  if unicode < 128:
-    return cast[int](cast[char](unicode).toUpper)
-  result = case unicode:
-  of 228: 196 # Ä
-  of 246: 214 # Ö
-  of 252: 220 # Ü
-  else: unicode
-
 proc sleep(app: App, milliSeconds: float) =
   let t = epochTime() + milliSeconds / 1000
   while epochTime() < t:

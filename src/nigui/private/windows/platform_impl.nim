@@ -208,29 +208,6 @@ proc pCommonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
     discard
   result = DefWindowProcA(hWnd, uMsg, wParam, lParam)
 
-proc pVirtualKeyToKey(keyval, scancode: int32): Key =
-  case keyval
-  of VK_CONTROL, VK_SHIFT, VK_MENU:
-    case MapVirtualKeyW(scancode, MAPVK_VSC_TO_VK_EX)
-    of VK_LCONTROL: result = Key_ControlL
-    of VK_RCONTROL: result = Key_ControlR
-    of VK_LSHIFT: result = Key_ShiftL
-    of VK_RSHIFT: result = Key_ShiftR
-    of VK_LMENU: result = Key_AltL
-    of VK_RMENU: result = Key_AltR
-    else: discard
-  of VK_PRIOR: result = Key_PageUp
-  of VK_NEXT: result = Key_PageDown
-  of VK_END: result = Key_End
-  of VK_HOME: result = Key_Home
-  of VK_LEFT: result = Key_Left
-  of VK_UP: result = Key_Up
-  of VK_RIGHT: result = Key_Right
-  of VK_DOWN: result = Key_Down
-  of VK_INSERT: result = Key_Insert
-  of VK_DELETE: result = Key_Delete
-  else: result = cast[Key](keyval.unicodeToUpper)
-
 proc pWMParamsToKey(wParam, lParam: pointer): Key =
   case cast[int32](wParam)
   of VK_CONTROL, VK_SHIFT, VK_MENU:
@@ -254,7 +231,7 @@ proc pWMParamsToKey(wParam, lParam: pointer): Key =
   of VK_INSERT: result = Key_Insert
   of VK_DELETE: result = Key_Delete
   of VK_OEM_5: result = Key_Circumflex
-  else: result = cast[Key](cast[int32](wParam).unicodeToUpper)
+  else: result = cast[Key](cast[int32](wParam))
 
 proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int): bool =
   internalKeyDown(pKeyDownKey)
