@@ -63,7 +63,7 @@ proc pUtf8ToUtf16(s: string): string =
   result = newString(characters * 2 + 1)
   characters = MultiByteToWideChar(CP_UTF8, 0, s, s.len.int32, result, characters.int32) # do the conversion
   result[characters * 2] = '\0'
-  result[characters * 2 + 1] = '\0'
+  # result[characters * 2 + 1] is set to '\0' automatically
   if characters == 0: pRaiseLastOSError()
 
 proc pUtf16ToUtf8(s: string, searchEnd = false): string =
