@@ -22,6 +22,7 @@ var pLastMouseButtonDownControlY: int
 
 var pClipboardPtr: pointer
 var pClipboardText: string
+var pClipboardTextIsSet: bool
 
 proc pRaiseGError(error: ptr GError) =
   if error == nil:
@@ -288,14 +289,13 @@ proc processEvents(app: App) =
     discard gtk_main_iteration()
 
 proc pClipboardTextReceivedFunc(clipboard: pointer, text: cstring, data: pointer): bool {.cdecl.} =
-  pClipboardText = $text
-  if pClipboardText == nil:
-    pClipboardText = ""
+  pClipboardText = $text # string needs to be copied
+  pClipboardTextIsSet = true
 
 proc clipboardText(app: App): string =
-  pClipboardText = nil
+  pClipboardTextIsSet = false
   gtk_clipboard_request_text(pClipboardPtr, pClipboardTextReceivedFunc, nil)
-  while pClipboardText == nil:
+  while not pClipboardTextIsSet:
     discard gtk_main_iteration()
   result = pClipboardText
 

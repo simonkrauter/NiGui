@@ -501,9 +501,9 @@ method endPixelDataAccess*(image: Image)
 #                                        Window
 # ----------------------------------------------------------------------------------------
 
-proc newWindow*(title: string = nil): Window
+proc newWindow*(title: string = ""): Window
 ## Constructor for a Window object.
-## If the title is nil, it will be set to the application filename.
+## If the title is empty, it will be set to the application filename.
 
 proc init*(window: WindowImpl)
 ## Initialize a WindowImpl object
@@ -1149,10 +1149,10 @@ method canvas(image: Image): Canvas = image.fCanvas
 #                                        Window
 # ----------------------------------------------------------------------------------------
 
-proc newWindow(title: string = nil): Window =
+proc newWindow(title: string = ""): Window =
   result = new WindowImpl
   result.WindowImpl.init()
-  if title != nil:
+  if title != "":
     result.title = title
 
 
