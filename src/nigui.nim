@@ -268,6 +268,11 @@ type
     control*: Control
   TextChangeProc* = proc(event: TextChangeEvent)
 
+  CheckboxToggleEvent* = ref object
+    control*: Control
+    checked*: bool
+  CheckboxToggleProc* = proc(event: CheckboxToggleEvent)
+
   # Other events:
 
   ErrorHandlerProc* = proc()
@@ -299,6 +304,12 @@ type
   Button* = ref object of ControlImpl
     fText: string
     fEnabled: bool
+
+  Checkbox* = ref object of ControlImpl
+    fText: string
+    fEnabled: bool
+    fChecked: bool
+    fOnToggle: CheckboxToggleProc
 
   Label* = ref object of ControlImpl
     fText: string
@@ -806,6 +817,26 @@ method `text=`*(button: Button, text: string)
 method enabled*(button: Button): bool
 method `enabled=`*(button: Button, enabled: bool)
 
+# ----------------------------------------------------------------------------------------
+#                                      Checkbox
+# ----------------------------------------------------------------------------------------
+
+proc newCheckbox*(text = ""): Checkbox
+
+proc init*(checkbox: Checkbox)
+proc init*(checkbox: NativeCheckbox)
+
+method text*(checkbox: Checkbox): string
+method `text=`*(checkbox: Checkbox, text: string)
+
+method onToggle*(checkbox: Checkbox): CheckboxToggleProc
+method `onToggle=`*(checkbox: Checkbox, callback: CheckboxToggleProc)
+
+method enabled*(checkbox: Checkbox): bool
+method `enabled=`*(checkbox: Checkbox, enabled: bool)
+
+method checked*(checkbox: Checkbox): bool
+method `checked=`*(checkbox: Checkbox, checked: bool)
 
 # ----------------------------------------------------------------------------------------
 #                                        Label
@@ -2245,6 +2276,61 @@ method `enabled=`(button: Button, enabled: bool) = discard
   # has to be implemented by NativeTextBox
 
 method `onDraw=`(container: NativeButton, callback: DrawProc) = raiseError("NativeButton does not allow onDraw.")
+
+
+# ----------------------------------------------------------------------------------------
+#                                      Checkbox
+# ----------------------------------------------------------------------------------------
+
+proc newCheckbox(text = ""): Checkbox =
+  result = new NativeCheckbox
+  result.NativeCheckbox.init()
+  result.text = text
+
+proc init(checkbox: Checkbox) =
+  checkbox.ControlImpl.init()
+  checkbox.fText = ""
+  checkbox.fOnClick = nil
+  checkbox.fOnToggle = nil
+  checkbox.fWidthMode = WidthMode_Auto
+  checkbox.fHeightMode = HeightMode_Auto
+  checkbox.minWidth = 15
+  checkbox.minHeight = 15
+  checkbox.enabled = true
+  checkbox.checked = false
+
+method text(checkbox: Checkbox): string = checkbox.fText
+
+method `text=`(checkbox: Checkbox, text: string) =
+  checkbox.fText = text
+  checkbox.tag = text
+  checkbox.triggerRelayoutIfModeIsAuto()
+  # should be extended by NativeCheckbox
+
+method naturalWidth(checkbox: Checkbox): int = checkbox.getTextWidth(checkbox.text) + 20
+
+method naturalHeight(checkbox: Checkbox): int = checkbox.getTextLineHeight() * checkbox.text.countLines + 12
+
+method onToggle(checkbox: Checkbox): CheckboxToggleProc = checkbox.fOnToggle
+method `onToggle=`(checkbox: Checkbox, callback: CheckboxToggleProc) = checkbox.fOnToggle = callback
+
+method handleToggleEvent(checkbox: Checkbox, event: CheckboxToggleEvent) =
+  # can be overridden by custom button
+  let callback = checkbox.onToggle
+  if callback != nil:
+    callback(event)
+
+method enabled(checkbox: Checkbox): bool = checkbox.fEnabled
+
+method `enabled=`(checkbox: Checkbox, enabled: bool) = discard
+  # has to be implemented by NativeCheckbox
+
+method checked(checkbox: Checkbox): bool = checkbox.fChecked
+
+method `checked=`(checkbox: Checkbox, checked: bool) = discard
+  # has to be implemented by NativeCheckbox
+
+method `onDraw=`(container: NativeCheckbox, callback: DrawProc) = raiseError("NativeCheckbox does not allow onDraw.")
 
 
 # ----------------------------------------------------------------------------------------

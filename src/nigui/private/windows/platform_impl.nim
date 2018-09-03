@@ -1313,6 +1313,57 @@ method `enabled=`(button: NativeButton, enabled: bool) =
 
 
 # ----------------------------------------------------------------------------------------
+#                                      Checkbox
+# ----------------------------------------------------------------------------------------
+
+var pCheckboxOrigWndProc: pointer
+
+proc pCheckboxWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
+  case uMsg
+  of WM_KEYDOWN, WM_LBUTTONUP:
+    let checkbox = cast[Checkbox](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+    let keyCode = if uMsg == WM_KEYDOWN: cast[int](wParam) else: 32
+    if checkbox != nil and keyCode == 32:
+      checkbox.fChecked = not checkbox.fChecked
+      discard SendMessageA(checkbox.fHandle, BM_SETCHECK, cast[pointer](checkbox.fChecked), nil)
+
+      var event = new CheckboxToggleEvent
+      event.control = checkbox
+      event.checked = checkbox.fChecked
+      checkbox.handleToggleEvent(event)
+  else:
+    discard
+  result = pCommonControlWndProc(pCheckboxOrigWndProc, hWnd, uMsg, wParam, lParam)
+
+proc init(checkbox: NativeCheckbox) =
+  checkbox.fHandle = pCreateWindowExWithUserdata(
+    "BUTTON",
+    WS_CHILD or BS_CHECKBOX or WS_TABSTOP,
+    0,
+    pDefaultParentWindow,
+    cast[pointer](checkbox)
+  )
+  # WS_TABSTOP does not work, why?
+  pCheckboxOrigWndProc = pSetWindowLongPtr(checkbox.fHandle, GWLP_WNDPROC, pCheckboxWndProc)
+  checkbox.Checkbox.init()
+
+method `text=`(checkbox: NativeCheckbox, text: string) =
+  procCall checkbox.Checkbox.`text=`(text)
+  pSetWindowText(checkbox.fHandle, text)
+
+method enabled(checkbox: NativeCheckbox): bool = checkbox.fEnabled
+
+method `enabled=`(checkbox: NativeCheckbox, enabled: bool) =
+  checkbox.fEnabled = enabled
+  discard EnableWindow(checkbox.fHandle, enabled)
+
+method checked(checkbox: NativeCheckbox): bool = checkbox.fChecked
+
+method `checked=`(checkbox: NativeCheckbox, checked: bool) =
+  checkbox.fChecked = checked
+  discard SendMessageA(checkbox.fHandle, BM_SETCHECK, cast[pointer](checked), nil)
+
+# ----------------------------------------------------------------------------------------
 #                                        Label
 # ----------------------------------------------------------------------------------------
 
