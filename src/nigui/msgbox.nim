@@ -20,7 +20,7 @@ proc buttonClick(event: ClickEvent) =
   cast[MessageBoxWindow](event.control.parentWindow).clickedButton = cast[Button](event.control)
   event.control.parentWindow.dispose()
 
-proc msgBox*(parent: Window, message: string, title = "Message", button1 = "OK", button2, button3: string = nil): int {.discardable.}  =
+proc msgBox*(parent: Window, message: string, title = "Message", button1 = "OK", button2, button3: string = ""): int {.discardable.}  =
   const buttonMinWidth = 100
   var window = new MessageBoxWindow
   window.init()
@@ -50,13 +50,13 @@ proc msgBox*(parent: Window, message: string, title = "Message", button1 = "OK",
   b1.onClick = buttonClick
   buttonContainer.add(b1)
 
-  if button2 != nil:
+  if button2 != "":
     b2 = newButton(button2)
     b2.minWidth = buttonMinWidth
     b2.onClick = buttonClick
     buttonContainer.add(b2)
 
-  if button3 != nil:
+  if button3 != "":
     b3 = newButton(button3)
     b3.minWidth = buttonMinWidth
     b3.onClick = buttonClick

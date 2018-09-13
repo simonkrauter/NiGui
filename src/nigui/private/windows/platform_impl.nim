@@ -446,14 +446,14 @@ method run*(dialog: OpenFileDialog) =
   ofn.lpstrFile = s
   let ret = GetOpenFileNameW(ofn)
   if ret:
-    var dirOrFirstFile: string
+    var dirOrFirstFile = ""
     # Split selected file names:
     while s[0].ord != 0:
       var i = 0
       while i < s.len - 1 and s[i].ord != 0:
         i.inc(2)
       let filename = s.substr(0, i - 1).pUtf16ToUtf8()
-      if dirOrFirstFile == nil:
+      if dirOrFirstFile == "":
         dirOrFirstFile = filename
       else:
         dialog.files.add(dirOrFirstFile / filename)
