@@ -30,7 +30,7 @@ button2.onClick = proc(event: ClickEvent) =
 var button3 = newButton("Example 3")
 buttons.add(button3)
 button3.onClick = proc(event: ClickEvent) =
-  let res = window.msgBox("Hello.\n\nThis message box is created with \"msgBox()\" and has three buttons.", "Title of message box", "Button 1", " Button 2", "Button 3")
+  let res = window.msgBox("Hello.\n\nThis message box is created with \"msgBox()\" and has three buttons.", "Title of message box", "Button 1", "Button 2", "Button 3")
   textArea.addLine("Message box closed, result = " & $res)
 
 window.show()

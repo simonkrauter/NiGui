@@ -832,9 +832,9 @@ method `visible=`(control: ControlImpl, visible: bool) =
   else:
     gtk_widget_hide(control.fHandle)
 
-proc dummy(widget: pointer, event: var GdkEventButton, data: pointer): bool {.cdecl.} =
-  echo "dummy"
-  result = true # Stop propagation
+# proc dummy(widget: pointer, event: var GdkEventButton, data: pointer): bool {.cdecl.} =
+  # echo "dummy"
+  # result = true # Stop propagation
 
 method pUpdateScrollBar(control: ControlImpl) =
   if control.fScrollableWidth == -1 and control.fScrollableHeight == -1:
@@ -1093,7 +1093,6 @@ method getPadding(frame: NativeFrame): Spacing =
 proc init(button: NativeButton) =
   button.fHandle = gtk_button_new()
   button.Button.init()
-  # discard g_signal_connect_data(button.fHandle, "clicked", pWidgetClickSignal, cast[pointer](button))
 
 method `text=`(button: NativeButton, text: string) =
   procCall button.Button.`text=`(text)
@@ -1110,10 +1109,6 @@ method naturalWidth(button: NativeButton): int =
   var padding: GtkBorder
   gtk_style_context_get_padding(context, GTK_STATE_FLAG_NORMAL, padding)
   result = button.getTextLineWidth(button.text) + padding.left + padding.right + 5
-
-method pAddButtonPressEvent(control: NativeButton) =
-  gtk_widget_add_events(control.fHandle, GDK_BUTTON_PRESS_MASK)
-  discard g_signal_connect_data(control.fHandle, "button-press-event", pDefaultControlButtonPressSignal, cast[pointer](control))
 
 method `enabled=`(button: NativeButton, enabled: bool) =
   button.fEnabled = enabled

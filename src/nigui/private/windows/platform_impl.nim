@@ -1280,16 +1280,11 @@ method getPadding(frame: NativeFrame): Spacing =
 var pButtonOrigWndProc: pointer
 
 proc pButtonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
-  case uMsg
-  of WM_KEYDOWN:
-    let button = cast[Button](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
-    # if button != nil and (cast[int](wParam) == 13 or cast[int](wParam) == 32):
-    if button != nil and cast[int](wParam) == 13:
-      var event = new ClickEvent
-      event.control = button
-      button.handleClickEvent(event)
-  else:
-    discard
+  # case uMsg
+  # of WM_KEYDOWN:
+    # let button = cast[Button](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+  # else:
+    # discard
   let comProcRes = pCommonControlWndProc(hWnd, uMsg, wParam, lParam)
   if comProcRes == PWndProcResult_False:
     return cast[pointer](false)

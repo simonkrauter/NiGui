@@ -2244,6 +2244,13 @@ method enabled(button: Button): bool = button.fEnabled
 method `enabled=`(button: Button, enabled: bool) = discard
   # has to be implemented by NativeTextBox
 
+method handleKeyDownEvent*(button: Button, event: KeyboardEvent) =
+  if event.key == Key_Return or event.key == Key_Space:
+    var clickEvent = new ClickEvent
+    clickEvent.control = button
+    button.handleClickEvent(clickEvent)
+
+
 method `onDraw=`(container: NativeButton, callback: DrawProc) = raiseError("NativeButton does not allow onDraw.")
 
 

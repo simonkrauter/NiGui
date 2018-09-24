@@ -3,10 +3,11 @@
 # This module provides an extended message box.
 # The message box is shown as modal window.
 # The message box can have up to 3 buttons with customizable titles.
+# button1 will be focused.
 # Call the proc msgBox() to open the message box.
 # It will wait until the message box is closed.
 # Meaning of the result value:
-#  0    - message box was closed over the window close button
+#  0    - message box was closed over the window close button or escape key
 #  1..3 - button 1..3 clicked
 
 # For an example see "example_04_msgboxes.nim".
@@ -25,6 +26,10 @@ proc msgBox*(parent: Window, message: string, title = "Message", button1 = "OK",
   var window = new MessageBoxWindow
   window.init()
   window.title = title
+
+  window.onKeyDown = proc(event: KeyboardEvent) =
+    if event.key == Key_Escape:
+      window.dispose()
 
   var container = newLayoutContainer(Layout_Vertical)
   container.padding = 10
@@ -49,6 +54,7 @@ proc msgBox*(parent: Window, message: string, title = "Message", button1 = "OK",
   b1.minWidth = buttonMinWidth
   b1.onClick = buttonClick
   buttonContainer.add(b1)
+  b1.focus()
 
   if button2 != "":
     b2 = newButton(button2)
@@ -76,7 +82,7 @@ proc msgBox*(parent: Window, message: string, title = "Message", button1 = "OK",
 
   if window.clickedButton == b1:
     result = 1
-  elif window.clickedButton == b2:
+  elif window.clickedButton == b2 and b2 != nil:
     result = 2
-  elif window.clickedButton == b3:
+  elif window.clickedButton == b3 and b3 != nil:
     result = 3
