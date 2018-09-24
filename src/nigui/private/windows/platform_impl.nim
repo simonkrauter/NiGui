@@ -307,9 +307,10 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
       window.fY = rect.top
       # echo "WM_MOVE: " & $rect.left & ", " & $rect.top
   of WM_SETFOCUS:
-    discard
-    #echo "window WM_SETFOCUS"
-    # not called?
+    # Re-focus last focused control
+    let window = cast[WindowImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+    if window.fFocusedControl != nil:
+      window.fFocusedControl.focus()
   of WM_KILLFOCUS:
     internalAllKeysUp()
   of WM_DROPFILES:
@@ -1105,6 +1106,12 @@ proc pCommonControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
           control.handleClickEvent(clickEvent)
   of WM_HSCROLL, WM_VSCROLL:
     pCommonControlWndProc_Scroll(hWnd, uMsg, wParam, lParam)
+
+  of WM_SETFOCUS:
+    # Save focused control
+    let control = cast[ControlImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+    control.parentWindow().fFocusedControl = control
+
   else:
     discard
 
@@ -1172,9 +1179,6 @@ proc pCustomControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
     echo "wheel: " & $scrolled
   of WM_ERASEBKGND:
     return cast[pointer](true) # Allow flicker-free drawing
-  of WM_SETFOCUS:
-    # echo "control WM_SETFOCUS"
-    discard
   else:
     discard
   let comProcRes = pCommonControlWndProc(hWnd, uMsg, wParam, lParam)
@@ -1280,11 +1284,15 @@ method getPadding(frame: NativeFrame): Spacing =
 var pButtonOrigWndProc: pointer
 
 proc pButtonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
-  # case uMsg
-  # of WM_KEYDOWN:
-    # let button = cast[Button](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
-  # else:
-    # discard
+  case uMsg
+  of WM_SETFOCUS:
+    let button = cast[Button](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+    discard SendMessageA(button.fHandle, BM_SETSTYLE, cast[pointer](BS_DEFPUSHBUTTON), nil)
+  of WM_KILLFOCUS:
+    let button = cast[Button](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+    discard SendMessageA(button.fHandle, BM_SETSTYLE, cast[pointer](0), nil)
+  else:
+    discard
   let comProcRes = pCommonControlWndProc(hWnd, uMsg, wParam, lParam)
   if comProcRes == PWndProcResult_False:
     return cast[pointer](false)

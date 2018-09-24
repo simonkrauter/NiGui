@@ -8,6 +8,7 @@ type
   WindowImpl* = ref object of Window
     fHandle: pointer
     fModalParent: WindowImpl
+    fFocusedControl: ControlImpl
 
   ControlImpl* = ref object of Control
     fHandle: pointer
