@@ -26,8 +26,12 @@ var textArea = newTextArea("TextArea\nLine 2\n")
 container.add(textArea)
 
 # Add more text to the TextArea:
-for i in 3..30:
+for i in 3..15:
   textArea.addLine("Line " & $i)
+
+# Add click event to the button:
+button.onClick = proc(event: ClickEvent) =
+  textArea.addLine("Button clicked")
 
 window.show()
 
