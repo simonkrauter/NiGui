@@ -801,6 +801,9 @@ method pAddButtonPressEvent(control: ControlImpl) =
   gtk_widget_add_events(control.fHandle, GDK_BUTTON_PRESS_MASK)
   discard g_signal_connect_data(control.fHandle, "button-press-event", pCustomControlButtonPressSignal, cast[pointer](control))
 
+method pAddKeyPressEvent(control: ControlImpl) =
+  discard g_signal_connect_data(control.fHandle, "key-press-event", pControlKeyPressSignal, cast[pointer](control))
+
 proc init(control: ControlImpl) =
 
   if control.fHandle == nil:
@@ -808,9 +811,9 @@ proc init(control: ControlImpl) =
     control.fHandle = gtk_layout_new(nil, nil)
     discard g_signal_connect_data(control.fHandle, "draw", pControlDrawSignal, cast[pointer](control))
     gtk_widget_add_events(control.fHandle, GDK_KEY_PRESS_MASK)
-    discard g_signal_connect_data(control.fHandle, "key-press-event", pControlKeyPressSignal, cast[pointer](control))
 
   control.pAddButtonPressEvent()
+  control.pAddKeyPressEvent()
 
   gtk_widget_add_events(control.fHandle, GDK_BUTTON_RELEASE_MASK)
   discard g_signal_connect_data(control.fHandle, "button-release-event", pControlButtonReleaseSignal, cast[pointer](control))
@@ -1134,10 +1137,6 @@ method `text=`(label: NativeLabel, text: string) =
 method naturalWidth(label: NativeLabel): int = label.getTextLineWidth(label.text) + 10
 # Override parent method, to make it big enough for the text to fit in.
 
-method pAddButtonPressEvent(control: NativeLabel) =
-  gtk_widget_add_events(control.fHandle, GDK_BUTTON_PRESS_MASK)
-  discard g_signal_connect_data(control.fHandle, "button-press-event", pDefaultControlButtonPressSignal, cast[pointer](control))
-
 
 # ----------------------------------------------------------------------------------------
 #                                       TextBox
@@ -1156,7 +1155,6 @@ proc pTextBoxKeyPressSignal(widget: pointer, event: var GdkEventKey, data: point
 
 proc init(textBox: NativeTextBox) =
   textBox.fHandle = gtk_entry_new()
-  discard g_signal_connect_data(textBox.fHandle, "key-press-event", pTextBoxKeyPressSignal, cast[pointer](textBox))
   discard g_signal_connect_data(textBox.fHandle, "changed", pControlChangedSignal, cast[pointer](textBox))
   textBox.TextBox.init()
 
@@ -1172,9 +1170,12 @@ method setSize(textBox: NativeTextBox, width, height: int) =
   gtk_entry_set_width_chars(textBox.fHandle, 1)
   procCall textBox.ControlImpl.setSize(width, height)
 
-method pAddButtonPressEvent(control: NativeTextBox) =
-  gtk_widget_add_events(control.fHandle, GDK_BUTTON_PRESS_MASK)
-  discard g_signal_connect_data(control.fHandle, "button-press-event", pDefaultControlButtonPressSignal, cast[pointer](control))
+method pAddButtonPressEvent(textBox: NativeTextBox) =
+  gtk_widget_add_events(textBox.fHandle, GDK_BUTTON_PRESS_MASK)
+  discard g_signal_connect_data(textBox.fHandle, "button-press-event", pDefaultControlButtonPressSignal, cast[pointer](textBox))
+
+method pAddKeyPressEvent(textBox: NativeTextBox) =
+  discard g_signal_connect_data(textBox.fHandle, "key-press-event", pTextBoxKeyPressSignal, cast[pointer](textBox))
 
 method `editable=`(textBox: NativeTextBox, editable: bool) =
   textBox.fEditable = editable
@@ -1223,7 +1224,6 @@ proc init(textArea: NativeTextArea) =
   gtk_text_view_set_bottom_margin(textArea.fTextViewHandle, 5)
   gtk_container_add(textArea.fHandle, textArea.fTextViewHandle)
   gtk_widget_show(textArea.fTextViewHandle)
-  discard g_signal_connect_data(textArea.fTextViewHandle, "key-press-event", pTextBoxKeyPressSignal, cast[pointer](textArea))
   textArea.fBufferHandle = gtk_text_view_get_buffer(textArea.fTextViewHandle)
   discard g_signal_connect_data(textArea.fBufferHandle, "changed", pControlChangedSignal, cast[pointer](textArea))
   textArea.TextArea.init()
@@ -1254,10 +1254,6 @@ method scrollToBottom(textArea: NativeTextArea) =
   gtk_text_buffer_get_end_iter(textArea.fBufferHandle, iter)
   gtk_text_view_scroll_to_iter(textArea.fTextViewHandle, iter, 0, false, 0, 0)
   app.processEvents()
-
-method pAddButtonPressEvent(control: NativeTextArea) =
-  gtk_widget_add_events(control.fHandle, GDK_BUTTON_PRESS_MASK)
-  discard g_signal_connect_data(control.fHandle, "button-press-event", pDefaultControlButtonPressSignal, cast[pointer](control))
 
 method `wrap=`(textArea: NativeTextArea, wrap: bool) =
   procCall textArea.TextArea.`wrap=`(wrap)
