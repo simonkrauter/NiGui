@@ -1228,6 +1228,9 @@ proc init(textArea: NativeTextArea) =
   discard g_signal_connect_data(textArea.fBufferHandle, "changed", pControlChangedSignal, cast[pointer](textArea))
   textArea.TextArea.init()
 
+method pAddKeyPressEvent(textBox: NativeTextArea) =
+  discard g_signal_connect_data(textBox.fTextViewHandle, "key-press-event", pTextBoxKeyPressSignal, cast[pointer](textBox))
+
 method setSize(textBox: NativeTextArea, width, height: int) =
   # Need to override method of NativeTextBox
   procCall textBox.ControlImpl.setSize(width, height)
