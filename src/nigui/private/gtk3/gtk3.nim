@@ -462,6 +462,7 @@ proc cairo_set_source_surface*(cr, surface: pointer, x, y: cdouble) {.importc: "
 proc cairo_fill*(cr: pointer) {.importc: "cairo_fill", libgtk3.}
 proc cairo_stroke*(cr: pointer) {.importc: "cairo_stroke", libgtk3.}
 proc cairo_rectangle*(cr: pointer, x, y, width, height: cdouble) {.importc: "cairo_rectangle", libgtk3.}
+proc cairo_arc*(cr: pointer, xc, yc, radius, angle1, angle2: cdouble) {.importc: "cairo_arc", libgtk3.}
 proc cairo_line_to*(cr: pointer, x, y: cdouble) {.importc: "cairo_line_to", libgtk3.}
 proc cairo_move_to*(cr: pointer, x, y: cdouble) {.importc: "cairo_move_to", libgtk3.}
 proc cairo_set_line_width*(cr: pointer, width: cdouble) {.importc: "cairo_set_line_width", libgtk3.}

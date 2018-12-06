@@ -619,6 +619,36 @@ method drawRectOutline(canvas: Canvas, x, y, width, height: int) =
   pCheckGdiplusStatus(GdipCreatePen1(canvas.lineColor.pColorToARGB(), canvasImpl.lineWidth, UnitPixel, pen))
   pCheckGdiplusStatus(GdipDrawRectangleI(canvasImpl.fGraphics, pen, x.int32, y.int32, width.int32, height.int32))
 
+method drawEllipseArea(canvas: Canvas, x, y, width, height: int) =
+  let canvasImpl = cast[CanvasImpl](canvas)
+  if canvasImpl.fGraphics == nil:
+    raiseError("Canvas is not in drawing state.")
+  if canvasImpl.fAreaBrush == nil:
+    pCheckGdiplusStatus(GdipCreateSolidFill(canvas.areaColor.pColorToARGB(), canvasImpl.fAreaBrush))
+  pCheckGdiplusStatus(GdipFillEllipseI(canvasImpl.fGraphics, canvasImpl.fAreaBrush, x.int32, y.int32, width.int32, height.int32))
+
+method drawEllipseOutline(canvas: Canvas, x, y, width, height: int) =
+  let canvasImpl = cast[CanvasImpl](canvas)
+  if canvasImpl.fGraphics == nil:
+    raiseError("Canvas is not in drawing state.")
+  var pen: pointer
+  pCheckGdiplusStatus(GdipCreatePen1(canvas.lineColor.pColorToARGB(), canvasImpl.lineWidth, UnitPixel, pen))
+  pCheckGdiplusStatus(GdipDrawEllipseI(canvasImpl.fGraphics, pen, x.int32, y.int32, width.int32, height.int32))
+
+proc pRadToDegree(angleRad: float): float = angleRad / 2 / PI * 360
+
+method drawArcOutline(canvas: Canvas, centerX, centerY: int, radius, startAngle, sweepAngle: float) =
+  let canvasImpl = cast[CanvasImpl](canvas)
+  if canvasImpl.fGraphics == nil:
+    raiseError("Canvas is not in drawing state.")
+  var pen: pointer
+  pCheckGdiplusStatus(GdipCreatePen1(canvas.lineColor.pColorToARGB(), canvasImpl.lineWidth, UnitPixel, pen))
+  let x = centerX.float - radius
+  let y = centerY.float - radius
+  let width = radius * 2
+  let height = radius * 2
+  pCheckGdiplusStatus(GdipDrawArc(canvasImpl.fGraphics, pen, x, y, width, height, startAngle.pRadToDegree(), sweepAngle.pRadToDegree()))
+
 method drawImage(canvas: Canvas, image: Image, x, y = 0, width, height = -1) =
   var drawWith = image.width
   var drawHeight = image.height

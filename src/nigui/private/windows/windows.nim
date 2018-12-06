@@ -489,6 +489,9 @@ proc GdipDisposeImage*(image: pointer): int32 {.importc: "GdipDisposeImage", lib
 proc GdipFillRectangleI*(graphics, brush: pointer, x, y, width, height: int32): int32 {.importc: "GdipFillRectangleI", libGdiplus.}
 proc GdipDrawRectangleI*(graphics, pen: pointer, x, y, width, height: int32): int32 {.importc: "GdipDrawRectangleI", libGdiplus.}
 proc GdipDrawLineI*(graphics, pen: pointer, x1, y1, x2, y2: int32): int32 {.importc: "GdipDrawLineI", libGdiplus.}
+proc GdipDrawArc*(graphics, pen: pointer, x, y, width, height, startAngle, sweepAngle: cfloat): int32 {.importc: "GdipDrawArc", libGdiplus.}
+proc GdipFillEllipseI*(graphics, brush: pointer, x, y, width, height: int32): int32 {.importc: "GdipFillEllipseI", libGdiplus.}
+proc GdipDrawEllipseI*(graphics, pen: pointer, x, y, width, height: int32): int32 {.importc: "GdipDrawEllipseI", libGdiplus.}
 proc GdipCreateSolidFill*(color: ARGB, brush: var pointer): int32 {.importc: "GdipCreateSolidFill", libGdiplus.}
 proc GdipDeleteBrush*(brush: pointer): int32 {.importc: "GdipDeleteBrush", libGdiplus.}
 proc GdipCreatePen1*(color: ARGB, width: cfloat, unit: int32, pen: var pointer): int32 {.importc: "GdipCreatePen1", libGdiplus.}

@@ -463,6 +463,12 @@ method drawRectArea*(canvas: Canvas, x, y, width, height: int)
 
 method drawRectOutline*(canvas: Canvas, x, y, width, height: int)
 
+method drawEllipseArea*(canvas: Canvas, x, y, width, height: int)
+
+method drawEllipseOutline*(canvas: Canvas, x, y, width, height: int)
+
+method drawArcOutline*(canvas: Canvas, centerX, centerY: int, radius, startAngle, sweepAngle: float)
+
 method fill*(canvas: Canvas)
 
 method drawImage*(canvas: Canvas, image: Image, x, y = 0, width, height = -1)

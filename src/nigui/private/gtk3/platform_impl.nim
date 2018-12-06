@@ -475,6 +475,51 @@ method drawRectOutline(canvas: Canvas, x, y, width, height: int) =
   cairo_set_line_width(cr, canvas.lineWidth)
   cairo_stroke(cr)
 
+method drawEllipseArea(canvas: Canvas, x, y, width, height: int) =
+  let cr = cast[CanvasImpl](canvas).fCairoContext
+  if cr == nil:
+    raiseError("Canvas is not in drawing state.")
+  var rgba: GdkRGBA
+  canvas.areaColor.pColorToGdkRGBA(rgba)
+  gdk_cairo_set_source_rgba(cr, rgba)
+  cairo_save(cr)
+  let centerX = x.float + width.float / 2
+  let centerY = y.float + height.float / 2
+  cairo_translate(cr, centerX, centerY)
+  cairo_scale(cr, width.float / 2, height.float / 2)
+  cairo_arc(cr, 0, 0, 1, 0, 2 * PI)
+  cairo_fill(cr)
+  cairo_restore(cr)
+
+method drawEllipseOutline(canvas: Canvas, x, y, width, height: int) =
+  let cr = cast[CanvasImpl](canvas).fCairoContext
+  if cr == nil:
+    raiseError("Canvas is not in drawing state.")
+  var rgba: GdkRGBA
+  canvas.lineColor.pColorToGdkRGBA(rgba)
+  gdk_cairo_set_source_rgba(cr, rgba)
+  cairo_save(cr)
+  let centerX = x.float + width.float / 2
+  let centerY = y.float + height.float / 2
+  cairo_translate(cr, centerX, centerY)
+  cairo_scale(cr, width.float / 2, height.float / 2)
+  cairo_arc(cr, 0, 0, 1, 0, 2 * PI)
+  cairo_set_line_width(cr, canvas.lineWidth / width.float * 2)
+  # problem: width of horizontal line and vertical line is not the same
+  cairo_stroke(cr)
+  cairo_restore(cr)
+
+method drawArcOutline(canvas: Canvas, centerX, centerY: int, radius, startAngle, sweepAngle: float) =
+  let cr = cast[CanvasImpl](canvas).fCairoContext
+  if cr == nil:
+    raiseError("Canvas is not in drawing state.")
+  var rgba: GdkRGBA
+  canvas.lineColor.pColorToGdkRGBA(rgba)
+  gdk_cairo_set_source_rgba(cr, rgba)
+  cairo_arc(cr, centerX.float, centerY.float, radius, startAngle, sweepAngle)
+  cairo_set_line_width(cr, canvas.lineWidth)
+  cairo_stroke(cr)
+
 method drawImage(canvas: Canvas, image: Image, x, y = 0, width, height = -1) =
   let cr = cast[CanvasImpl](canvas).fCairoContext
   if cr == nil:
