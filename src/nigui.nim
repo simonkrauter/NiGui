@@ -210,6 +210,7 @@ type
     fFontSize: float
     fTextColor: Color
     fLineColor: Color
+    fLineWidth: float
     fAreaColor: Color
 
   Image* = ref object of RootObj
@@ -445,6 +446,9 @@ method `textColor=`*(canvas: Canvas, color: Color)
 
 method lineColor*(canvas: Canvas): Color
 method `lineColor=`*(canvas: Canvas, color: Color)
+
+method lineWidth*(canvas: Canvas): float
+method `lineWidth=`*(canvas: Canvas, width: float)
 
 method areaColor*(canvas: Canvas): Color
 method `areaColor=`*(canvas: Canvas, color: Color)
@@ -1066,6 +1070,7 @@ proc internalAllKeysUp() =
 proc newCanvas(control: Control = nil): CanvasImpl =
   result = new CanvasImpl
   result.fLineColor = rgb(0, 0, 0)
+  result.fLineWidth = 1
   result.fAreaColor = rgb(0, 0, 0)
   if control == nil:
     result.fFontFamily = app.defaultFontFamily
@@ -1100,6 +1105,10 @@ method `textColor=`(canvas: Canvas, color: Color) = canvas.fTextColor = color
 method lineColor(canvas: Canvas): Color = canvas.fLineColor
 
 method `lineColor=`(canvas: Canvas, color: Color) = canvas.fLineColor = color
+
+method lineWidth(canvas: Canvas): float = canvas.fLineWidth
+
+method `lineWidth=`(canvas: Canvas, width: float) = canvas.fLineWidth = width
 
 method areaColor(canvas: Canvas): Color = canvas.fAreaColor
 

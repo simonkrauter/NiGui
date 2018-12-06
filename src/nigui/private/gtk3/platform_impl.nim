@@ -451,6 +451,7 @@ method drawLine(canvas: Canvas, x1, y1, x2, y2: int) =
   gdk_cairo_set_source_rgba(cr, rgba)
   cairo_move_to(cr, x1.float, y1.float)
   cairo_line_to(cr, x2.float, y2.float)
+  cairo_set_line_width(cr, canvas.lineWidth)
   cairo_stroke(cr)
 
 method drawRectArea(canvas: Canvas, x, y, width, height: int) =
@@ -471,7 +472,7 @@ method drawRectOutline(canvas: Canvas, x, y, width, height: int) =
   canvas.lineColor.pColorToGdkRGBA(rgba)
   gdk_cairo_set_source_rgba(cr, rgba)
   cairo_rectangle(cr, x.float, y.float, width.float, height.float)
-  cairo_set_line_width(cr, 1)
+  cairo_set_line_width(cr, canvas.lineWidth)
   cairo_stroke(cr)
 
 method drawImage(canvas: Canvas, image: Image, x, y = 0, width, height = -1) =

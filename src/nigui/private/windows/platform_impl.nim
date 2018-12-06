@@ -600,7 +600,7 @@ method drawLine(canvas: Canvas, x1, y1, x2, y2: int) =
   if canvasImpl.fGraphics == nil:
     raiseError("Canvas is not in drawing state.")
   if canvasImpl.fLinePen == nil:
-    pCheckGdiplusStatus(GdipCreatePen1(canvas.lineColor.pColorToARGB(), 1, UnitPixel, canvasImpl.fLinePen))
+    pCheckGdiplusStatus(GdipCreatePen1(canvas.lineColor.pColorToARGB(), canvasImpl.lineWidth, UnitPixel, canvasImpl.fLinePen))
   pCheckGdiplusStatus(GdipDrawLineI(canvasImpl.fGraphics, canvasImpl.fLinePen, x1.int32, y1.int32, x2.int32, y2.int32))
 
 method drawRectArea(canvas: Canvas, x, y, width, height: int) =
@@ -616,7 +616,7 @@ method drawRectOutline(canvas: Canvas, x, y, width, height: int) =
   if canvasImpl.fGraphics == nil:
     raiseError("Canvas is not in drawing state.")
   var pen: pointer
-  pCheckGdiplusStatus(GdipCreatePen1(canvas.lineColor.pColorToARGB(), 1, UnitPixel, pen))
+  pCheckGdiplusStatus(GdipCreatePen1(canvas.lineColor.pColorToARGB(), canvasImpl.lineWidth, UnitPixel, pen))
   pCheckGdiplusStatus(GdipDrawRectangleI(canvasImpl.fGraphics, pen, x.int32, y.int32, width.int32, height.int32))
 
 method drawImage(canvas: Canvas, image: Image, x, y = 0, width, height = -1) =
