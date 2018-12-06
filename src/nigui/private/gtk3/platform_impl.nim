@@ -590,6 +590,14 @@ method loadFromFile(image: Image, filePath: string) =
   image.canvas.fWidth = cairo_image_surface_get_width(canvas.fSurface)
   image.canvas.fHeight = cairo_image_surface_get_height(canvas.fSurface)
 
+method saveToBitmapFile(image: Image, filePath: string) =
+  let canvas = cast[CanvasImpl](image.fCanvas)
+  var pixbuf = gdk_pixbuf_get_from_surface(canvas.fSurface, 0, 0, image.width.cint, image.height.cint)
+  defer: g_object_unref(pixbuf)
+  var error: ptr GError
+  if not gdk_pixbuf_save(pixbuf, filePath, "bmp", error.addr, nil, nil, nil):
+    pRaiseGError(error)
+
 method saveToPngFile(image: Image, filePath: string) =
   let canvas = cast[CanvasImpl](image.fCanvas)
   var pixbuf = gdk_pixbuf_get_from_surface(canvas.fSurface, 0, 0, image.width.cint, image.height.cint)
@@ -597,7 +605,6 @@ method saveToPngFile(image: Image, filePath: string) =
   var error: ptr GError
   if not gdk_pixbuf_save(pixbuf, filePath, "png", error.addr, nil, nil, nil):
     pRaiseGError(error)
-
 
 method saveToJpegFile(image: Image, filePath: string, quality = 80) =
   let canvas = cast[CanvasImpl](image.fCanvas)

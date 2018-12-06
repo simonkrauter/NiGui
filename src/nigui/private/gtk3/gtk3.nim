@@ -481,6 +481,7 @@ proc pango_layout_set_font_description*(layout, desc: pointer) {.importc: "pango
 proc pango_font_description_new*(): pointer {.importc: "pango_font_description_new", libgtk3.}
 proc pango_font_description_set_family*(desc: pointer, family: cstring) {.importc: "pango_font_description_set_family", libgtk3.}
 proc pango_font_description_set_size*(desc: pointer, size: cint) {.importc: "pango_font_description_set_size", libgtk3.}
+proc pango_font_description_set_weight*(desc: pointer, size: cint) {.importc: "pango_font_description_set_weight", libgtk3.}
 # proc pango_font_description_get_size*(desc: pointer): cint {.importc: "pango_font_description_get_size", libgtk3.}
 # proc pango_layout_set_markup*(layout: pointer, markup: cstring, length: cint) {.importc: "pango_layout_set_markup", libgtk3.}
 # proc pango_layout_new*(context: pointer): pointer {.importc: "pango_layout_new", libgtk3.}

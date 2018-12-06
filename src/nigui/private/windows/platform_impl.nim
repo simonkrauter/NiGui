@@ -712,6 +712,15 @@ method loadFromFile(image: Image, filePath: string) =
   image.canvas.fWidth = width
   image.canvas.fHeight = height
 
+method saveToBitmapFile(image: Image, filePath: string) =
+  let canvas = cast[CanvasImpl](image.canvas)
+  var clsidEncoder: GUID
+  clsidEncoder.Data1 = 0x557cf400
+  clsidEncoder.Data2 = 0x11d31a04
+  clsidEncoder.Data3 = 0x0000739a
+  clsidEncoder.Data4 = 0x2ef31ef8
+  pCheckGdiplusStatus(GdipSaveImageToFile(canvas.fBitmap, filePath.pUtf8ToUtf16(), clsidEncoder.addr, nil), false)
+
 method saveToPngFile(image: Image, filePath: string) =
   let canvas = cast[CanvasImpl](image.canvas)
   var clsidEncoder: GUID

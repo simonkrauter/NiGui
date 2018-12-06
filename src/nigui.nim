@@ -482,6 +482,8 @@ method resize*(image: Image, width, height: int)
 
 method loadFromFile*(image: Image, filePath: string)
 
+method saveToBitmapFile*(image: Image, filePath: string)
+
 method saveToPngFile*(image: Image, filePath: string)
 
 method saveToJpegFile*(image: Image, filePath: string, quality = 80)
