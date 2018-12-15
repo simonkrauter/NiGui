@@ -439,8 +439,10 @@ method drawText(canvas: Canvas, text: string, x, y = 0) =
     canvas.pUpdateFont()
   pango_layout_set_font_description(layout, canvasImpl.fFont)
 
-  cairo_move_to(cr, x.float, y.float)
+  cairo_save(cr)
+  cairo_translate(cr, x.float, y.float)
   pango_cairo_show_layout(cr, layout)
+  cairo_restore(cr)
 
 method drawLine(canvas: Canvas, x1, y1, x2, y2: int) =
   let cr = cast[CanvasImpl](canvas).fCairoContext
