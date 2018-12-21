@@ -1526,7 +1526,7 @@ proc triggerRelayout(control: Control) =
   if con.parentWindow != nil:
     con.parentWindow.triggerRelayout()
   if control.parentControl != nil:
-    control.parentControl.realignChildControls()
+    control.parentControl.triggerRelayout()
   control.realignChildControls()
 
 proc triggerRelayoutIfModeIsAuto(control: Control) =
@@ -1620,6 +1620,7 @@ method fontFamily(control: Control): string = control.fFontFamily
 method `fontFamily=`(control: Control, fontFamily: string) =
   control.setFontFamily(fontFamily)
   control.fUseDefaultFontFamily = false
+  control.triggerRelayoutIfModeIsAuto()
 
 method setFontFamily(control: Control, fontFamily: string) =
   control.fFontFamily = fontFamily
@@ -1629,21 +1630,23 @@ method setFontFamily(control: Control, fontFamily: string) =
 method resetFontFamily(control: Control) =
   control.setFontFamily(fDefaultFontFamily)
   control.fUseDefaultFontFamily = true
+  control.triggerRelayoutIfModeIsAuto()
 
 method fontSize(control: Control): float = control.fFontSize
 
 method `fontSize=`(control: Control, fontSize: float) =
   control.setFontSize(fontSize)
   control.fUseDefaultFontSize = false
+  control.triggerRelayoutIfModeIsAuto()
 
 method setFontSize(control: Control, fontSize: float) =
   control.fFontSize = fontSize
-  control.triggerRelayoutIfModeIsAuto()
   # should be extended by ControlImpl
 
 method resetFontSize(control: Control) =
   control.setFontSize(fDefaultFontSize)
   control.fUseDefaultFontSize = true
+  control.triggerRelayoutIfModeIsAuto()
 
 method backgroundColor(control: Control): Color = control.fBackgroundColor
 

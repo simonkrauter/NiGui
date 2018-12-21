@@ -1040,6 +1040,13 @@ method getTextLineWidth(control: ControlImpl, text: string): int =
 
 method getTextLineHeight(control: ControlImpl): int =
   var layout = gtk_widget_create_pango_layout(control.fHandle, "a")
+
+  # Because the widget's font size is not always regarded, we have to set the font here again:
+  var font = pango_font_description_new()
+  pango_font_description_set_family(font, control.fontFamily)
+  pango_font_description_set_size(font, cint(control.fontSize * pFontSizeFactor))
+  pango_layout_set_font_description(layout, font)
+
   var width: cint = 0
   var height: cint = 0
   pango_layout_get_pixel_size(layout, width, height)
