@@ -2136,8 +2136,6 @@ method realignChildControls(container: LayoutContainer) =
         width = clientWidth - container.padding * 2
     elif control.widthMode == WidthMode_Auto:
       width = control.wantedWidth
-    # elif control.widthMode == WidthMode_Fill:
-      # width = clientWidth - container.padding * 2
 
     if control.minWidth > width:
       width = control.minWidth
@@ -2154,8 +2152,6 @@ method realignChildControls(container: LayoutContainer) =
         height = clientHeight - container.padding * 2
     elif control.heightMode == HeightMode_Auto:
       height = control.wantedHeight
-    # elif control.heightMode == HeightMode_Fill:
-      # height = clientHeight - container.padding * 2
 
     if control.minHeight > height:
       height = control.minHeight
