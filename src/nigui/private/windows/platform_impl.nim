@@ -29,7 +29,7 @@ var pLastMouseButtonDownControlY: int
 
 proc pRaiseLastOSError(showAlert = true) =
   let e = osLastError()
-  raiseError(osErrorMsg(e).strip & " (OS Error Code: " & $e & ")", showAlert)
+  raiseError(strutils.strip(osErrorMsg(e)) & " (OS Error Code: " & $e & ")", showAlert)
 
 proc pCheckGdiplusStatus(status: int32, showAlert = true) =
   if status != 0:
