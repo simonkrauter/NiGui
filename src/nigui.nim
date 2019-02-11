@@ -2114,8 +2114,12 @@ method realignChildControls(container: LayoutContainer) =
 
   if (container.xAlign == XAlign_Center or (container.xAlign == XAlign_Spread and container.childControls.len == 1)) and (container.layout == Layout_Vertical or expandWidthCount == 0):
     x.inc(dynamicWidth div 2)
+  elif container.xAlign == XAlign_Right:
+    x.inc(dynamicWidth)
   if (container.yAlign == YAlign_Center or (container.yAlign == YAlign_Spread and container.childControls.len == 1)) and (container.layout == Layout_Horizontal or expandHeightCount == 0):
     y.inc(dynamicHeight div 2)
+  elif container.yAlign == YAlign_Bottom:
+    y.inc(dynamicHeight)
 
   for control in container.fChildControls:
     if not control.visible:
