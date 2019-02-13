@@ -479,8 +479,7 @@ method run(dialog: SaveFileDialog) =
   var s = newString(maxCharacters * 2)
   if dialog.defaultName.len > 0:
     let temp = pUtf8ToUtf16(dialog.defaultName)
-    for i in 0..temp.len:
-      s[i] = temp[i]
+    copyMem(s.cstring, temp.cstring, temp.len)
   ofn.lpstrFile = s
   let ret = GetSaveFileNameW(ofn)
   if ret:
