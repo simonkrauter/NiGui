@@ -1124,6 +1124,10 @@ method pUpdateScrollBar(container: ContainerImpl) =
   # Overwrite base method
   if container.fScrollableWidth == -1 and container.fScrollableHeight == -1:
     return
+
+  if fScrollbarSize == -1:
+      return
+
   # echo "container.pUpdateScrollBar"
 
   container.fXScrollEnabled = false
