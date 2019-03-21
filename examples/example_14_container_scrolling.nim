@@ -1,8 +1,10 @@
 # This example shows an inner container with a scrollbar.
 # Result:
 # topContainer will take as many space as needed for the 5 labels.
+# scrollContainer takes the remaining space.
 # There is only one scrollbar:
-# The vertical scrollbar in scrollContainer, because it has an insufficient fixed height.
+# The vertical scrollbar in scrollContainer, because it's height is insufficient for the 25 labels.
+# When the window height is increased, the scrollbar disappears.
 
 import NiGui
 
@@ -23,7 +25,7 @@ for i in 1..5:
 
 var scrollContainer = newLayoutContainer(Layout_Vertical)
 mainContainer.add(scrollContainer)
-scrollContainer.height = 300
+scrollContainer.heightMode = HeightMode_Expand
 scrollContainer.widthMode = WidthMode_Expand
 
 for i in 1..25:
