@@ -1126,6 +1126,21 @@ method pUpdateScrollBar(container: ContainerImpl) =
     return
   # echo "container.pUpdateScrollBar"
 
+  container.fXScrollEnabled = false
+  container.fYScrollEnabled = false
+
+  if container.scrollableWidth > container.width:
+    container.fXScrollEnabled = true
+  if container.scrollableHeight > container.height:
+    container.fYScrollEnabled = true
+
+  if container.fXScrollEnabled and not container.fYScrollEnabled and container.scrollableHeight > container.height - fScrollbarSize:
+    container.fYScrollEnabled = true
+  if container.fYScrollEnabled and not container.fXScrollEnabled and container.scrollableWidth > container.width - fScrollbarSize:
+    container.fXScrollEnabled = true
+
+  # TODO: move to common part
+
   var xPolicy: cint = GTK_POLICY_NEVER
   var yPolicy: cint = GTK_POLICY_NEVER
   if container.fXScrollEnabled:
