@@ -1585,15 +1585,19 @@ method getTextWidth(control: Control, text: string): int =
   for line in text.splitLines:
     result = max(result, control.getTextLineWidth(line))
 
-method visibleWidth(control: Control): int =
-  result = control.width
+method xScrollbarSpace(control: Control): int =
+  if control.fYScrollEnabled:
+    result.inc(fScrollbarSize)
+
+method yScrollbarSpace(control: Control): int =
   if control.fXScrollEnabled:
-    result.dec(fScrollbarSize)
+    result.inc(fScrollbarSize)
+
+method visibleWidth(control: Control): int =
+  result = control.width - control.xScrollbarSpace
 
 method visibleHeight(control: Control): int =
-  result = control.height
-  if control.fYScrollEnabled:
-    result.dec(fScrollbarSize)
+  result = control.height - control.yScrollbarSpace
 
 method xScrollPos(control: Control): int = control.fXScrollPos
 
@@ -1809,6 +1813,7 @@ method minWidth(container: Container): int =
   let padding = container.getPadding()
   result.inc(padding.left)
   result.inc(padding.right)
+  result.inc(container.xScrollbarSpace)
   result = max(result, container.fMinWidth)
 
 method minHeight(container: Container): int =
@@ -1820,6 +1825,7 @@ method minHeight(container: Container): int =
   let padding = container.getPadding()
   result.inc(padding.top)
   result.inc(padding.bottom)
+  result.inc(container.yScrollbarSpace)
   result = max(result, container.fMinHeight)
 
 method naturalWidth(container: Container): int =
@@ -1837,6 +1843,7 @@ method naturalWidth(container: Container): int =
   let padding = container.getPadding()
   result.inc(padding.left)
   result.inc(padding.right)
+  result.inc(container.xScrollbarSpace)
   if container.frame != nil and container.frame.visible:
     result = max(result, container.frame.naturalWidth)
 
@@ -1855,6 +1862,7 @@ method naturalHeight(container: Container): int =
   let padding = container.getPadding()
   result.inc(padding.top)
   result.inc(padding.bottom)
+  result.inc(container.yScrollbarSpace)
 
 method getPadding(container: Container): Spacing =
   if container.frame != nil and container.frame.visible:
@@ -1865,8 +1873,8 @@ method setInnerSize(container: Container, width, height: int) = discard
 
 method updateInnerSize(container: Container, pInnerWidth, pInnerHeight: int) {.base.} =
   let padding = container.getPadding()
-  let clientWidth = container.width - padding.left - padding.right
-  let clientHeight = container.height - padding.top - padding.bottom
+  let clientWidth = container.visibleWidth - padding.left - padding.right
+  let clientHeight = container.visibleHeight - padding.top - padding.bottom
   var innerWidth = pInnerWidth
   var innerHeight = pInnerHeight
 
@@ -1888,6 +1896,7 @@ method updateInnerSize(container: Container, pInnerWidth, pInnerHeight: int) {.b
 
   container.scrollableWidth = innerWidth
   container.scrollableHeight = innerHeight
+
   container.setInnerSize(innerWidth, innerHeight)
 
 method realignChildControls(container: Container) =
@@ -1898,7 +1907,7 @@ method realignChildControls(container: Container) =
     innerWidth = container.width
   if innerHeight == -1:
     innerHeight = container.height
-  container.updateInnerSize(innerWidth - padding.left - padding.right, innerHeight - padding.top - padding.bottom)
+  container.updateInnerSize(innerWidth - padding.left - padding.right - container.xScrollbarSpace, innerHeight - padding.top - padding.bottom - container.yScrollbarSpace)
 
 method `onDraw=`(container: ContainerImpl, callback: DrawProc) = raiseError("ContainerImpl does not allow onDraw.")
 
@@ -1938,6 +1947,7 @@ method naturalWidth(container: LayoutContainer): int =
   result.inc(container.padding * 2)
   if container.layout == Layout_Horizontal and container.childControls.len > 1:
     result.inc(container.spacing * (container.childControls.len - 1))
+  result.inc(container.xScrollbarSpace)
   if container.frame != nil and container.frame.visible:
     result = max(result, container.frame.naturalWidth)
 
@@ -1960,6 +1970,7 @@ method naturalHeight(container: LayoutContainer): int =
   result.inc(padding.top)
   result.inc(padding.bottom)
   result.inc(container.padding * 2)
+  result.inc(container.yScrollbarSpace)
   if container.layout == Layout_Vertical and container.childControls.len > 1:
     result.inc(container.spacing * (container.childControls.len - 1))
 
@@ -1978,6 +1989,7 @@ method minWidth(container: LayoutContainer): int =
   result.inc(container.padding * 2)
   if container.layout == Layout_Horizontal and container.childControls.len > 1:
     result.inc(container.spacing * (container.childControls.len - 1))
+  result.inc(container.xScrollbarSpace)
   result = max(result, container.fMinWidth)
 
 method minHeight(container: LayoutContainer): int =
@@ -1995,6 +2007,7 @@ method minHeight(container: LayoutContainer): int =
   result.inc(container.padding * 2)
   if container.layout == Layout_Vertical and container.childControls.len > 1:
     result.inc(container.spacing * (container.childControls.len - 1))
+  result.inc(container.yScrollbarSpace)
   result = max(result, container.fMinHeight)
 
 method setControlPosition(container: LayoutContainer, control: Control, x, y: int) =
@@ -2037,8 +2050,9 @@ method realignChildControls(container: LayoutContainer) =
     return
   # echo "  container size: " & $container.width & ", " & $container.height
   let padding = container.getPadding()
-  let clientWidth = container.width - padding.left - padding.right
-  let clientHeight = container.height - padding.top - padding.bottom
+  let clientWidth = container.visibleWidth - padding.left - padding.right
+  let clientHeight = container.visibleHeight - padding.top - padding.bottom
+
   # echo "  client size: " & $clientWidth & ", " & $clientHeight
   var minInnerWidth = 0
   var minInnerHeight = 0
