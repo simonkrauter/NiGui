@@ -6,7 +6,7 @@ app.init()
 
 var window = newWindow()
 
-var container = newLayoutContainer()
+var container = newLayoutContainer(Layout_Vertical)
 window.add(container)
 
 var button = newButton("Raise Exception")
