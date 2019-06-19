@@ -815,17 +815,19 @@ method `visible=`(window: WindowImpl, visible: bool) =
   else:
     pShowWindow(window.fHandle, SW_HIDE)
 
-method showModal(window, parent: WindowImpl) =
+method showModal(window: WindowImpl, parent: Window) =
+  # Overwrite base method
+
   # Set window owner, to hide it from the taskbar
-  discard pSetWindowLongPtr(window.fHandle, GWL_HWNDPARENT, parent.fHandle)
+  discard pSetWindowLongPtr(window.fHandle, GWL_HWNDPARENT, cast[WindowImpl](parent).fHandle)
 
   # Hide minimize and maximize buttons:
   pSetWindowLong(window.fHandle, GWL_STYLE, WS_CAPTION or WS_THICKFRAME or WS_SYSMENU)
   # pSetWindowLong(window.fHandle, GWL_EXSTYLE, WS_EX_TOOLWINDOW) # does not look good
 
-  window.fModalParent = parent
+  window.fModalParent = cast[WindowImpl](parent)
   window.visible = true
-  discard EnableWindow(parent.fHandle, false)
+  discard EnableWindow(cast[WindowImpl](parent).fHandle, false)
 
 method minimize(window: WindowImpl) =
   procCall window.Window.minimize()
@@ -1267,9 +1269,10 @@ method `frame=`(container: ContainerImpl, frame: Frame) =
     pSetParent(frame.fHandle, container.fHandle)
   container.pUpdateScrollWnd()
 
-method add(container: ContainerImpl, control: ControlImpl) =
+method add(container: ContainerImpl, control: Control) =
+  # Overwrite base method
   procCall container.Container.add(control)
-  pSetParent(control.fHandle, container.fInnerHandle)
+  pSetParent(cast[ControlImpl](control).fHandle, container.fInnerHandle)
 
 method remove(container: ContainerImpl, control: ControlImpl) =
   procCall container.Container.remove(control)

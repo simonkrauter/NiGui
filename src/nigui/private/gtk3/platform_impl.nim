@@ -749,9 +749,10 @@ method `visible=`(window: WindowImpl, visible: bool) =
     gtk_widget_hide(window.fHandle)
   app.processEvents()
 
-method showModal(window, parent: WindowImpl) =
+method showModal(window: WindowImpl, parent: Window) =
+  # Overwrite base method
   gtk_window_set_modal(window.fHandle, 1)
-  gtk_window_set_transient_for(window.fHandle, parent.fHandle)
+  gtk_window_set_transient_for(window.fHandle, cast[WindowImpl](parent).fHandle)
   window.visible = true
 
 method minimize(window: WindowImpl) =
@@ -1103,8 +1104,9 @@ method `frame=`(container: ContainerImpl, frame: Frame) =
     gtk_container_add(container.fHandle, frame.fHandle)
   container.pUpdateScrollWnd()
 
-method add(container: ContainerImpl, control: ControlImpl) =
-  gtk_container_add(container.fInnerHandle, control.fHandle)
+method add(container: ContainerImpl, control: Control) =
+  # Overwrite base method
+  gtk_container_add(container.fInnerHandle, cast[ControlImpl](control).fHandle)
   procCall container.Container.add(control)
 
 method paddingLeft(container: ContainerImpl): int = 5 # TODO
