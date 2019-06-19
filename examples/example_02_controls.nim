@@ -22,7 +22,7 @@ var textBox = newTextBox("TextBox")
 container.add(textBox)
 
 # Add a TextArea control:
-var textArea = newTextArea("TextArea\nLine 2\n")
+var textArea = newTextArea("TextArea\pLine 2\p")
 container.add(textArea)
 
 # Add more text to the TextArea:
