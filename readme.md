@@ -1,7 +1,7 @@
 NiGui
 =====
 
-NiGui is a cross-platform, desktop GUI toolkit written in [Nim](https://nim-lang.org/).<br>
+NiGui is a cross-platform desktop GUI toolkit written in [Nim](https://nim-lang.org/).<br>
 NiGui provides an easy way to develop applications in Nim with a full-featured graphical user interface.
 
 Target platforms:
