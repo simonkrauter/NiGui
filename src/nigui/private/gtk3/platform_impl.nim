@@ -792,9 +792,10 @@ method `title=`(window: WindowImpl, title: string) =
   procCall window.Window.`title=`(title)
   gtk_window_set_title(window.fHandle, window.title.cstring)
 
-method `control=`(window: WindowImpl, control: ControlImpl) =
+method `control=`(window: WindowImpl, control: Control) =
+  # Overwrite base method
   procCall window.Window.`control=`(control)
-  gtk_container_add(window.fInnerHandle, control.fHandle)
+  gtk_container_add(window.fInnerHandle, cast[ControlImpl](control).fHandle)
 
 method `iconPath=`(window: WindowImpl, iconPath: string) =
   procCall window.Window.`iconPath=`(iconPath)

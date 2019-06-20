@@ -875,12 +875,13 @@ method `title=`(window: WindowImpl, title: string) =
   procCall window.Window.`title=`(title)
   pSetWindowText(window.fHandle, window.title)
 
-method `control=`(window: WindowImpl, control: ControlImpl) =
+method `control=`(window: WindowImpl, control: Control) =
+  # Overwrite base method
   if window.control != nil:
     pSetParent(cast[ControlImpl](window.control).fHandle, pDefaultParentWindow)
     window.control.fParentWindow = nil
   procCall window.Window.`control=`(control)
-  pSetParent(control.fHandle, window.fHandle)
+  pSetParent(cast[ControlImpl](control).fHandle, window.fHandle)
 
 method `iconPath=`(window: WindowImpl, iconPath: string) =
   procCall window.Window.`iconPath=`(iconPath)
