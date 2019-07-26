@@ -383,6 +383,9 @@ proc isDown*(key: Key): bool
 
 proc downKeys*(): seq[Key]
 
+proc scaleToDpi*(val: int): int
+proc scaleToDpi*(val: float): float
+
 
 # ----------------------------------------------------------------------------------------
 #                                       Dialogs
@@ -924,17 +927,22 @@ import unicode
 #                                   Global Variables
 # ----------------------------------------------------------------------------------------
 
+const 
+  defaultDpi = 96
+  defaultFontSizeForDefaultDpi = 12.0
+
 var
   fErrorHandler: ErrorHandlerProc = nil
   windowList: seq[Window] = @[]
   fScrollbarSize = -1
   fDownKeys: seq[Key] = @[]
-
+  fSystemDpi = defaultDpi
+  
   # Default style:
   fDefaultBackgroundColor: Color # initialized by platform-specific init()
   fDefaultTextColor: Color # initialized by platform-specific init()
   fDefaultFontFamily = ""
-  fDefaultFontSize = 15.float
+  fDefaultFontSize = defaultFontSizeForDefaultDpi
 
 
 # ----------------------------------------------------------------------------------------
@@ -1055,6 +1063,9 @@ proc newSaveFileDialog(): SaveFileDialog =
 proc isDown(key: Key): bool = fDownKeys.contains(key)
 
 proc downKeys(): seq[Key] = fDownKeys
+
+proc scaleToDpi(val: int): int = (val * fSystemDpi) div defaultDpi
+proc scaleToDpi(val: float): float = val * fSystemDpi.float / defaultDpi.float
 
 proc internalKeyDown(key: Key) =
   if not fDownKeys.contains(key):
@@ -1365,8 +1376,8 @@ proc init(control: Control) =
   control.tag = ""
   control.fWidthMode = WidthMode_Static
   control.fHeightMode = HeightMode_Static
-  control.fWidth = 50
-  control.fheight = 50
+  control.fWidth = 50.scaleToDpi
+  control.fheight = 50.scaleToDpi
   control.fScrollableWidth = -1
   control.fScrollableHeight = -1
   control.resetFontFamily()
@@ -1648,7 +1659,7 @@ method setFontSize(control: Control, fontSize: float) =
   # should be extended by ControlImpl
 
 method resetFontSize(control: Control) =
-  control.setFontSize(fDefaultFontSize)
+  control.setFontSize(app.defaultFontSize)
   control.fUseDefaultFontSize = true
   control.triggerRelayoutIfModeIsAuto()
 
@@ -1922,8 +1933,8 @@ proc newLayoutContainer(layout: Layout): LayoutContainer =
   result.layout = layout
   result.xAlign = XAlign_Left
   result.yAlign = YAlign_Top
-  result.spacing = 4
-  result.padding = 2
+  result.spacing = 4.scaleToDpi
+  result.padding = 2.scaleToDpi
 
 method naturalWidth(container: LayoutContainer): int =
   # echo container.tag & ".naturalWidth"
@@ -2232,10 +2243,10 @@ method `text=`(frame: Frame, text: string) =
   # should be extended by NativeFrame
 
 method getPadding(frame: Frame): Spacing =
-  result.left = 4
-  result.right = 4
-  result.top = 4
-  result.bottom = 4
+  result.left = 4.scaleToDpi
+  result.right = 4.scaleToDpi
+  result.top = 4.scaleToDpi
+  result.bottom = 4.scaleToDpi
   # should be extended by NativeFrame
 
 method `onDraw=`(container: NativeFrame, callback: DrawProc) = raiseError("NativeFrame does not allow onDraw.")
@@ -2256,8 +2267,8 @@ proc init(button: Button) =
   button.fOnClick = nil
   button.fWidthMode = WidthMode_Auto
   button.fHeightMode = HeightMode_Auto
-  button.minWidth = 15
-  button.minHeight = 15
+  button.minWidth = 15.scaleToDpi
+  button.minHeight = 15.scaleToDpi
   button.enabled = true
 
 method text(button: Button): string = button.fText
@@ -2302,8 +2313,8 @@ proc init(label: Label) =
   label.fText = ""
   label.fWidthMode = WidthMode_Auto
   label.fHeightMode = HeightMode_Auto
-  label.minWidth = 10
-  label.minHeight = 10
+  label.minWidth = 10.scaleToDpi
+  label.minHeight = 10.scaleToDpi
 
 method text(label: Label): string = label.fText
 
@@ -2333,8 +2344,8 @@ proc init(textBox: TextBox) =
   textBox.ControlImpl.init()
   textBox.fWidthMode = WidthMode_Expand
   textBox.fHeightMode = HeightMode_Auto
-  textBox.minWidth = 20
-  textBox.minHeight = 20
+  textBox.minWidth = 20.scaleToDpi
+  textBox.minHeight = 20.scaleToDpi
   textBox.editable = true
 
 method naturalHeight(textBox: TextBox): int = textBox.getTextLineHeight()
@@ -2393,8 +2404,8 @@ proc init(textArea: TextArea) =
   textArea.ControlImpl.init()
   textArea.fWidthMode = WidthMode_Expand
   textArea.fHeightMode = HeightMode_Expand
-  textArea.minWidth = 20
-  textArea.minHeight = 20
+  textArea.minWidth = 20.scaleToDpi
+  textArea.minHeight = 20.scaleToDpi
   textArea.wrap = true
   textArea.editable = true
 

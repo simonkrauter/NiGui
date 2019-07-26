@@ -13,8 +13,8 @@ var window = newWindow("NiGui Example")
 # A window can contain only one control.
 # A container can contain multiple controls.
 
-window.width = 600
-window.height = 400
+window.width = 600.scaleToDpi
+window.height = 400.scaleToDpi
 # Set the size of the window
 
 # window.iconPath = "example_01_basic_app.png"

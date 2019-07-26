@@ -17,7 +17,6 @@ import tables
 const pTopLevelWindowClass = "1"
 const pContainerWindowClass = "2"
 const pCustomControlWindowClass = "3"
-
 var pDefaultParentWindow: pointer
 var pKeyState: KeyState
 var pKeyDownKey: Key
@@ -37,7 +36,7 @@ proc pCheckGdiplusStatus(status: int32, showAlert = true) =
       pRaiseLastOSError(showAlert)
     else:
       raiseError("A GDI+ error occured. (Status: " & $status & ")", showAlert)
-
+  
 proc pColorToRGB32(color: Color): RGB32 =
   result.red = color.red
   result.green = color.green
@@ -379,6 +378,10 @@ proc init(app: App) =
   app.defaultBackgroundColor = GetSysColor(COLOR_BTNFACE).pRgb32ToColor()
   app.defaultFontFamily = "Arial"
   fScrollbarSize = GetSystemMetrics(SM_CXVSCROLL)
+  # High DPI support:
+  discard SetProcessDpiAwareness(PROCESS_SYSTEM_DPI_AWARE)
+  fSystemDpi = GetDpiForWindow(pDefaultParentWindow)
+  fDefaultFontSize = defaultFontSizeForDefaultDpi.scaleToDpi
 
 proc runMainLoop() =
   var msg: Msg

@@ -22,7 +22,7 @@ proc buttonClick(event: ClickEvent) =
   event.control.parentWindow.dispose()
 
 proc msgBox*(parent: Window, message: string, title = "Message", button1 = "OK", button2, button3: string = ""): int {.discardable.}  =
-  const buttonMinWidth = 100
+  const buttonMinWidth = 100.scaleToDpi
   var window = new MessageBoxWindow
   window.init()
   window.title = title
@@ -32,7 +32,7 @@ proc msgBox*(parent: Window, message: string, title = "Message", button1 = "OK",
       window.dispose()
 
   var container = newLayoutContainer(Layout_Vertical)
-  container.padding = 10
+  container.padding = 10.scaleToDpi
   window.control = container
 
   var labelContainer = newLayoutContainer(Layout_Horizontal)
@@ -46,7 +46,7 @@ proc msgBox*(parent: Window, message: string, title = "Message", button1 = "OK",
   var buttonContainer = newLayoutContainer(Layout_Horizontal)
   buttonContainer.widthMode = WidthMode_Expand
   buttonContainer.xAlign = XAlign_Center
-  buttonContainer.spacing = 12
+  buttonContainer.spacing = 12.scaleToDpi
   container.add(buttonContainer)
   var b1, b2, b3: Button
 
@@ -68,8 +68,8 @@ proc msgBox*(parent: Window, message: string, title = "Message", button1 = "OK",
     b3.onClick = buttonClick
     buttonContainer.add(b3)
 
-  window.width = min(max(label.width + 40, buttonMinWidth * 3 + 65), 600)
-  window.height = min(label.height, 300) + buttonContainer.height + 70
+  window.width = min(max(label.width + 40.scaleToDpi, buttonMinWidth * 3 + 65.scaleToDpi), 600.scaleToDpi)
+  window.height = min(label.height, 300.scaleToDpi) + buttonContainer.height + 70.scaleToDpi
 
   # Center message box on window:
   window.x = parent.x + ((parent.width - window.width) div 2)

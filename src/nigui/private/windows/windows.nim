@@ -24,6 +24,7 @@
 {.pragma: libShell32, stdcall, dynlib: "Shell32.dll".}
 {.pragma: libGdiplus, stdcall, dynlib: "Gdiplus.dll".}
 {.pragma: libComdlg32, stdcall, dynlib: "Comdlg32.dll".}
+{.pragma: libShcore, stdcall, dynlib: "Shcore.dll".}
 
 
 # ----------------------------------------------------------------------------------------
@@ -190,7 +191,9 @@ const
   PixelFormat32bppARGB* = 2498570
   ImageLockModeWrite* = 2
   MAPVK_VSC_TO_VK_EX* = 3
-
+  PROCESS_DPI_UNAWARE* = 0
+  PROCESS_SYSTEM_DPI_AWARE* = 1
+  PROCESS_PER_MONITOR_DPI_AWARE* = 2
 
 
 # ----------------------------------------------------------------------------------------
@@ -428,6 +431,7 @@ proc GetClipboardData*(uFormat: int32): pointer {.importc: "GetClipboardData", l
 proc SetClipboardData*(uFormat: int32, hMem: pointer): pointer {.importc: "SetClipboardData", libUser32.}
 proc EmptyClipboard*(): bool {.importc: "EmptyClipboard", libUser32.}
 proc MapVirtualKeyW*(uCode, uMapType: int32): int32 {.importc: "MapVirtualKeyW", libUser32.}
+proc GetDpiForWindow*(hWnd: pointer): int32 {.importc: "GetDpiForWindow", libUser32.}
 
 when defined(cpu64):
   # Only available on 64-bit Windows:
@@ -522,4 +526,11 @@ proc DragFinish*(hDrop: pointer) {.importc: "DragFinish", libShell32.}
 proc CommDlgExtendedError*(): int32 {.importc: "CommDlgExtendedError", libComdlg32.}
 proc GetOpenFileNameW*(lpofn: var OpenFileName): bool {.importc: "GetOpenFileNameW", libComdlg32.}
 proc GetSaveFileNameW*(lpofn: var OpenFileName): bool {.importc: "GetSaveFileNameW", libComdlg32.}
+
+
+# ----------------------------------------------------------------------------------------
+#                                       Comdlg32 Procs
+# ----------------------------------------------------------------------------------------
+
+proc SetProcessDpiAwareness*(value: int32): int32 {.importc: "SetProcessDpiAwareness", libShcore.}
 
