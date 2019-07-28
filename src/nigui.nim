@@ -927,9 +927,9 @@ import unicode
 #                                   Global Variables
 # ----------------------------------------------------------------------------------------
 
-const 
+const
   defaultDpi = 96
-  defaultFontSizeForDefaultDpi = 12.0
+  defaultFontSizeForDefaultDpi = 15.0
 
 var
   fErrorHandler: ErrorHandlerProc = nil
@@ -937,7 +937,7 @@ var
   fScrollbarSize = -1
   fDownKeys: seq[Key] = @[]
   fSystemDpi = defaultDpi
-  
+
   # Default style:
   fDefaultBackgroundColor: Color # initialized by platform-specific init()
   fDefaultTextColor: Color # initialized by platform-specific init()
