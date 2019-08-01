@@ -2280,9 +2280,9 @@ method `text=`(button: Button, text: string) =
   button.forceRedraw()
   # should be extended by NativeButton
 
-method naturalWidth(button: Button): int = button.getTextWidth(button.text) + 20
+method naturalWidth(button: Button): int = button.getTextWidth(button.text) + 20.scaleToDpi
 
-method naturalHeight(button: Button): int = button.getTextLineHeight() * button.text.countLines + 12
+method naturalHeight(button: Button): int = button.getTextLineHeight() * button.text.countLines + 12.scaleToDpi
 
 method enabled(button: Button): bool = button.fEnabled
 
