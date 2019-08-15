@@ -22,7 +22,7 @@ proc buttonClick(event: ClickEvent) =
   event.control.parentWindow.dispose()
 
 proc msgBox*(parent: Window, message: string, title = "Message", button1 = "OK", button2, button3: string = ""): int {.discardable.}  =
-  const buttonMinWidth = 100.scaleToDpi
+  let buttonMinWidth = 100.scaleToDpi
   var window = new MessageBoxWindow
   window.init()
   window.title = title
