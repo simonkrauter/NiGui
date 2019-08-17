@@ -8,6 +8,7 @@
 # math, os, strutils, times are imported by nigui.nim
 import windows
 import tables
+import dynlib
 
 
 # ----------------------------------------------------------------------------------------
@@ -36,7 +37,7 @@ proc pCheckGdiplusStatus(status: int32, showAlert = true) =
       pRaiseLastOSError(showAlert)
     else:
       raiseError("A GDI+ error occured. (Status: " & $status & ")", showAlert)
-  
+
 proc pColorToRGB32(color: Color): RGB32 =
   result.red = color.red
   result.green = color.green
@@ -367,6 +368,19 @@ proc pGetTextSize(hDC, font: pointer, text: string): Size =
 #                                    App Procedures
 # ----------------------------------------------------------------------------------------
 
+proc pEnableHighDpiSupport() =
+  let shcoreLib = loadLib("Shcore.dll")
+  if shcoreLib == nil:
+    return
+  let SetProcessDpiAwareness = cast[SetProcessDpiAwarenessType](shcoreLib.symAddr("SetProcessDpiAwareness"))
+  discard SetProcessDpiAwareness(PROCESS_SYSTEM_DPI_AWARE)
+  let user32Lib = loadLib("User32.dll")
+  if user32Lib == nil:
+    return
+  let GetDpiForWindow = cast[GetDpiForWindowType](user32Lib.symAddr("GetDpiForWindow"))
+  fSystemDpi = GetDpiForWindow(pDefaultParentWindow)
+  fDefaultFontSize = defaultFontSizeForDefaultDpi.scaleToDpi
+
 proc init(app: App) =
   pInitGdiplus()
   pEnableVisualStyles()
@@ -378,10 +392,7 @@ proc init(app: App) =
   app.defaultBackgroundColor = GetSysColor(COLOR_BTNFACE).pRgb32ToColor()
   app.defaultFontFamily = "Arial"
   fScrollbarSize = GetSystemMetrics(SM_CXVSCROLL)
-  # High DPI support:
-  discard SetProcessDpiAwareness(PROCESS_SYSTEM_DPI_AWARE)
-  fSystemDpi = GetDpiForWindow(pDefaultParentWindow)
-  fDefaultFontSize = defaultFontSizeForDefaultDpi.scaleToDpi
+  pEnableHighDpiSupport()
 
 proc runMainLoop() =
   var msg: Msg

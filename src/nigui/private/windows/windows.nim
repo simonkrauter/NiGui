@@ -24,7 +24,6 @@
 {.pragma: libShell32, stdcall, dynlib: "Shell32.dll".}
 {.pragma: libGdiplus, stdcall, dynlib: "Gdiplus.dll".}
 {.pragma: libComdlg32, stdcall, dynlib: "Comdlg32.dll".}
-{.pragma: libShcore, stdcall, dynlib: "Shcore.dll".}
 
 
 # ----------------------------------------------------------------------------------------
@@ -431,7 +430,8 @@ proc GetClipboardData*(uFormat: int32): pointer {.importc: "GetClipboardData", l
 proc SetClipboardData*(uFormat: int32, hMem: pointer): pointer {.importc: "SetClipboardData", libUser32.}
 proc EmptyClipboard*(): bool {.importc: "EmptyClipboard", libUser32.}
 proc MapVirtualKeyW*(uCode, uMapType: int32): int32 {.importc: "MapVirtualKeyW", libUser32.}
-proc GetDpiForWindow*(hWnd: pointer): int32 {.importc: "GetDpiForWindow", libUser32.}
+
+type GetDpiForWindowType* = proc(hWnd: pointer): int32 {.gcsafe, stdcall.} # not available on Windows 7
 
 when defined(cpu64):
   # Only available on 64-bit Windows:
@@ -529,8 +529,7 @@ proc GetSaveFileNameW*(lpofn: var OpenFileName): bool {.importc: "GetSaveFileNam
 
 
 # ----------------------------------------------------------------------------------------
-#                                       Comdlg32 Procs
+#                                       Shcore Procs
 # ----------------------------------------------------------------------------------------
 
-proc SetProcessDpiAwareness*(value: int32): int32 {.importc: "SetProcessDpiAwareness", libShcore.}
-
+type SetProcessDpiAwarenessType* = proc(value: int32): int32 {.gcsafe, stdcall.} # not available on Windows 7
