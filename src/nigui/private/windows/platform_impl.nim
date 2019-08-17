@@ -562,7 +562,12 @@ proc pUpdateFont(canvas: Canvas) =
   if canvasImpl.fFont == nil:
     var fontFamily: pointer
     pCheckGdiplusStatus(GdipCreateFontFamilyFromName(canvas.fontFamily.pUtf8ToUtf16(), nil, fontFamily))
-    pCheckGdiplusStatus(GdipCreateFont(fontFamily, canvas.fontSize, 0, UnitPixel, canvasImpl.fFont))
+    let style: int32 =
+      if canvas.fontBold:
+        FontStyleBold
+      else:
+        FontStyleRegular
+    pCheckGdiplusStatus(GdipCreateFont(fontFamily, canvas.fontSize, style, UnitPixel, canvasImpl.fFont))
     pCheckGdiplusStatus(GdipDeleteFontFamily(fontFamily))
 
 proc pDeleteFont(canvas: CanvasImpl) =
@@ -692,6 +697,10 @@ method `fontFamily=`(canvas: CanvasImpl, fontFamily: string) =
 
 method `fontSize=`(canvas: CanvasImpl, fontSize: float) =
   procCall canvas.Canvas.`fontSize=`(fontSize)
+  canvas.pDeleteFont()
+
+method `fontBold=`(canvas: CanvasImpl, fontBold: bool) =
+  procCall canvas.Canvas.`fontBold=`(fontBold)
   canvas.pDeleteFont()
 
 method `textColor=`(canvas: CanvasImpl, color: Color) =
@@ -1022,7 +1031,12 @@ method forceRedraw(control: ControlImpl) = discard InvalidateRect(control.fHandl
 proc pUpdateFont(control: ControlImpl) =
   if control.fFont != nil:
     discard DeleteObject(control.fFont)
-  control.fFont = CreateFontA(control.fontSize.int32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, control.fontFamily)
+  let fontWeight: int32 =
+    if control.fontBold:
+      700
+    else:
+      400
+  control.fFont = CreateFontA(control.fontSize.int32, 0, 0, 0, fontWeight, 0, 0, 0, 0, 0, 0, 0, 0, control.fontFamily)
   discard SendMessageA(control.fHandle, WM_SETFONT, control.fFont, cast[pointer](true))
 
 method setFontFamily(control: ControlImpl, fontFamily: string) =
@@ -1031,6 +1045,10 @@ method setFontFamily(control: ControlImpl, fontFamily: string) =
 
 method setFontSize(control: ControlImpl, fontSize: float) =
   procCall control.Control.setFontSize(fontSize)
+  control.pUpdateFont()
+
+method setFontBold(control: ControlImpl, fontBold: bool) =
+  procCall control.Control.setFontBold(fontBold)
   control.pUpdateFont()
 
 # method `setBackgroundColor=`(control: ControlImpl, color: Color) =

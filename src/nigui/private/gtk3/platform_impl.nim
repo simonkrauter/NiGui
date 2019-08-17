@@ -262,6 +262,15 @@ proc pSetDragDest(widget: pointer) =
   target.info = 0
   gtk_drag_dest_set(widget, GTK_DEST_DEFAULT_ALL, target.addr, 1, GDK_ACTION_COPY)
 
+proc pCreateFont(fontFamily: string, fontSize: float, fontBold: bool): pointer =
+  result = pango_font_description_new()
+  pango_font_description_set_family(result, fontFamily)
+  pango_font_description_set_size(result, cint(fontSize * pFontSizeFactor))
+  if fontBold:
+    pango_font_description_set_weight(result, 700)
+  else:
+    pango_font_description_set_weight(result, 400)
+
 
 # ----------------------------------------------------------------------------------------
 #                                    App Procedures
@@ -413,15 +422,14 @@ proc stop(timer: var Timer) =
     discard g_source_remove(timerEntry.timerInternalId)
     timer = cast[Timer](inactiveTimer)
 
+
 # ----------------------------------------------------------------------------------------
 #                                       Canvas
 # ----------------------------------------------------------------------------------------
 
 proc pUpdateFont(canvas: Canvas) =
   let canvasImpl = cast[CanvasImpl](canvas)
-  canvasImpl.fFont = pango_font_description_new()
-  pango_font_description_set_family(canvasImpl.fFont, canvas.fontFamily)
-  pango_font_description_set_size(canvasImpl.fFont, cint(canvas.fontSize * pFontSizeFactor))
+  canvasImpl.fFont = pCreateFont(canvas.fontFamily, canvas.fontSize, canvas.fontBold)
 
 method drawText(canvas: Canvas, text: string, x, y = 0) =
   let canvasImpl = cast[CanvasImpl](canvas)
@@ -577,6 +585,10 @@ method `fontFamily=`(canvas: CanvasImpl, fontFamily: string) =
 
 method `fontSize=`(canvas: CanvasImpl, fontSize: float) =
   procCall canvas.Canvas.`fontSize=`(fontSize)
+  canvas.fFont = nil
+
+method `fontBold=`(canvas: CanvasImpl, fontBold: bool) =
+  procCall canvas.Canvas.`fontBold=`(fontBold)
   canvas.fFont = nil
 
 method getTextLineWidth(canvas: CanvasImpl, text: string): int =
@@ -847,9 +859,7 @@ proc pControlScollYSignal(adjustment: pointer, data: pointer) {.cdecl.} =
   control.forceRedraw()
 
 proc pUpdateFont(control: ControlImpl) =
-  var font = pango_font_description_new()
-  pango_font_description_set_family(font, control.fontFamily)
-  pango_font_description_set_size(font, cint(control.fontSize * pFontSizeFactor))
+  var font = pCreateFont(control.fontFamily, control.fontSize, control.fontBold)
   gtk_widget_modify_font(control.fHandle, font)
   var rgba: GdkRGBA
   control.textColor.pColorToGdkRGBA(rgba)
@@ -1023,6 +1033,10 @@ method setFontSize(control: ControlImpl, fontSize: float) =
   procCall control.Control.setFontSize(fontSize)
   control.pUpdateFont()
 
+method setFontBold(control: ControlImpl, fontBold: bool) =
+  procCall control.Control.setFontBold(fontBold)
+  control.pUpdateFont()
+
 method setTextColor(control: ControlImpl, color: Color) =
   procCall control.Control.setTextColor(color)
   control.pUpdateFont()
@@ -1045,9 +1059,7 @@ method getTextLineHeight(control: ControlImpl): int =
   var layout = gtk_widget_create_pango_layout(control.fHandle, "a")
 
   # Because the widget's font size is not always regarded, we have to set the font here again:
-  var font = pango_font_description_new()
-  pango_font_description_set_family(font, control.fontFamily)
-  pango_font_description_set_size(font, cint(control.fontSize * pFontSizeFactor))
+  var font = pCreateFont(control.fontFamily, control.fontSize, control.fontBold)
   pango_layout_set_font_description(layout, font)
 
   var width: cint = 0

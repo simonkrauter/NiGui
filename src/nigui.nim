@@ -184,6 +184,7 @@ type
     fScrollableWidth, fScrollableHeight: int
     fFontFamily: string
     fFontSize: float
+    fFontBold: bool
     fTextColor: Color
     fBackgroundColor: Color
     fUseDefaultFontFamily: bool
@@ -208,6 +209,7 @@ type
     fHeight: int
     fFontFamily: string
     fFontSize: float
+    fFontBold: bool
     fTextColor: Color
     fLineColor: Color
     fLineWidth: float
@@ -443,6 +445,9 @@ method `fontFamily=`*(canvas: Canvas, fontFamily: string)
 
 method fontSize*(canvas: Canvas): float
 method `fontSize=`*(canvas: Canvas, fontSize: float)
+
+method fontBold*(canvas: Canvas): bool
+method `fontBold=`*(canvas: Canvas, fontBold: bool)
 
 method textColor*(canvas: Canvas): Color
 method `textColor=`*(canvas: Canvas, color: Color)
@@ -700,6 +705,10 @@ method fontSize*(control: Control): float
 method `fontSize=`*(control: Control, fontSize: float)
 method setFontSize*(control: Control, fontSize: float)
 method resetFontSize*(control: Control)
+
+method fontBold*(control: Control): bool
+method `fontBold=`*(control: Control, fontBold: bool)
+method setFontBold*(control: Control, fontBold: bool)
 
 method backgroundColor*(control: Control): Color
 method `backgroundColor=`*(control: Control, color: Color)
@@ -1114,6 +1123,10 @@ method `fontFamily=`(canvas: Canvas, fontFamily: string) = canvas.fFontFamily = 
 method fontSize(canvas: Canvas): float = canvas.fFontSize
 
 method `fontSize=`(canvas: Canvas, fontSize: float) = canvas.fFontSize = fontSize
+
+method fontBold(canvas: Canvas): bool = canvas.fFontBold
+
+method `fontBold=`(canvas: Canvas, fontBold: bool) = canvas.fFontBold = fontBold
 
 method textColor(canvas: Canvas): Color = canvas.fTextColor
 
@@ -1662,6 +1675,16 @@ method resetFontSize(control: Control) =
   control.setFontSize(app.defaultFontSize)
   control.fUseDefaultFontSize = true
   control.triggerRelayoutIfModeIsAuto()
+
+method fontBold(control: Control): bool = control.fFontBold
+
+method `fontBold=`(control: Control, fontBold: bool) =
+  control.setFontBold(fontBold)
+  control.triggerRelayoutIfModeIsAuto()
+
+method setFontBold(control: Control, fontBold: bool) =
+  control.fFontBold = fontBold
+  # should be extended by ControlImpl
 
 method backgroundColor(control: Control): Color = control.fBackgroundColor
 
@@ -2287,7 +2310,7 @@ method naturalHeight(button: Button): int = button.getTextLineHeight() * button.
 method enabled(button: Button): bool = button.fEnabled
 
 method `enabled=`(button: Button, enabled: bool) = discard
-  # has to be implemented by NativeTextBox
+  # has to be implemented by NativeButton
 
 method handleKeyDownEvent*(button: Button, event: KeyboardEvent) =
   if event.key == Key_Return or event.key == Key_Space:
