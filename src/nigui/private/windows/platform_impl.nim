@@ -191,12 +191,11 @@ proc pCommonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
       let control = cast[Control](pGetWindowLongPtr(lParam, GWLP_USERDATA))
       var evt = new TextChangeEvent
       control.handleTextChangeEvent(evt)
-  of WM_CTLCOLOREDIT:
+  of WM_CTLCOLORSTATIC, WM_CTLCOLOREDIT:
     let control = cast[Control](pGetWindowLongPtr(lParam, GWLP_USERDATA))
     discard SetTextColor(wParam, control.textColor.pColorToRGB32())
-    # discard SetBkColor(wParam, control.backgroundColor.pColorToRGB32())
-    # does not cover complete background
-    return GetCurrentObject(wParam, OBJ_BRUSH)
+    discard SetBkColor(wParam, control.backgroundColor.pColorToRGB32())
+    return CreateSolidBrush(control.backgroundColor.pColorToRGB32)
   else:
     discard
   result = DefWindowProcA(hWnd, uMsg, wParam, lParam)
@@ -1472,6 +1471,10 @@ method `selectionStart=`(textBox: NativeTextBox, selectionStart: int) =
 method `selectionEnd=`(textBox: NativeTextBox, selectionEnd: int) =
   discard SendMessageA(textBox.fHandle, EM_SETSEL, cast[pointer](textBox.selectionStart), cast[pointer](selectionEnd))
 
+method resetBackgroundColor(textBox: NativeTextBox) =
+  # textBox.setBackgroundColor(rgb(255, 255, 0))
+  textBox.setBackgroundColor(GetSysColor(COLOR_WINDOW).pRgb32ToColor())
+  textBox.fUseDefaultBackgroundColor = true
 
 # ----------------------------------------------------------------------------------------
 #                                       TextArea
