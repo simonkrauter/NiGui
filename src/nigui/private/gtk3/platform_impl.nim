@@ -1045,12 +1045,11 @@ method setTextColor(control: ControlImpl, color: Color) =
   procCall control.Control.setTextColor(color)
   control.pUpdateFont()
 
-method `setBackgroundColor=`(control: ControlImpl, color: Color) =
+method `setBackgroundColor`(control: ControlImpl, color: Color) =
   procCall control.Control.setBackgroundColor(color)
   var rgba: GdkRGBA
   color.pColorToGdkRGBA(rgba)
   gtk_widget_override_background_color(control.fHandle, GTK_STATE_FLAG_NORMAL, rgba)
-  # TODO: check why it has no effect
 
 method getTextLineWidth(control: ControlImpl, text: string): int =
   var layout = gtk_widget_create_pango_layout(control.fHandle, text)
