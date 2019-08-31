@@ -867,7 +867,6 @@ proc pUpdateFont(control: ControlImpl) =
   gtk_widget_modify_font(control.fHandle, font)
   var rgba: GdkRGBA
   control.textColor.pColorToGdkRGBA(rgba)
-  gtk_widget_override_color(control.fHandle, GTK_STATE_FLAG_NORMAL, rgba)
 
 method pAddButtonPressEvent(control: ControlImpl) =
   gtk_widget_add_events(control.fHandle, GDK_BUTTON_PRESS_MASK)
@@ -1043,7 +1042,9 @@ method setFontBold(control: ControlImpl, fontBold: bool) =
 
 method setTextColor(control: ControlImpl, color: Color) =
   procCall control.Control.setTextColor(color)
-  control.pUpdateFont()
+  var rgba: GdkRGBA
+  color.pColorToGdkRGBA(rgba)
+  gtk_widget_override_color(control.fHandle, GTK_STATE_FLAG_NORMAL, rgba)
 
 method `setBackgroundColor`(control: ControlImpl, color: Color) =
   procCall control.Control.setBackgroundColor(color)
@@ -1257,6 +1258,17 @@ proc init(textBox: NativeTextBox) =
   textBox.fHandle = gtk_entry_new()
   discard g_signal_connect_data(textBox.fHandle, "changed", pControlChangedSignal, cast[pointer](textBox))
   textBox.TextBox.init()
+
+method initStyle(textBox: NativeTextBox) =
+  procCall textBox.TextBox.initStyle()
+  var context = gtk_widget_get_style_context(textBox.fHandle)
+  var rgba: GdkRGBA
+  gtk_style_context_get_background_color(context, GTK_STATE_FLAG_NORMAL, rgba)
+  textBox.fBackgroundColor = rgba.pGdkRGBAToColor()
+  gtk_style_context_get_color(context, GTK_STATE_FLAG_NORMAL, rgba)
+  textBox.fTextColor = rgba.pGdkRGBAToColor()
+  textBox.fUseDefaultBackgroundColor = false
+  textBox.fUseDefaultTextColor = false
 
 method text(textBox: NativeTextBox): string = $gtk_entry_get_text(textBox.fHandle)
 

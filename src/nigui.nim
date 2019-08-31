@@ -699,12 +699,10 @@ method `scrollableHeight=`*(control: Control, scrollableHeight: int)
 method fontFamily*(control: Control): string
 method `fontFamily=`*(control: Control, fontFamily: string)
 method setFontFamily*(control: Control, fontFamily: string)
-method resetFontFamily*(control: Control)
 
 method fontSize*(control: Control): float
 method `fontSize=`*(control: Control, fontSize: float)
 method setFontSize*(control: Control, fontSize: float)
-method resetFontSize*(control: Control)
 
 method fontBold*(control: Control): bool
 method `fontBold=`*(control: Control, fontBold: bool)
@@ -713,12 +711,11 @@ method setFontBold*(control: Control, fontBold: bool)
 method backgroundColor*(control: Control): Color
 method `backgroundColor=`*(control: Control, color: Color)
 method setBackgroundColor*(control: Control, color: Color)
-method resetBackgroundColor*(control: Control)
+method initStyle*(control: Control)
 
 method textColor*(control: Control): Color
 method `textColor=`*(control: Control, color: Color)
 method setTextColor*(control: Control, color: Color)
-method resetTextColor*(control: Control)
 
 method forceRedraw*(control: Control)
 
@@ -1399,10 +1396,7 @@ proc init(control: Control) =
   control.fheight = 50.scaleToDpi
   control.fScrollableWidth = -1
   control.fScrollableHeight = -1
-  control.resetFontFamily()
-  control.resetFontSize()
-  control.resetTextColor()
-  control.resetBackgroundColor()
+  control.initStyle()
   control.show()
   # should be extended by ControlImpl
 
@@ -1661,11 +1655,6 @@ method setFontFamily(control: Control, fontFamily: string) =
   control.triggerRelayoutIfModeIsAuto()
   # should be extended by ControlImpl
 
-method resetFontFamily(control: Control) =
-  control.setFontFamily(fDefaultFontFamily)
-  control.fUseDefaultFontFamily = true
-  control.triggerRelayoutIfModeIsAuto()
-
 method fontSize(control: Control): float = control.fFontSize
 
 method `fontSize=`(control: Control, fontSize: float) =
@@ -1676,11 +1665,6 @@ method `fontSize=`(control: Control, fontSize: float) =
 method setFontSize(control: Control, fontSize: float) =
   control.fFontSize = fontSize
   # should be extended by ControlImpl
-
-method resetFontSize(control: Control) =
-  control.setFontSize(app.defaultFontSize)
-  control.fUseDefaultFontSize = true
-  control.triggerRelayoutIfModeIsAuto()
 
 method fontBold(control: Control): bool = control.fFontBold
 
@@ -1703,9 +1687,16 @@ method setBackgroundColor(control: Control, color: Color) =
   control.forceRedraw()
   # should be extended by ControlImpl
 
-method resetBackgroundColor(control: Control) =
-  control.setBackgroundColor(fDefaultBackgroundColor)
+method initStyle(control: Control) =
+  control.fBackgroundColor = fDefaultBackgroundColor
+  control.fTextColor = fDefaultTextColor
+  control.setFontFamily(fDefaultFontFamily)
+  control.setFontSize(app.defaultFontSize)
   control.fUseDefaultBackgroundColor = true
+  control.fUseDefaultTextColor = true
+  control.fUseDefaultFontFamily = true
+  control.fUseDefaultFontSize = true
+  control.triggerRelayoutIfModeIsAuto()
 
 method textColor(control: Control): Color = control.fTextColor
 
@@ -1717,10 +1708,6 @@ method setTextColor(control: Control, color: Color) =
   control.fTextColor = color
   control.forceRedraw()
   # should be extended by ControlImpl
-
-method resetTextColor*(control: Control) =
-  control.setTextColor(fDefaultTextColor)
-  control.fUseDefaultTextColor = true
 
 method forceRedraw(control: Control) =
   discard

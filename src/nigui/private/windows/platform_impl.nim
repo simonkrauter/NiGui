@@ -1429,6 +1429,13 @@ proc init(textBox: NativeTextBox) =
   pTextBoxOrigWndProc = pSetWindowLongPtr(textBox.fHandle, GWLP_WNDPROC, pTextBoxWndProc)
   textBox.TextBox.init()
 
+method initStyle(textBox: NativeTextBox) =
+  procCall textBox.TextBox.initStyle()
+  textBox.fBackgroundColor = GetSysColor(COLOR_WINDOW).pRgb32ToColor()
+  textBox.fTextColor = fDefaultTextColor
+  textBox.fUseDefaultBackgroundColor = false
+  textBox.fUseDefaultTextColor = false
+
 method text(textBox: NativeTextBox): string = pGetWindowText(textBox.fHandle)
 
 method `text=`(textBox: NativeTextBox, text: string) = pSetWindowText(textBox.fHandle, text)
@@ -1465,9 +1472,6 @@ method `selectionStart=`(textBox: NativeTextBox, selectionStart: int) =
 method `selectionEnd=`(textBox: NativeTextBox, selectionEnd: int) =
   discard SendMessageA(textBox.fHandle, EM_SETSEL, cast[pointer](textBox.selectionStart), cast[pointer](selectionEnd))
 
-method resetBackgroundColor(textBox: NativeTextBox) =
-  textBox.setBackgroundColor(GetSysColor(COLOR_WINDOW).pRgb32ToColor())
-  textBox.fUseDefaultBackgroundColor = true
 
 # ----------------------------------------------------------------------------------------
 #                                       TextArea
