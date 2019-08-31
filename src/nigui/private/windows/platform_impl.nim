@@ -1060,12 +1060,6 @@ method setFontBold(control: ControlImpl, fontBold: bool) =
   procCall control.Control.setFontBold(fontBold)
   control.pUpdateFont()
 
-# method `setBackgroundColor=`(control: ControlImpl, color: Color) =
-  # procCall control.Control.setBackgroundColor(color)
-  # var brush = CreateSolidBrush(color.pColorToRGB32())
-  # discard SetClassLongPtrA(control.fHandle, GCLP_HBRBACKGROUND, brush)
-  # no effect
-
 proc pGetTextSize(control: ControlImpl, text: string): Size =
   let hdc = GetDC(control.fHandle)
   result = pGetTextSize(hdc, control.fFont, text)
@@ -1472,7 +1466,6 @@ method `selectionEnd=`(textBox: NativeTextBox, selectionEnd: int) =
   discard SendMessageA(textBox.fHandle, EM_SETSEL, cast[pointer](textBox.selectionStart), cast[pointer](selectionEnd))
 
 method resetBackgroundColor(textBox: NativeTextBox) =
-  # textBox.setBackgroundColor(rgb(255, 255, 0))
   textBox.setBackgroundColor(GetSysColor(COLOR_WINDOW).pRgb32ToColor())
   textBox.fUseDefaultBackgroundColor = true
 
