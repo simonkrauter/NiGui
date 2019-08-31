@@ -1404,7 +1404,7 @@ proc init(control: Control) =
   control.resetTextColor()
   control.resetBackgroundColor()
   control.show()
-  # should be extended by WindowImpl
+  # should be extended by ControlImpl
 
 method destroy(control: Control) =
   discard # nothing to do here
