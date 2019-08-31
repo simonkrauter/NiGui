@@ -1431,7 +1431,7 @@ method visible(control: Control): bool = control.fVisible
 method `visible=`(control: Control, visible: bool) =
   control.fVisible = visible
   control.triggerRelayout()
-  # should be extended by WindowImpl
+  # should be extended by ControlImpl
 
 method show(control: Control) = control.visible = true
 
