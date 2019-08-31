@@ -27,16 +27,9 @@ var pLastMouseButtonDownControl: Control
 var pLastMouseButtonDownControlX: int
 var pLastMouseButtonDownControlY: int
 
-proc pRaiseLastOSError(showAlert = true) =
+proc pRaiseLastOSError() =
   let e = osLastError()
-  raiseError(strutils.strip(osErrorMsg(e)) & " (OS Error Code: " & $e & ")", showAlert)
-
-proc pCheckGdiplusStatus(status: int32, showAlert = true) =
-  if status != 0:
-    if status == 7:
-      pRaiseLastOSError(showAlert)
-    else:
-      raiseError("A GDI+ error occured. (Status: " & $status & ")", showAlert)
+  raiseError(strutils.strip(osErrorMsg(e)) & " (OS Error Code: " & $e & ")")
 
 proc pColorToRGB32(color: Color): RGB32 =
   result.red = color.red
@@ -352,11 +345,28 @@ proc pContainerWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): poi
 
 proc pCustomControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.}
 
+proc pCheckGdiplusStatus(status: int32, msg = "") =
+  if status != 0:
+    if status == 7:
+      pRaiseLastOSError()
+    elif msg != "":
+      raiseError(msg & " (GDI+ Status: " & $status & ")")
+    else:
+      raiseError("A GDI+ error occured. (GDI+ Status: " & $status & ")")
+
 proc pInitGdiplus() =
   var input: GdiplusStartupInput
   input.GdiplusVersion = 1
   var gidplus: pointer = nil
   pCheckGdiplusStatus(GdiplusStartup(gidplus, input, nil))
+
+proc pGdipCreateBitmapFromFileWrapped(filename: string, bitmap: var pointer) =
+  let status = GdipCreateBitmapFromFile(filename.pUtf8ToUtf16(), bitmap)
+  if status != 0:
+    if not fileExists(filename):
+      raiseError("Faild to load image from file '" & filename & "': File does not exist")
+    else:
+      pCheckGdiplusStatus(status, "Faild to load image from file '" & filename & "'")
 
 proc pGetTextSize(hDC, font: pointer, text: string): Size =
   let wideText = text.pUtf8ToUtf16
@@ -736,7 +746,7 @@ method getTextLineHeight(canvas: CanvasImpl): int = canvas.pGetTextSize("a").cy
 method resize(image: Image, width, height: int) =
   let canvas = cast[CanvasImpl](image.canvas)
   if canvas.fBitmap != nil:
-    pCheckGdiplusStatus(GdipDisposeImage(canvas.fBitmap), false)
+    pCheckGdiplusStatus(GdipDisposeImage(canvas.fBitmap))
     pCheckGdiplusStatus(GdipDeleteGraphics(canvas.fGraphics))
     canvas.fBitmap = nil
     canvas.fGraphics = nil
@@ -750,13 +760,13 @@ method resize(image: Image, width, height: int) =
 method loadFromFile(image: Image, filePath: string) =
   let canvas = cast[CanvasImpl](image.canvas)
   if canvas.fBitmap != nil:
-    pCheckGdiplusStatus(GdipDisposeImage(canvas.fBitmap), false)
+    pCheckGdiplusStatus(GdipDisposeImage(canvas.fBitmap))
     pCheckGdiplusStatus(GdipDeleteGraphics(canvas.fGraphics))
     canvas.fBitmap = nil
     canvas.fGraphics = nil
   image.canvas.fWidth = 0
   image.canvas.fHeight = 0
-  pCheckGdiplusStatus(GdipCreateBitmapFromFile(filePath.pUtf8ToUtf16(), canvas.fBitmap), false)
+  pGdipCreateBitmapFromFileWrapped(filePath, canvas.fBitmap)
   pCheckGdiplusStatus(GdipGetImageGraphicsContext(canvas.fBitmap, canvas.fGraphics))
   var width, height: int32
   pCheckGdiplusStatus(GdipGetImageWidth(canvas.fBitmap, width))
@@ -771,7 +781,7 @@ method saveToBitmapFile(image: Image, filePath: string) =
   clsidEncoder.Data2 = 0x11d31a04
   clsidEncoder.Data3 = 0x0000739a
   clsidEncoder.Data4 = 0x2ef31ef8
-  pCheckGdiplusStatus(GdipSaveImageToFile(canvas.fBitmap, filePath.pUtf8ToUtf16(), clsidEncoder.addr, nil), false)
+  pCheckGdiplusStatus(GdipSaveImageToFile(canvas.fBitmap, filePath.pUtf8ToUtf16(), clsidEncoder.addr, nil))
 
 method saveToPngFile(image: Image, filePath: string) =
   let canvas = cast[CanvasImpl](image.canvas)
@@ -780,7 +790,7 @@ method saveToPngFile(image: Image, filePath: string) =
   clsidEncoder.Data2 = 0x11d31a04
   clsidEncoder.Data3 = 0x0000739a
   clsidEncoder.Data4 = 0x2ef31ef8
-  pCheckGdiplusStatus(GdipSaveImageToFile(canvas.fBitmap, filePath.pUtf8ToUtf16(), clsidEncoder.addr, nil), false)
+  pCheckGdiplusStatus(GdipSaveImageToFile(canvas.fBitmap, filePath.pUtf8ToUtf16(), clsidEncoder.addr, nil))
 
 method saveToJpegFile(image: Image, filePath: string, quality = 80) =
   let canvas = cast[CanvasImpl](image.canvas)
@@ -790,7 +800,7 @@ method saveToJpegFile(image: Image, filePath: string, quality = 80) =
   clsidEncoder.Data3 = 0x0000739a
   clsidEncoder.Data4 = 0x2ef31ef8
   # TODO: pass quality
-  pCheckGdiplusStatus(GdipSaveImageToFile(canvas.fBitmap, filePath.pUtf8ToUtf16(), clsidEncoder.addr, nil), false)
+  pCheckGdiplusStatus(GdipSaveImageToFile(canvas.fBitmap, filePath.pUtf8ToUtf16(), clsidEncoder.addr, nil))
 
 method beginPixelDataAccess(image: Image): ptr UncheckedArray[byte] =
   let imageImpl = cast[ImageImpl](image)
@@ -909,7 +919,7 @@ method `control=`(window: WindowImpl, control: Control) =
 method `iconPath=`(window: WindowImpl, iconPath: string) =
   procCall window.Window.`iconPath=`(iconPath)
   var bitmap: pointer
-  pCheckGdiplusStatus(GdipCreateBitmapFromFile(iconPath.pUtf8ToUtf16(), bitmap))
+  pGdipCreateBitmapFromFileWrapped(iconPath, bitmap)
   var icon: pointer
   pCheckGdiplusStatus(GdipGetHicon(bitmap, icon))
   discard SendMessageA(window.fHandle, WM_SETICON, cast[pointer](ICON_BIG), icon)

@@ -27,7 +27,7 @@ var pClipboardTextIsSet: bool
 proc pRaiseGError(error: ptr GError) =
   if error == nil:
     raiseError("Unkown error")
-  raiseError($error.message, false)
+  raiseError($error.message)
 
 proc pColorToGdkRGBA(color: Color, rgba: var GdkRGBA) =
   rgba.red = color.red.float / 255
@@ -811,7 +811,11 @@ method `control=`(window: WindowImpl, control: Control) =
 
 method `iconPath=`(window: WindowImpl, iconPath: string) =
   procCall window.Window.`iconPath=`(iconPath)
-  gtk_window_set_icon_from_file(window.fHandle, iconPath, nil)
+  if not gtk_window_set_icon_from_file(window.fHandle, iconPath, nil):
+    if not fileExists(iconPath):
+      raiseError("Faild to load image from file '" & iconPath & "': File does not exist")
+    else:
+      raiseError("Faild to load image from file '" & iconPath & "'")
 
 
 # ----------------------------------------------------------------------------------------

@@ -240,7 +240,7 @@ proc gtk_window_resize_to_geometry*(window: pointer, width, height: cint) {.impo
 proc gtk_window_get_size*(window: pointer, width, height: var cint) {.importc: "gtk_window_get_size", libgtk3.}
 proc gtk_window_get_position*(window: pointer, x, y: var cint) {.importc: "gtk_window_get_position", libgtk3.}
 proc gtk_window_move*(window: pointer, x, y: cint) {.importc: "gtk_window_move", libgtk3.}
-proc gtk_window_set_icon_from_file*(window: pointer, filename: cstring, err: pointer) {.importc: "gtk_window_set_icon_from_file", libgtk3.}
+proc gtk_window_set_icon_from_file*(window: pointer, filename: cstring, err: pointer): bool {.importc: "gtk_window_set_icon_from_file", libgtk3.}
 proc gtk_window_iconify*(window: pointer) {.importc: "gtk_window_iconify", libgtk3.}
 proc gtk_window_deiconify*(window: pointer) {.importc: "gtk_window_deiconify", libgtk3.}
 proc gtk_window_present*(window: pointer) {.importc: "gtk_window_present", libgtk3.}

@@ -894,7 +894,7 @@ method `wrap=`*(textArea: TextArea, wrap: bool)
 #                            Private Procedures Predeclaration
 # ----------------------------------------------------------------------------------------
 
-proc raiseError(msg: string, showAlert = true, title = "NiGui Error")
+proc raiseError(msg: string)
 
 proc handleException()
 
@@ -958,14 +958,20 @@ var
 #                                  Global/App Procedures
 # ----------------------------------------------------------------------------------------
 
-proc raiseError(msg: string, showAlert = true, title = "NiGui Error") =
-  if showAlert:
-    alert(nil, msg & "\p\p" & getStackTrace(), title)
+proc raiseError(msg: string) =
   raise newException(Exception, msg)
 
+proc defaultExceptionHandler() =
+  let msg = getCurrentExceptionMsg() & "\p\p" & getStackTrace()
+  alert(nil, msg, "Error")
+  echo "Error: unhandled exception: ", msg
+  quit()
+
 proc handleException() =
+  ## Handle an exception raised in runMainLoop().
+  ## This is called directly from the Gtk part.
   if fErrorHandler == nil:
-    raiseError(getCurrentExceptionMsg(), true, "Unhandled Exception")
+    defaultExceptionHandler()
   else:
     fErrorHandler()
 
