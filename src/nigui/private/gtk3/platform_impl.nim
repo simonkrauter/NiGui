@@ -140,12 +140,13 @@ proc pWindowKeyReleaseSignal(widget: pointer, event: var GdkEventKey): bool {.cd
 
 proc pControlKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
   let control = cast[ControlImpl](data)
-  control.fKeyPressed = pKeyvalToKey(event.keyval)
-  if gtk_im_context_filter_keypress(control.fIMContext, event) and control.fKeyPressed == Key_None:
-    return
+  let key = pKeyvalToKey(event.keyval)
+  control.fKeyPressed = key
+  if gtk_im_context_filter_keypress(control.fIMContext, event):
+    return control.fKeyPressed == Key_None
   var evt = new KeyboardEvent
   evt.control = control
-  evt.key = control.fKeyPressed
+  evt.key = key
   if evt.key == Key_None:
     echo "Unkown key value: ", event.keyval
     return
@@ -177,9 +178,10 @@ proc pControlIMContextCommitSignal(context: pointer, str: cstring, data: pointer
   evt.character = $str
   evt.unicode = evt.character.runeAt(0).toUpper().int
   evt.key = control.fKeyPressed
-  control.fKeyPressed = Key_None
   try:
     control.handleKeyDownEvent(evt)
+    if evt.handled:
+      control.fKeyPressed = Key_None
   except:
     handleException()
 
