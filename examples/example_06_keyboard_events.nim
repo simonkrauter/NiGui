@@ -26,7 +26,7 @@ textBox.onKeyDown = proc(event: KeyboardEvent) =
   label.text = label.text & "TextBox KeyDown event: key: " & $event.key & ", unicode: " & $event.unicode & ", character: " & event.character & ", down keys: " & $downKeys() & "\n"
 
   # Accept only digits
-  if event.character.len != 1 or event.character[0] notin '0'..'9':
+  if event.character.len == 1 and event.character[0].ord >= 32 and event.character[0] notin '0'..'9':
     event.handled = true
 
 
