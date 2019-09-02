@@ -72,9 +72,10 @@ type
     Key_Backspace  = 8
     Key_Tab        = 9
     Key_Return     = 13
+    Key_Pause      = 19
     Key_Escape     = 27
     Key_Space      = 32
-    Key_Asterisk   = 42
+    Key_NumberSign = 35
     Key_Plus       = 43
     Key_Comma      = 44
     Key_Minus      = 45
@@ -89,6 +90,7 @@ type
     Key_Number7    = 55
     Key_Number8    = 56
     Key_Number9    = 57
+    Key_Less       = 60
     Key_A          = 65
     Key_B          = 66
     Key_C          = 67
@@ -115,7 +117,52 @@ type
     Key_X          = 88
     Key_Y          = 89
     Key_Z          = 90
+    Key_SuperL     = 91
+    Key_SuperR     = 92
+    Key_ContextMenu = 93
     Key_Circumflex = 94
+    Key_Numpad0    = 96
+    Key_Numpad1    = 97
+    Key_Numpad2    = 98
+    Key_Numpad3    = 99
+    Key_Numpad4    = 100
+    Key_Numpad5    = 101
+    Key_Numpad6    = 102
+    Key_Numpad7    = 103
+    Key_Numpad8    = 104
+    Key_Numpad9    = 105
+    Key_NumpadMultiply  = 106
+    Key_NumpadAdd       = 107
+    Key_NumpadSeparator = 108
+    Key_NumpadSubtract  = 109
+    Key_NumpadDecimal   = 110
+    Key_NumpadDivide    = 111
+    Key_F1         = 112
+    Key_F2         = 113
+    Key_F3         = 114
+    Key_F4         = 115
+    Key_F5         = 116
+    Key_F6         = 117
+    Key_F7         = 118
+    Key_F8         = 119
+    Key_F9         = 120
+    Key_F10        = 121
+    Key_F11        = 122
+    Key_F12        = 123
+    Key_F13        = 124
+    Key_F14        = 125
+    Key_F15        = 126
+    Key_F16        = 127
+    Key_F17        = 128
+    Key_F18        = 129
+    Key_F19        = 130
+    Key_F20        = 131
+    Key_F21        = 132
+    Key_F22        = 133
+    Key_F23        = 134
+    Key_F24        = 135
+    Key_NumLock    = 144
+    Key_ScrollLock = 145
     Key_AE         = 196
     Key_OE         = 214
     Key_UE         = 220
@@ -137,6 +184,7 @@ type
     Key_AltR
     Key_ShiftL
     Key_ShiftR
+    Key_Print
 
 const
   inactiveTimer* = 0

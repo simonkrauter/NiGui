@@ -222,7 +222,18 @@ proc pWMParamsToKey(wParam, lParam: pointer): Key =
   of VK_DOWN: result = Key_Down
   of VK_INSERT: result = Key_Insert
   of VK_DELETE: result = Key_Delete
+  of VK_SNAPSHOT: result = Key_Print
+  of VK_OEM_PLUS: result = Key_Plus
+  of VK_OEM_PERIOD: result = Key_Point
+  of VK_OEM_COMMA: result = Key_Comma
+  of VK_OEM_MINUS: result = Key_Minus
+
+  # the following block is probably only correct for german keyboard layout
+  of VK_OEM_2: result = Key_NumberSign
+  of VK_OEM_4: result = Key_SharpS
   of VK_OEM_5: result = Key_Circumflex
+  of VK_OEM_102: result = Key_Less
+
   else: result = cast[Key](cast[int32](wParam))
 
 proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int): bool =

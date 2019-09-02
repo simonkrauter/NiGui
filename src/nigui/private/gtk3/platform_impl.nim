@@ -63,6 +63,14 @@ proc pWindowConfigureSignal(windowHandle, event, data: pointer): bool {.cdecl.} 
 
 proc pKeyvalToKey(keyval: cint): Key =
   result = case keyval
+
+  # the following block is probably only correct for german keyboard layout
+  of 39: Key_NumberSign
+  of 42: Key_Plus
+  of 58: Key_Point
+  of 59: Key_Comma
+  of 95: Key_Minus
+
   of 97: Key_A
   of 98: Key_B
   of 99: Key_C
@@ -93,26 +101,73 @@ proc pKeyvalToKey(keyval: cint): Key =
   of 246: Key_OE
   of 252: Key_UE
   of 65106: Key_Circumflex
+  of 65288: Key_Backspace
   of 65289: Key_Tab
   of 65293: Key_Return
+  of 65299: Key_Pause
+  of 65300: Key_ScrollLock
   of 65307: Key_Escape
   of 65379: Key_Insert
-  of 65535: Key_Delete
-  of 65288: Key_Backspace
+  of 65360: Key_Home
   of 65361: Key_Left
   of 65362: Key_Up
   of 65363: Key_Right
   of 65364: Key_Down
-  of 65360: Key_Home
-  of 65367: Key_End
   of 65365: Key_PageUp
   of 65366: Key_PageDown
+  of 65367: Key_End
+  of 65377: Key_Print
+  of 65383: Key_ContextMenu
+  of 65407: Key_NumLock
+  of 65450: Key_NumpadMultiply
+  of 65451: Key_NumpadAdd
+  of 65452: Key_NumpadSeparator
+  of 65453: Key_NumpadSubtract
+  of 65454: Key_NumpadDecimal
+  of 65455: Key_NumpadDivide
+  of 65456: Key_Numpad0
+  of 65457: Key_Numpad1
+  of 65458: Key_Numpad2
+  of 65459: Key_Numpad3
+  of 65460: Key_Numpad4
+  of 65461: Key_Numpad5
+  of 65462: Key_Numpad6
+  of 65463: Key_Numpad7
+  of 65464: Key_Numpad8
+  of 65465: Key_Numpad9
+  of 65470: Key_F1
+  of 65471: Key_F2
+  of 65472: Key_F3
+  of 65473: Key_F4
+  of 65474: Key_F5
+  of 65475: Key_F6
+  of 65476: Key_F7
+  of 65477: Key_F8
+  of 65478: Key_F9
+  of 65479: Key_F10
+  of 65480: Key_F11
+  of 65481: Key_F12
+  of 65482: Key_F13
+  of 65483: Key_F14
+  of 65484: Key_F15
+  of 65485: Key_F16
+  of 65486: Key_F17
+  of 65487: Key_F18
+  of 65488: Key_F19
+  of 65489: Key_F20
+  of 65490: Key_F21
+  of 65491: Key_F22
+  of 65492: Key_F23
+  of 65493: Key_F24
   of 65505: Key_ShiftL
   of 65506: Key_ShiftR
   of 65507: Key_ControlL
   of 65508: Key_ControlR
   of 65513: Key_AltL
   of 65514: Key_AltR
+  of 65515: Key_SuperL
+  of 65516: Key_SuperR
+  of 65535: Key_Delete
   else: cast[Key](keyval)
 
 proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
