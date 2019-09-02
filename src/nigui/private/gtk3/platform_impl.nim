@@ -119,6 +119,7 @@ proc pKeyvalToKey(keyval: cint): Key =
   of 65377: Key_Print
   of 65383: Key_ContextMenu
   of 65407: Key_NumLock
+  of 65421: Key_NumpadEnter
   of 65450: Key_NumpadMultiply
   of 65451: Key_NumpadAdd
   of 65452: Key_NumpadSeparator

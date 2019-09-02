@@ -90,6 +90,7 @@ const
   SW_RESTORE* = 9
   SWP_NOMOVE* = 2
   SWP_NOSIZE* = 1
+  VK_RETURN* = 13
   VK_SHIFT* = 16
   VK_CONTROL* = 17
   VK_MENU* = 18

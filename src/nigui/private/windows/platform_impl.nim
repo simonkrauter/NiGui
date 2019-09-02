@@ -227,6 +227,11 @@ proc pWMParamsToKey(wParam, lParam: pointer): Key =
   of VK_OEM_PERIOD: result = Key_Point
   of VK_OEM_COMMA: result = Key_Comma
   of VK_OEM_MINUS: result = Key_Minus
+  of VK_RETURN:
+    if (cast[int32](lParam) and 0x1000000) > 0:
+      result = Key_NumpadEnter
+    else:
+      result = Key_Return
 
   # the following block is probably only correct for german keyboard layout
   of VK_OEM_2: result = Key_NumberSign

@@ -185,6 +185,7 @@ type
     Key_ShiftL
     Key_ShiftR
     Key_Print
+    Key_NumpadEnter
 
 const
   inactiveTimer* = 0
