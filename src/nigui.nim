@@ -73,6 +73,7 @@ type
     Key_Tab        = 9
     Key_Return     = 13
     Key_Pause      = 19
+    Key_CapsLock   = 20
     Key_Escape     = 27
     Key_Space      = 32
     Key_NumberSign = 35

@@ -164,6 +164,7 @@ proc pKeyvalToKey(keyval: cint): Key =
   of 65506: Key_ShiftR
   of 65507: Key_ControlL
   of 65508: Key_ControlR
+  of 65509: Key_CapsLock
   of 65513: Key_AltL
   of 65514: Key_AltR
   of 65515: Key_SuperL
