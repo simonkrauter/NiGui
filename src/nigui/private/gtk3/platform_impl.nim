@@ -59,6 +59,9 @@ proc pWindowConfigureSignal(windowHandle, event, data: pointer): bool {.cdecl.} 
   window.fHeight = height
   window.fClientWidth = width
   window.fClientHeight = height
+  var event = new ResizeEvent
+  event.window = window
+  window.handleResizeEvent(event)
   window.triggerRelayout()
 
 proc pKeyvalToKey(keyval: cint): Key =

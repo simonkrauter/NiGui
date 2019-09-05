@@ -306,6 +306,9 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
       rect = pGetClientRect(window.fHandle)
       window.fClientWidth = rect.right - rect.left
       window.fClientHeight = rect.bottom - rect.top
+      var event = new ResizeEvent
+      event.window = window
+      window.handleResizeEvent(event)
       window.triggerRelayout()
   of WM_MOVE:
     let window = cast[WindowImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))

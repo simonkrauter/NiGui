@@ -1355,17 +1355,11 @@ method height(window: Window): int = window.fHeight
 
 method `width=`(window: Window, width: int) =
   window.fWidth = width
-  window.triggerRelayout()
-  var event = new ResizeEvent
-  event.window = window
-  window.handleResizeEvent(event)
+  # has to be extended by WindowImpl
 
 method `height=`(window: Window, height: int) =
   window.fHeight = height
-  window.triggerRelayout()
-  var event = new ResizeEvent
-  event.window = window
-  window.handleResizeEvent(event)
+  # has to be extended by WindowImpl
 
 method clientWidth(window: Window): int = window.fClientWidth
 
