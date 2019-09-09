@@ -353,6 +353,10 @@ type
     fText: string
     fEnabled: bool
 
+  Checkbox* = ref object of ControlImpl
+    fText: string
+    fEnabled: bool
+
   Label* = ref object of ControlImpl
     fText: string
 
@@ -876,6 +880,24 @@ method `text=`*(button: Button, text: string)
 
 method enabled*(button: Button): bool
 method `enabled=`*(button: Button, enabled: bool)
+
+
+# ----------------------------------------------------------------------------------------
+#                                        Checkbox
+# ----------------------------------------------------------------------------------------
+
+proc newCheckbox*(text = ""): Checkbox
+
+proc init*(checkbox: Checkbox)
+proc init*(checkbox: NativeCheckbox)
+
+method text*(checkbox: Checkbox): string
+method `text=`*(checkbox: Checkbox, text: string)
+
+method enabled*(checkbox: Checkbox): bool
+method `enabled=`*(checkbox: Checkbox, enabled: bool)
+
+method getState*(checkbox: Checkbox): int
 
 
 # ----------------------------------------------------------------------------------------
@@ -2357,6 +2379,51 @@ method handleKeyDownEvent*(button: Button, event: KeyboardEvent) =
 
 
 method `onDraw=`(container: NativeButton, callback: DrawProc) = raiseError("NativeButton does not allow onDraw.")
+
+
+# ----------------------------------------------------------------------------------------
+#                                        Checkbox
+# ----------------------------------------------------------------------------------------
+
+proc newCheckbox(text = ""): Checkbox =
+  result = new NativeCheckbox
+  result.NativeCheckbox.init()
+  result.text = text
+
+proc init(checkbox: Checkbox) =
+  checkbox.ControlImpl.init()
+  checkbox.fText = ""
+  checkbox.fOnClick = nil
+  checkbox.fWidthMode = WidthMode_Auto
+  checkbox.fHeightMode = HeightMode_Auto
+  checkbox.enabled = true
+
+method text(checkbox: Checkbox): string = checkbox.fText
+
+method `text=`(checkbox: Checkbox, text: string) =
+  checkbox.fText = text
+  checkbox.tag = text
+  checkbox.triggerRelayoutIfModeIsAuto()
+  checkbox.forceRedraw()
+
+method naturalWidth(checkbox: Checkbox): int = checkbox.getTextWidth(checkbox.text) + 20.scaleToDpi
+
+method naturalHeight(checkbox: Checkbox): int = checkbox.getTextLineHeight() * checkbox.text.countLines + 12.scaleToDpi
+
+method enabled(checkbox: Checkbox): bool = checkbox.fEnabled
+
+method `enabled=`(checkbox: Checkbox, enabled: bool) = discard
+
+method getState(checkbox: Checkbox): int = discard
+
+method handleKeyDownEvent*(checkbox: Checkbox, event: KeyboardEvent) =
+  if event.key == Key_Return or event.key == Key_Space:
+    var clickEvent = new ClickEvent
+    clickEvent.control = checkbox
+    checkbox.handleClickEvent(clickEvent)
+
+
+method `onDraw=`(container: NativeCheckbox, callback: DrawProc) = raiseError("NativeCheckbox does not allow onDraw.")
 
 
 # ----------------------------------------------------------------------------------------

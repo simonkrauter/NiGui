@@ -1410,6 +1410,36 @@ method `enabled=`(button: NativeButton, enabled: bool) =
   button.fEnabled = enabled
   discard EnableWindow(button.fHandle, enabled)
 
+# ----------------------------------------------------------------------------------------
+#                                        Checkbox
+# ----------------------------------------------------------------------------------------
+
+var pCheckboxOrigWndProc: pointer
+
+proc pCheckboxWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
+  let comProcRes = pCommonControlWndProc(hWnd, uMsg, wParam, lParam)
+  if comProcRes == PWndProcResult_False:
+    return cast[pointer](false)
+  if comProcRes == PWndProcResult_True:
+    return cast[pointer](true)
+  result = CallWindowProcW(pCheckboxOrigWndProc, hWnd, uMsg, wParam, lParam)
+
+proc init(checkbox: NativeCheckbox) =
+  checkbox.fHandle = pCreateWindowExWithUserdata("BUTTON", WS_CHILD or BS_AUTOCHECKBOX, 0, pDefaultParentWindow, cast[pointer](checkbox))
+  pCheckboxOrigWndProc = pSetWindowLongPtr(checkbox.fHandle, GWLP_WNDPROC, pCheckboxWndProc)
+  checkbox.Checkbox.init()
+
+method `text=`(checkbox: NativeCheckbox, text: string) =
+  procCall checkbox.Checkbox.`text=`(text)
+  pSetWindowText(checkbox.fHandle, text)
+
+method `enabled=`(checkbox: NativeCheckbox, enabled: bool) =
+  checkbox.fEnabled = enabled
+  discard EnableWindow(checkbox.fHandle, enabled)
+
+method getState(checkbox: NativeCheckbox): int =
+  result = loWord(SendMessageA(checkbox.fHandle, BM_GETCHECK, cast[pointer](0), cast[pointer](0)))
+
 
 # ----------------------------------------------------------------------------------------
 #                                        Label
