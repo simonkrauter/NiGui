@@ -156,12 +156,8 @@ proc pEnableVisualStyles() =
   actCtx.cbSize = ActCtx.sizeof.int32
   actCtx.dwFlags = ACTCTX_FLAG_RESOURCE_NAME_VALID or ACTCTX_FLAG_SET_PROCESS_DEFAULT or ACTCTX_FLAG_ASSEMBLY_DIRECTORY_VALID
   actCtx.lpSource = "shell32.dll"
-  actCtx.wProcessorArchitecture = 0
-  actCtx.wLangId = 0
   actCtx.lpAssemblyDirectory = dir
   actCtx.lpResourceName = cast[cstring](124)
-  actCtx.lpApplicationName = nil
-  actCtx.hModule = nil
   var context = CreateActCtxA(actCtx.addr)
   if context == INVALID_HANDLE_VALUE: pRaiseLastOSError()
   # has no effect:
@@ -174,14 +170,8 @@ proc pRegisterWindowClass(className: cstring, wndProc: pointer, style: int32 = 0
   class.lpszClassName = className
   class.lpfnWndProc = wndProc
   class.style = style
-  class.cbClsExtra = 0
-  class.cbWndExtra = 0
-  class.hInstance = nil
-  class.hIcon = nil
   class.hCursor = LoadCursorA(nil, cast[cstring](IDC_ARROW))
   class.hbrBackground = CreateSolidBrush(GetSysColor(COLOR_BTNFACE)) # default background
-  class.lpszMenuName = nil
-  class.hIconSm = nil
   if RegisterClassExA(class) == 0: pRaiseLastOSError()
 
 proc pCommonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
@@ -375,7 +365,7 @@ proc pCheckGdiplusStatus(status: int32, msg = "") =
 proc pInitGdiplus() =
   var input: GdiplusStartupInput
   input.GdiplusVersion = 1
-  var gidplus: pointer = nil
+  var gidplus: pointer
   pCheckGdiplusStatus(GdiplusStartup(gidplus, input, nil))
 
 proc pGdipCreateBitmapFromFileWrapped(filename: string, bitmap: var pointer) =

@@ -2340,7 +2340,6 @@ proc newButton(text = ""): Button =
 
 proc init(button: Button) =
   button.ControlImpl.init()
-  button.fOnClick = nil
   button.fWidthMode = WidthMode_Auto
   button.fHeightMode = HeightMode_Auto
   button.minWidth = 15.scaleToDpi
@@ -2386,7 +2385,6 @@ proc newCheckbox(text = ""): Checkbox =
 
 proc init(checkbox: Checkbox) =
   checkbox.ControlImpl.init()
-  checkbox.fOnClick = nil
   checkbox.fWidthMode = WidthMode_Auto
   checkbox.fHeightMode = HeightMode_Auto
   checkbox.enabled = true
