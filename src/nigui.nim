@@ -897,7 +897,7 @@ method `text=`*(checkbox: Checkbox, text: string)
 method enabled*(checkbox: Checkbox): bool
 method `enabled=`*(checkbox: Checkbox, enabled: bool)
 
-method isChecked*(checkbox: Checkbox): bool
+method checked*(checkbox: Checkbox): bool
 
 
 # ----------------------------------------------------------------------------------------
@@ -2405,7 +2405,7 @@ method enabled(checkbox: Checkbox): bool = checkbox.fEnabled
 
 method `enabled=`(checkbox: Checkbox, enabled: bool) = discard
 
-method isChecked(checkbox: Checkbox): bool = discard
+method checked(checkbox: Checkbox): bool = discard
 
 method handleKeyDownEvent*(checkbox: Checkbox, event: KeyboardEvent) =
   if event.key == Key_Return or event.key == Key_Space:
