@@ -1426,8 +1426,8 @@ method `enabled=`(checkbox: NativeCheckbox, enabled: bool) =
   checkbox.fEnabled = enabled
   discard EnableWindow(checkbox.fHandle, enabled)
 
-method getState(checkbox: NativeCheckbox): int =
-  result = loWord(SendMessageA(checkbox.fHandle, BM_GETCHECK, cast[pointer](0), cast[pointer](0)))
+method isChecked(checkbox: NativeCheckbox): bool =
+  result = cast[int](SendMessageA(checkbox.fHandle, BM_GETCHECK, nil, nil)) == BST_CHECKED
 
 
 # ----------------------------------------------------------------------------------------
