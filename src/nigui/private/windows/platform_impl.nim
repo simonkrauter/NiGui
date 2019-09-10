@@ -435,7 +435,6 @@ proc processEvents(app: App) =
     discard DispatchMessageA(msg.addr)
 
 proc clipboardText(app: App): string =
-  result = ""
   if not OpenClipboard(nil):
     return
   let data = GetClipboardData(CF_TEXT)

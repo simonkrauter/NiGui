@@ -1140,9 +1140,6 @@ proc newSaveFileDialog(): SaveFileDialog =
   result = new SaveFileDialog
   result.title = "Save File"
   result.directory = getCurrentDir()
-  result.defaultExtension = ""
-  result.defaultName = ""
-  result.file = ""
 
 proc isDown(key: Key): bool = fDownKeys.contains(key)
 
@@ -1455,7 +1452,6 @@ proc newControl(): Control =
   result.ControlImpl.init()
 
 proc init(control: Control) =
-  control.tag = ""
   control.fWidthMode = WidthMode_Static
   control.fHeightMode = HeightMode_Static
   control.fWidth = 50.scaleToDpi
@@ -2314,7 +2310,6 @@ proc newFrame(text = ""): Frame =
 
 proc init(frame: Frame) =
   frame.ControlImpl.init()
-  frame.fText = ""
 
 method text(frame: Frame): string = frame.fText
 
@@ -2345,7 +2340,6 @@ proc newButton(text = ""): Button =
 
 proc init(button: Button) =
   button.ControlImpl.init()
-  button.fText = ""
   button.fOnClick = nil
   button.fWidthMode = WidthMode_Auto
   button.fHeightMode = HeightMode_Auto
@@ -2392,7 +2386,6 @@ proc newCheckbox(text = ""): Checkbox =
 
 proc init(checkbox: Checkbox) =
   checkbox.ControlImpl.init()
-  checkbox.fText = ""
   checkbox.fOnClick = nil
   checkbox.fWidthMode = WidthMode_Auto
   checkbox.fHeightMode = HeightMode_Auto
@@ -2437,7 +2430,6 @@ proc newLabel(text = ""): Label =
 
 proc init(label: Label) =
   label.ControlImpl.init()
-  label.fText = ""
   label.fWidthMode = WidthMode_Auto
   label.fHeightMode = HeightMode_Auto
   label.minWidth = 10.scaleToDpi
