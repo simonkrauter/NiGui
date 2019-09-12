@@ -359,6 +359,11 @@ type
   TextBox* = ref object of ControlImpl
     fEditable: bool
 
+  ComboBox* = ref object of ControlImpl
+    fOptions: seq[string]
+    fStyle: string
+    fEnabled: bool
+
 # Platform-specific extension:
 when useWindows(): include "nigui/private/windows/platform_types2"
 when useGtk():     include "nigui/private/gtk3/platform_types2"
@@ -935,6 +940,40 @@ method scrollToBottom*(textArea: TextArea)
 
 method wrap*(textArea: TextArea): bool
 method `wrap=`*(textArea: TextArea, wrap: bool)
+
+
+
+# ----------------------------------------------------------------------------------------
+#                                       ComboBox
+# ----------------------------------------------------------------------------------------
+
+proc newComboBox*(options = @[""], style = "simple"): ComboBox
+
+proc init*(comboBox: ComboBox)
+proc init*(comboBox: NativeComboBox)
+
+method options*(comboBox: ComboBox): seq[string]
+method `options=`*(comboBox: ComboBox, options: seq[string])
+
+method style*(comboBox: ComboBox): string
+method `style=`*(comboBox: ComboBox, style: string)
+
+method enabled*(comboBox: ComboBox): bool
+method `enabled=`*(comboBox: ComboBox, enabled: bool)
+
+method getOptionCount*(comboBox: ComboBox): int
+
+method addOption*(comboBox: ComboBox, option: string)
+
+method deleteOption*(comboBox: ComboBox, index: uint)
+
+method selectOption*(comboBox: ComboBox, index: uint)
+
+method findOptionIndex*(comboBox: ComboBox, search: string): int
+
+method getSelectedIndex*(comboBox: ComboBox): int
+
+method getSelectedValue*(comboBox: ComboBox): string
 
 
 # ----------------------------------------------------------------------------------------
@@ -2483,6 +2522,59 @@ method wrap(textArea: TextArea): bool = textArea.fWrap
 method `wrap=`(textArea: TextArea, wrap: bool) =
   textArea.fWrap = wrap
   # should be extended by NativeTextArea
+
+
+# ----------------------------------------------------------------------------------------
+#                                       ComboBox
+# ----------------------------------------------------------------------------------------
+
+proc newComboBox(options = @[""], style = "simple"): ComboBox =
+  result = new NativeComboBox
+  # need to pass desired style (type) of combobox to NativeComboBox... is there a better way?
+  result.style = style  
+  result.NativeComboBox.init()
+  result.options = options
+
+proc init(comboBox: ComboBox) =
+  comboBox.ControlImpl.init()
+  comboBox.fOnClick = nil
+  comboBox.fWidthMode = WidthMode_Expand
+  comboBox.fHeightMode = HeightMode_Auto
+  comboBox.minWidth = 20.scaleToDpi
+  comboBox.minHeight = 20.scaleToDpi
+  comboBox.enabled = true
+
+method options(comboBox: ComboBox): seq[string] = comboBox.fOptions
+method `options=`(comboBox: ComboBox, options: seq[string]) = comboBox.fOptions = options
+
+method style(comboBox: ComboBox): string = comboBox.fStyle
+method `style=`(comboBox: ComboBox, style: string) = comboBox.fStyle = style
+
+method getOptionCount*(comboBox: ComboBox): int = discard
+# has to be implemented by NativeComboBox
+
+method addOption(comboBox: ComboBox, option: string) = discard
+# has to be implemented by NativeComboBox
+
+method deleteOption(comboBox: ComboBox, index: uint) = discard
+# has to be implemented by NativeComboBox
+
+method selectOption*(comboBox: ComboBox, index: uint) = discard
+# has to be implemented by NativeComboBox
+
+method findOptionIndex(comboBox: ComboBox, search: string): int = discard
+# has to be implemented by NativeComboBox
+
+method getSelectedIndex(comboBox: ComboBox): int = discard
+# has to be implemented by NativeComboBox
+
+method getSelectedValue(comboBox: ComboBox): string = discard
+# has to be implemented by NativeComboBox
+
+method enabled(comboBox: ComboBox): bool = comboBox.fEnabled
+
+method `enabled=`(comboBox: ComboBox, enabled: bool) = discard
+# has to be implemented by NativeComboBox
 
 
 # ----------------------------------------------------------------------------------------

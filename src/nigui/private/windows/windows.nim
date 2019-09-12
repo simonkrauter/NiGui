@@ -37,8 +37,20 @@ const
   BN_CLICKED* = 0
   BM_SETSTYLE* = 244
   BM_SETIMAGE* = 247
+  BM_GETCHECK* = 0x00F0
   BS_DEFPUSHBUTTON* = 0x00000001
   BS_GROUPBOX* = 0x00000007
+  CB_ERR* = -1
+  CB_ADDSTRING* = 0x0143
+  CB_DELETESTRING* = 0x0144
+  CB_FINDSTRINGEXACT* = 0x0158
+  CB_GETCOUNT* = 0x0146
+  CB_GETCURSEL* = 0x0147
+  CB_SETCURSEL* = 0x014E
+  CB_SETITEMHEIGHT* = 0x0153
+  CBS_SIMPLE* = 0x0001
+  CBS_DROPDOWN* = 0x0002
+  CBS_DROPDOWNLIST* = 0x0003
   CF_TEXT* = 1
   COLOR_BTNFACE* = 15
   COLOR_WINDOW* = 5
@@ -166,6 +178,7 @@ const
   WS_THICKFRAME* = 0x00040000
   WS_VSCROLL* = 0x00200000
   WS_EX_CONTROLPARENT* = 0x00010000
+  WS_VISIBLE* = 0x10000000
   # DT_CALCRECT* = 1024
   # OBJ_FONT* = 6
   # SM_XVIRTUALSCREEN* = 76
@@ -406,7 +419,7 @@ proc GetClientRect*(wnd: pointer, lpRect: var Rect): bool {.importc: "GetClientR
 proc BeginPaint*(hWnd: pointer, lpPaint: var PaintStruct): pointer {.importc: "BeginPaint", libUser32.}
 proc EndPaint*(hWnd: pointer, lpPaint: var PaintStruct): bool {.importc: "EndPaint", libUser32.}
 proc SendMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "SendMessageA", libUser32.}
-# proc SendMessageW*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "SendMessageW", libUser32.}
+proc SendMessageW*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "SendMessageW", libUser32.}
 proc PostMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "PostMessageA", libUser32.}
 proc GetSysColor*(nIndex: int32): RGB32 {.importc: "GetSysColor", libUser32.}
 proc InvalidateRect*(hWnd: pointer, lpRect: ref Rect, bErase: bool): bool {.importc: "InvalidateRect", libUser32.}
