@@ -410,7 +410,6 @@ proc SetWindowTextW*(hWnd: pointer, lpString: cstring): bool {.importc: "SetWind
 proc GetWindowTextW*(hWnd: pointer, lpString: cstring, nMaxCount: int32): int32 {.importc: "GetWindowTextW", libUser32.}
 # proc GetWindowTextLengthA*(hWnd: pointer): int32 {.importc: "GetWindowTextLengthA", libUser32.}
 proc GetWindowTextLengthW*(hWnd: pointer): int32 {.importc: "GetWindowTextLengthW", libUser32.}
-# proc GetComboBoxTextLength*(hWnd: pointer): int32 {.importc: "ComboBox_GetLBTextLen", libUser32.}
 proc UpdateWindow*(hWnd: pointer, nIndex: int32): bool {.importc: "UpdateWindow", libUser32.}
 proc SetWindowPos*(wnd, hWndInsertAfter: pointer, x, y, cx, cy: int32, uFlags: int): bool {.importc: "SetWindowPos", libUser32.}
 proc MoveWindow*(wnd: pointer, x, y, nWidth, nHeight: int32, bRepaint: bool): bool {.importc: "MoveWindow", libUser32.}

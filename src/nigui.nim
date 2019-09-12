@@ -1781,9 +1781,7 @@ method initStyle(control: Control) =
   control.fUseDefaultFontSize = true
   control.triggerRelayoutIfModeIsAuto()
 
-method textColor(control: Control): Color = 
-  control.fTextColor
-  
+method textColor(control: Control): Color = control.fTextColor
 
 method `textColor=`(control: Control, color: Color) =
   control.setTextColor(color)
