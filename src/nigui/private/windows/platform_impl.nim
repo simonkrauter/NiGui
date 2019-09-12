@@ -193,9 +193,11 @@ proc pCommonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
       control.handleTextChangeEvent(evt)
   of WM_CTLCOLORSTATIC, WM_CTLCOLOREDIT:
     let control = cast[Control](pGetWindowLongPtr(lParam, GWLP_USERDATA))
-    discard SetTextColor(wParam, control.textColor.pColorToRGB32())
-    discard SetBkColor(wParam, control.backgroundColor.pColorToRGB32())
-    return CreateSolidBrush(control.backgroundColor.pColorToRGB32)
+    # Without nil check, this cannot compile due to combobox addition? Why?
+    if control != nil: 
+      discard SetTextColor(wParam, control.textColor.pColorToRGB32())
+      discard SetBkColor(wParam, control.backgroundColor.pColorToRGB32())
+      return CreateSolidBrush(control.backgroundColor.pColorToRGB32)
   else:
     discard
   result = DefWindowProcA(hWnd, uMsg, wParam, lParam)
@@ -1410,36 +1412,6 @@ method `enabled=`(button: NativeButton, enabled: bool) =
   button.fEnabled = enabled
   discard EnableWindow(button.fHandle, enabled)
 
-# ----------------------------------------------------------------------------------------
-#                                        Checkbox
-# ----------------------------------------------------------------------------------------
-
-var pCheckboxOrigWndProc: pointer
-
-proc pCheckboxWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
-  let comProcRes = pCommonControlWndProc(hWnd, uMsg, wParam, lParam)
-  if comProcRes == PWndProcResult_False:
-    return cast[pointer](false)
-  if comProcRes == PWndProcResult_True:
-    return cast[pointer](true)
-  result = CallWindowProcW(pCheckboxOrigWndProc, hWnd, uMsg, wParam, lParam)
-
-proc init(checkbox: NativeCheckbox) =
-  checkbox.fHandle = pCreateWindowExWithUserdata("BUTTON", WS_CHILD or BS_AUTOCHECKBOX, 0, pDefaultParentWindow, cast[pointer](checkbox))
-  pCheckboxOrigWndProc = pSetWindowLongPtr(checkbox.fHandle, GWLP_WNDPROC, pCheckboxWndProc)
-  checkbox.Checkbox.init()
-
-method `text=`(checkbox: NativeCheckbox, text: string) =
-  procCall checkbox.Checkbox.`text=`(text)
-  pSetWindowText(checkbox.fHandle, text)
-
-method `enabled=`(checkbox: NativeCheckbox, enabled: bool) =
-  checkbox.fEnabled = enabled
-  discard EnableWindow(checkbox.fHandle, enabled)
-
-method getState(checkbox: NativeCheckbox): int =
-  result = loWord(SendMessageA(checkbox.fHandle, BM_GETCHECK, cast[pointer](0), cast[pointer](0)))
-
 
 # ----------------------------------------------------------------------------------------
 #                                        Label
@@ -1559,3 +1531,64 @@ method `wrap=`(textArea: NativeTextArea, wrap: bool) =
   # It seems that this is not possible.
   # Word wrap depends on whether dwStyle contains WS_HSCROLL at window creation.
   # Changing the style later has not the wanted effect.
+
+
+# ----------------------------------------------------------------------------------------
+#                                       ComboBox
+# ----------------------------------------------------------------------------------------
+
+proc init(comboBox: NativeComboBox) =
+  var dwStyle: int32
+  # determine which "style" of combobox to display.. is there a better way to do this?
+  case comboBox.style:
+    of "dropdown":
+      dwStyle = WS_CHILD or CBS_DROPDOWN or WS_VSCROLL
+    of "dropdownlist":
+      dwStyle = WS_CHILD or CBS_DROPDOWNLIST or WS_VSCROLL
+    else:
+      dwStyle = WS_CHILD or CBS_SIMPLE or WS_VSCROLL
+  comboBox.fHandle = pCreateWindowExWithUserdata("COMBOBOX", dwStyle, 0, pDefaultParentWindow, cast[pointer](comboBox))
+  comboBox.ComboBox.init()
+
+# TODO: Find correct(?) way to calculate optimum height on combobox
+method naturalHeight(comboBox: ComboBox): int = 
+  case comboBox.style:
+    of "dropdown", "dropdownlist":
+      # just size of dropdown window
+      # (line height + 8 padding/margin)
+      return comboBox.getTextLineHeight() + 8
+    else:
+      # size of combolist and dropdown section - not sure if this is calculated correctly.
+      # (line height + 8 padding/margin) + (number of options * (line height + 2 margin)) ??
+      return (comboBox.getTextLineHeight() + 8) + (comboBox.getOptionCount() * (comboBox.getTextLineHeight() + 2))
+
+method `options=`(comboBox: NativeComboBox, options: seq[string]) =
+  for option in options:
+    discard SendMessageW(comboBox.fHandle, CB_ADDSTRING, nil, cast[pointer](newWideCString(option)))
+
+method getOptionCount(comboBox: NativeComboBox): int =
+    result = cast[int](SendMessageW(comboBox.fHandle, CB_GETCOUNT, nil, nil))
+
+method addOption(comboBox: NativeComboBox, option: string) =
+  discard SendMessageW(comboBox.fHandle, CB_ADDSTRING, nil, cast[pointer](newWideCString(option)))
+
+method deleteOption(comboBox: NativeComboBox, index: uint) =
+  discard SendMessageA(comboBox.fHandle, CB_DELETESTRING, cast[pointer](index), nil)
+
+method selectOption(comboBox: NativeComboBox, index: uint) =
+  discard SendMessageA(comboBox.fHandle, CB_SETCURSEL, cast[pointer](index), nil)
+
+method findOptionIndex(comboBox: NativeComboBox, search: string): int =
+  # wParam value -1 searches entire contents of ComboBox, result of -1 means option doesn't exist (not found)
+  var searchString: cstring = search
+  result = cast[int](SendMessageA(comboBox.fHandle, CB_FINDSTRINGEXACT, cast[pointer](-1), cast[pointer](searchString)))
+
+method getSelectedIndex(comboBox: NativeComboBox): int =
+  result = cast[int]((SendMessageA(comboBox.fHandle, CB_GETCURSEL, cast[pointer](0), cast[pointer](0))))
+
+method getSelectedValue(comboBox: NativeComboBox): string =
+  result = pGetWindowText(comboBox.fHandle)
+
+method `enabled=`(comboBox: NativeComboBox, enabled: bool) =
+  comboBox.fEnabled = enabled
+  discard EnableWindow(comboBox.fHandle, enabled)

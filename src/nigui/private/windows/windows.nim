@@ -39,10 +39,18 @@ const
   BM_SETIMAGE* = 247
   BM_GETCHECK* = 0x00F0
   BS_DEFPUSHBUTTON* = 0x00000001
-  BS_AUTOCHECKBOX* = 0x00000003
   BS_GROUPBOX* = 0x00000007
-  BST_UNCHECKED* = 0x0000
-  BST_CHECKED* = 0x0001
+  CB_ERR* = -1
+  CB_ADDSTRING* = 0x0143
+  CB_DELETESTRING* = 0x0144
+  CB_FINDSTRINGEXACT* = 0x0158
+  CB_GETCOUNT* = 0x0146
+  CB_GETCURSEL* = 0x0147
+  CB_SETCURSEL* = 0x014E
+  CB_SETITEMHEIGHT* = 0x0153
+  CBS_SIMPLE* = 0x0001
+  CBS_DROPDOWN* = 0x0002
+  CBS_DROPDOWNLIST* = 0x0003
   CF_TEXT* = 1
   COLOR_BTNFACE* = 15
   COLOR_WINDOW* = 5
@@ -402,7 +410,8 @@ proc SetWindowTextW*(hWnd: pointer, lpString: cstring): bool {.importc: "SetWind
 proc GetWindowTextW*(hWnd: pointer, lpString: cstring, nMaxCount: int32): int32 {.importc: "GetWindowTextW", libUser32.}
 # proc GetWindowTextLengthA*(hWnd: pointer): int32 {.importc: "GetWindowTextLengthA", libUser32.}
 proc GetWindowTextLengthW*(hWnd: pointer): int32 {.importc: "GetWindowTextLengthW", libUser32.}
-proc UpdateWindow*(hWnd: pointer): bool {.importc: "UpdateWindow", libUser32.}
+# proc GetComboBoxTextLength*(hWnd: pointer): int32 {.importc: "ComboBox_GetLBTextLen", libUser32.}
+proc UpdateWindow*(hWnd: pointer, nIndex: int32): bool {.importc: "UpdateWindow", libUser32.}
 proc SetWindowPos*(wnd, hWndInsertAfter: pointer, x, y, cx, cy: int32, uFlags: int): bool {.importc: "SetWindowPos", libUser32.}
 proc MoveWindow*(wnd: pointer, x, y, nWidth, nHeight: int32, bRepaint: bool): bool {.importc: "MoveWindow", libUser32.}
 proc SetFocus*(hWnd: pointer): pointer {.importc: "SetFocus", libUser32.}
@@ -411,7 +420,7 @@ proc GetClientRect*(wnd: pointer, lpRect: var Rect): bool {.importc: "GetClientR
 proc BeginPaint*(hWnd: pointer, lpPaint: var PaintStruct): pointer {.importc: "BeginPaint", libUser32.}
 proc EndPaint*(hWnd: pointer, lpPaint: var PaintStruct): bool {.importc: "EndPaint", libUser32.}
 proc SendMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "SendMessageA", libUser32.}
-# proc SendMessageW*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "SendMessageW", libUser32.}
+proc SendMessageW*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "SendMessageW", libUser32.}
 proc PostMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "PostMessageA", libUser32.}
 proc GetSysColor*(nIndex: int32): RGB32 {.importc: "GetSysColor", libUser32.}
 proc InvalidateRect*(hWnd: pointer, lpRect: ref Rect, bErase: bool): bool {.importc: "InvalidateRect", libUser32.}
