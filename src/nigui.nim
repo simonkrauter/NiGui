@@ -249,7 +249,6 @@ type
     fOnClick: ClickProc
     # fOnMouseMove: MouseMoveProc
     fOnKeyDown: KeyboardProc
-    fOnTextChange: TextChangeProc
     tag*: string
 
   # Drawing:
@@ -367,6 +366,8 @@ type
 
   TextBox* = ref object of ControlImpl
     fEditable: bool
+    fOnTextChange: TextChangeProc
+
 
 # Platform-specific extension:
 when useWindows(): include "nigui/private/windows/platform_types2"
@@ -790,8 +791,6 @@ method handleClickEvent*(control: Control, event: ClickEvent)
 
 method handleKeyDownEvent*(control: Control, event: KeyboardEvent)
 
-method handleTextChangeEvent*(control: Control, event: TextChangeEvent)
-
 method onDispose*(control: Control): ControlDisposeProc
 method `onDispose=`*(control: Control, callback: ControlDisposeProc)
 
@@ -809,9 +808,6 @@ method `onClick=`*(control: Control, callback: ClickProc)
 
 method onKeyDown*(control: Control): KeyboardProc
 method `onKeyDown=`*(control: Control, callback: KeyboardProc)
-
-method onTextChange*(control: Control): TextChangeProc
-method `onTextChange=`*(control: Control, callback: TextChangeProc)
 
 
 # ----------------------------------------------------------------------------------------
@@ -951,6 +947,11 @@ method `selectionEnd=`*(textBox: TextBox, selectionEnd: int)
 
 method selectedText*(textBox: TextBox): string
 method `selectedText=`*(textBox: TextBox, text: string)
+
+method handleTextChangeEvent*(textBox: TextBox, event: TextChangeEvent)
+
+method onTextChange*(textBox: TextBox): TextChangeProc
+method `onTextChange=`*(textBox: TextBox, callback: TextChangeProc)
 
 
 # ----------------------------------------------------------------------------------------
@@ -1819,12 +1820,6 @@ method handleKeyDownEvent(control: Control, event: KeyboardEvent) =
   if callback != nil:
     callback(event)
 
-method handleTextChangeEvent(control: Control, event: TextChangeEvent) =
-  # can be overridden by custom control
-  let callback = control.onTextChange
-  if callback != nil:
-    callback(event)
-
 method onDispose(control: Control): ControlDisposeProc = control.fOnDispose
 method `onDispose=`(control: Control, callback: ControlDisposeProc) = control.fOnDispose = callback
 
@@ -1842,9 +1837,6 @@ method `onClick=`(control: Control, callback: ClickProc) = control.fOnClick = ca
 
 method onKeyDown(control: Control): KeyboardProc = control.fOnKeyDown
 method `onKeyDown=`(control: Control, callback: KeyboardProc) = control.fOnKeyDown = callback
-
-method onTextChange(control: Control): TextChangeProc = control.fOnTextChange
-method `onTextChange=`(control: Control, callback: TextChangeProc) = control.fOnTextChange = callback
 
 
 # ----------------------------------------------------------------------------------------
@@ -2534,6 +2526,16 @@ method `selectedText=`(textBox: TextBox, text: string) =
   let oldText = textBox.text
   textBox.text = oldText.runeSubStr(0, textBox.selectionStart) & text & oldText.runeSubStr(textBox.selectionEnd)
   textBox.cursorPos = oldCursorPos
+
+method handleTextChangeEvent(textBox: TextBox, event: TextChangeEvent) =
+  # can be overridden by custom control
+  let callback = textBox.onTextChange
+  if callback != nil:
+    callback(event)
+
+method onTextChange(textBox: TextBox): TextChangeProc = textBox.fOnTextChange
+
+method `onTextChange=`(textBox: TextBox, callback: TextChangeProc) = textBox.fOnTextChange = callback
 
 
 # ----------------------------------------------------------------------------------------
