@@ -178,8 +178,9 @@ proc pCommonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
   case uMsg
   of WM_COMMAND:
     if wParam.hiWord == EN_CHANGE:
-      let control = cast[Control](pGetWindowLongPtr(lParam, GWLP_USERDATA))
+      let control = cast[TextBox](pGetWindowLongPtr(lParam, GWLP_USERDATA))
       var evt = new TextChangeEvent
+      evt.control = control
       control.handleTextChangeEvent(evt)
   of WM_CTLCOLORSTATIC, WM_CTLCOLOREDIT:
     let control = cast[Control](pGetWindowLongPtr(lParam, GWLP_USERDATA))

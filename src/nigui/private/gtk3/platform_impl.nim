@@ -306,8 +306,9 @@ proc pControlButtonReleaseSignal(widget: pointer, event: var GdkEventButton, dat
   # result = true # stop propagation
 
 proc pControlChangedSignal(widget: pointer, data: pointer): bool {.cdecl.} =
-  let control = cast[ControlImpl](data)
+  let control = cast[TextBox](data)
   var evt = new TextChangeEvent
+  evt.control = control
   try:
     control.handleTextChangeEvent(evt)
   except:
