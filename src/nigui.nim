@@ -321,6 +321,10 @@ type
     control*: Control
   TextChangeProc* = proc(event: TextChangeEvent)
 
+  ToggleEvent* = ref object
+    control*: Control
+  ToggleProc* = proc(event: ToggleEvent)
+
   # Other events:
 
   ErrorHandlerProc* = proc()
@@ -356,6 +360,7 @@ type
   Checkbox* = ref object of ControlImpl
     fText: string
     fEnabled: bool
+    fOnToggle: ToggleProc
 
   Label* = ref object of ControlImpl
     fText: string
@@ -898,6 +903,13 @@ method enabled*(checkbox: Checkbox): bool
 method `enabled=`*(checkbox: Checkbox, enabled: bool)
 
 method checked*(checkbox: Checkbox): bool
+
+method `checked=`*(checkbox: Checkbox, checked: bool)
+
+method onToggle*(checkbox: Checkbox): ToggleProc
+method `onToggle=`*(checkbox: Checkbox, callback: ToggleProc)
+
+method handleToggleEvent*(checkbox: Checkbox, event: ToggleEvent)
 
 
 # ----------------------------------------------------------------------------------------
@@ -1778,19 +1790,19 @@ method forceRedraw(control: Control) =
 method canvas(control: Control): Canvas = control.fCanvas
 
 method handleDrawEvent(control: Control, event: DrawEvent) =
-  # can be implemented by custom control
+  # can be overridden by custom control
   let callback = control.onDraw
   if callback != nil:
     callback(event)
 
 method handleMouseButtonDownEvent(control: Control, event: MouseEvent) =
-  # can be implemented by custom control
+  # can be overridden by custom control
   let callback = control.onMouseButtonDown
   if callback != nil:
     callback(event)
 
 method handleMouseButtonUpEvent(control: Control, event: MouseEvent) =
-  # can be implemented by custom control
+  # can be overridden by custom control
   let callback = control.onMouseButtonUp
   if callback != nil:
     callback(event)
@@ -1802,13 +1814,13 @@ method handleClickEvent(control: Control, event: ClickEvent) =
     callback(event)
 
 method handleKeyDownEvent(control: Control, event: KeyboardEvent) =
-  # can be implemented by custom control
+  # can be overridden by custom control
   let callback = control.onKeyDown
   if callback != nil:
     callback(event)
 
 method handleTextChangeEvent(control: Control, event: TextChangeEvent) =
-  # can be implemented by custom control
+  # can be overridden by custom control
   let callback = control.onTextChange
   if callback != nil:
     callback(event)
@@ -2404,17 +2416,33 @@ method naturalHeight(checkbox: Checkbox): int = checkbox.getTextLineHeight() * c
 method enabled(checkbox: Checkbox): bool = checkbox.fEnabled
 
 method `enabled=`(checkbox: Checkbox, enabled: bool) = discard
+  # has to be implemented by NativeCheckbox
 
 method checked(checkbox: Checkbox): bool = discard
+  # has to be implemented by NativeCheckbox
+
+method `checked=`(checkbox: Checkbox, checked: bool) = discard
+  # has to be implemented by NativeCheckbox
 
 method handleKeyDownEvent*(checkbox: Checkbox, event: KeyboardEvent) =
   if event.key == Key_Return or event.key == Key_Space:
-    var clickEvent = new ClickEvent
-    clickEvent.control = checkbox
-    checkbox.handleClickEvent(clickEvent)
+    checkbox.checked = not checkbox.checked
+    var evt = new ToggleEvent
+    evt.control = checkbox
+    checkbox.handleToggleEvent(evt)
+    event.handled = true
 
 
-method `onDraw=`(container: NativeCheckbox, callback: DrawProc) = raiseError("NativeCheckbox does not allow onDraw.")
+method `onDraw=`(checkbox: NativeCheckbox, callback: DrawProc) = raiseError("NativeCheckbox does not allow onDraw.")
+
+method onToggle(checkbox: Checkbox): ToggleProc = checkbox.fOnToggle
+method `onToggle=`(checkbox: Checkbox, callback: ToggleProc) = checkbox.fOnToggle = callback
+
+method handleToggleEvent(checkbox: Checkbox, event: ToggleEvent) =
+  # can be overridden by custom control
+  let callback = checkbox.onToggle
+  if callback != nil:
+    callback(event)
 
 
 # ----------------------------------------------------------------------------------------

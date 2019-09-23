@@ -1406,11 +1406,25 @@ method `enabled=`(button: NativeButton, enabled: bool) =
 var pCheckboxOrigWndProc: pointer
 
 proc pCheckboxWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
+  let checkbox = cast[Checkbox](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+
+  if uMsg == WM_LBUTTONDOWN:
+    checkbox.checked = not checkbox.checked # let the event see the new status
+    var evt = new ToggleEvent
+    evt.control = checkbox
+    checkbox.handleToggleEvent(evt)
+    checkbox.checked = not checkbox.checked
+
   let comProcRes = pCommonControlWndProc(hWnd, uMsg, wParam, lParam)
   if comProcRes == PWndProcResult_False:
     return cast[pointer](false)
   if comProcRes == PWndProcResult_True:
     return cast[pointer](true)
+
+  # Avoid toggling the checkbox twice
+  if uMsg == WM_KEYDOWN and pWMParamsToKey(wParam, lParam) == Key_Space:
+    return
+
   result = CallWindowProcW(pCheckboxOrigWndProc, hWnd, uMsg, wParam, lParam)
 
 proc init(checkbox: NativeCheckbox) =
@@ -1428,6 +1442,13 @@ method `enabled=`(checkbox: NativeCheckbox, enabled: bool) =
 
 method checked(checkbox: NativeCheckbox): bool =
   result = cast[int](SendMessageA(checkbox.fHandle, BM_GETCHECK, nil, nil)) == BST_CHECKED
+
+method `checked=`(checkbox: NativeCheckbox, checked: bool) =
+  if checked:
+    discard SendMessageA(checkbox.fHandle, BM_SETCHECK, cast[pointer](BST_CHECKED), nil)
+  else:
+    discard SendMessageA(checkbox.fHandle, BM_SETCHECK, cast[pointer](BST_UNCHECKED), nil)
+  # app.processEvents
 
 
 # ----------------------------------------------------------------------------------------

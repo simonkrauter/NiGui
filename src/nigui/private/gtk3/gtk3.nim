@@ -210,6 +210,14 @@ const
   GDK_WINDOW_STATE_FOCUSED*    = 128
   GDK_WINDOW_STATE_TILED*      = 256
 
+  # GSignalMatchType:
+  G_SIGNAL_MATCH_ID*        = 1
+  G_SIGNAL_MATCH_DETAIL*    = 2
+  G_SIGNAL_MATCH_CLOSURE*   = 4
+  G_SIGNAL_MATCH_FUNC*      = 8
+  G_SIGNAL_MATCH_DATA*      = 16
+  G_SIGNAL_MATCH_UNBLOCKED* = 16
+
 
 # ----------------------------------------------------------------------------------------
 #                                   General Gtk Procs
@@ -228,6 +236,8 @@ proc gtk_main_iteration*(): cint {.importc: "gtk_main_iteration", libgtk3.}
 proc g_timeout_add*(interval: cint, function, data: pointer): cint {.importc: "g_timeout_add", libgtk3.}
 proc g_source_remove*(tag: cint): bool {.importc: "g_source_remove", libgtk3.}
 proc g_signal_connect_data*(instance: pointer, detailed_signal: cstring, c_handler: pointer, data, destroy_data, connect_flags: pointer = nil): pointer {.importc: "g_signal_connect_data", libgtk3.}
+proc g_signal_handlers_block_matched*(instance: pointer, mask, signal_id: cint, detail, closure, function, data: pointer = nil) {.importc: "g_signal_handlers_block_matched", libgtk3.}
+proc g_signal_handlers_unblock_matched*(instance: pointer, mask, signal_id: cint, detail, closure, function, data: pointer = nil) {.importc: "g_signal_handlers_unblock_matched", libgtk3.}
 
 proc gtk_window_new*(`type`: cint): pointer {.importc: "gtk_window_new", libgtk3.}
 proc gtk_window_set_title*(window: pointer, title: cstring) {.importc: "gtk_window_set_title", libgtk3.}
@@ -325,6 +335,10 @@ proc gtk_button_new*(): pointer {.importc: "gtk_button_new", libgtk3.}
 # proc gtk_button_new_with_label*(label: cstring): pointer {.importc: "gtk_button_new_with_label", libgtk3.}
 # proc gtk_button_get_label*(button: pointer): cstring {.importc: "gtk_button_get_label", libgtk3.}
 proc gtk_button_set_label*(button: pointer, label: cstring) {.importc: "gtk_button_set_label", libgtk3.}
+
+proc gtk_check_button_new*(): pointer {.importc: "gtk_check_button_new", libgtk3.}
+proc gtk_toggle_button_set_active*(toggle_button: pointer, is_active: bool) {.importc: "gtk_toggle_button_set_active", libgtk3.}
+proc gtk_toggle_button_get_active*(toggle_button: pointer): bool {.importc: "gtk_toggle_button_get_active", libgtk3.}
 
 proc gtk_entry_new*(): pointer {.importc: "gtk_entry_new", libgtk3.}
 proc gtk_entry_set_text*(entry: pointer, text: cstring) {.importc: "gtk_entry_set_text", libgtk3.}

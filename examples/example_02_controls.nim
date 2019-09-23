@@ -13,6 +13,10 @@ window.add(container)
 var button = newButton("Button")
 container.add(button)
 
+# Add a Checkbox control:
+var checkbox = newCheckbox("Checkbox")
+container.add(checkbox)
+
 # Add a Label control:
 var label = newLabel("Label")
 container.add(label)

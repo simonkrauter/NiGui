@@ -1282,6 +1282,52 @@ method `enabled=`(button: NativeButton, enabled: bool) =
 
 
 # ----------------------------------------------------------------------------------------
+#                                        Checkbox
+# ----------------------------------------------------------------------------------------
+
+proc pControlToggledSignal(widget: pointer, data: pointer): bool {.cdecl.} =
+  let control = cast[Checkbox](data)
+  var evt = new ToggleEvent
+  evt.control = control
+  try:
+    control.handleToggleEvent(evt)
+  except:
+    handleException()
+
+proc init(checkbox: NativeCheckbox) =
+  checkbox.fHandle = gtk_check_button_new()
+  discard g_signal_connect_data(checkbox.fHandle, "toggled", pControlToggledSignal, cast[pointer](checkbox))
+  checkbox.Checkbox.init()
+  gtk_widget_show(checkbox.fHandle)
+
+method `text=`(checkbox: NativeCheckbox, text: string) =
+  procCall checkbox.Checkbox.`text=`(text)
+  gtk_button_set_label(checkbox.fHandle, text)
+  app.processEvents()
+
+method naturalWidth(checkbox: NativeCheckbox): int =
+  # Override parent method, to make it big enough for the text to fit in.
+  var context = gtk_widget_get_style_context(checkbox.fHandle)
+  var padding: GtkBorder
+  gtk_style_context_get_padding(context, GTK_STATE_FLAG_NORMAL, padding)
+  result = checkbox.getTextLineWidth(checkbox.text) + padding.left + padding.right + 25.scaleToDpi
+
+method `enabled=`(checkbox: NativeCheckbox, enabled: bool) =
+  checkbox.fEnabled = enabled
+  gtk_widget_set_sensitive(checkbox.fHandle, enabled)
+
+method checked(checkbox: NativeCheckbox): bool =
+  result = gtk_toggle_button_get_active(checkbox.fHandle)
+
+method `checked=`(checkbox: NativeCheckbox, checked: bool) =
+  g_signal_handlers_block_matched(checkbox.fHandle, G_SIGNAL_MATCH_FUNC, 0, nil, nil, pControlToggledSignal)
+  gtk_toggle_button_set_active(checkbox.fHandle, checked)
+  g_signal_handlers_unblock_matched(checkbox.fHandle, G_SIGNAL_MATCH_FUNC, 0, nil, nil, pControlToggledSignal)
+
+method pAddButtonPressEvent(checkbox: NativeCheckbox) = discard # don't override default handler
+
+
+# ----------------------------------------------------------------------------------------
 #                                        Label
 # ----------------------------------------------------------------------------------------
 
