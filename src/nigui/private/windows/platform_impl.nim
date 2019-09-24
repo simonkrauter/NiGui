@@ -118,8 +118,8 @@ proc pGetClientRect(wnd: pointer): Rect =
 proc pGetWindowRect(wnd: pointer): Rect =
   if not GetWindowRect(wnd, result): pRaiseLastOSError()
 
-proc pCreateWindowEx(dwExStyle: int32, lpClassName, lpWindowName: cstring, dwStyle: int32, x, y, nWidth, nHeight: int, hWndParent, hMenu, hInstance, lpParam: pointer): pointer =
-  result = CreateWindowExA(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
+proc pCreateWindowEx(dwExStyle: int32, lpClassName: string, dwStyle: int32, x, y, nWidth, nHeight: int, hWndParent, hMenu, hInstance, lpParam: pointer): pointer =
+  result = CreateWindowExW(dwExStyle, lpClassName.pUtf8ToUtf16, nil, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
   if result == nil: pRaiseLastOSError()
 
 proc pGetWindowLongPtr(hWnd: pointer, nIndex: int32): pointer =
@@ -138,8 +138,8 @@ proc pSetWindowLongPtr(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointe
   # result = GetStockObject(fnObject)
   # if result == nil: pRaiseLastOSError()
 
-proc pCreateWindowExWithUserdata(lpClassName: cstring, dwStyle, dwExStyle: int32, hWndParent, userdata: pointer = nil): pointer =
-  result = pCreateWindowEx(dwExStyle, lpClassName, nil, dwStyle, 0, 0, 0, 0, hWndParent, nil, nil, nil)
+proc pCreateWindowExWithUserdata(lpClassName: string, dwStyle, dwExStyle: int32, hWndParent, userdata: pointer = nil): pointer =
+  result = pCreateWindowEx(dwExStyle, lpClassName, dwStyle, 0, 0, 0, 0, hWndParent, nil, nil, nil)
   if userdata != nil:
     discard pSetWindowLongPtr(result, GWLP_USERDATA, userdata)
   # Set default font:
@@ -164,15 +164,15 @@ proc pEnableVisualStyles() =
   # var ulpActivationCookie = false
   # if not ActivateActCtx(context, ulpActivationCookie.addr): pRaiseLastOSError()
 
-proc pRegisterWindowClass(className: cstring, wndProc: pointer, style: int32 = 0) =
+proc pRegisterWindowClass(className: string, wndProc: pointer, style: int32 = 0) =
   var class: WndClassEx
   class.cbSize = WndClassEx.sizeof.int32
-  class.lpszClassName = className
+  class.lpszClassName = className.pUtf8ToUtf16
   class.lpfnWndProc = wndProc
   class.style = style
   class.hCursor = LoadCursorA(nil, cast[cstring](IDC_ARROW))
   class.hbrBackground = CreateSolidBrush(GetSysColor(COLOR_BTNFACE)) # default background
-  if RegisterClassExA(class) == 0: pRaiseLastOSError()
+  if RegisterClassExW(class) == 0: pRaiseLastOSError()
 
 proc pCommonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
   case uMsg
@@ -189,7 +189,7 @@ proc pCommonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
     return CreateSolidBrush(control.backgroundColor.pColorToRGB32)
   else:
     discard
-  result = DefWindowProcA(hWnd, uMsg, wParam, lParam)
+  result = DefWindowProcW(hWnd, uMsg, wParam, lParam)
 
 proc pWMParamsToKey(wParam, lParam: pointer): Key =
   case cast[int32](wParam)
@@ -406,7 +406,7 @@ proc init(app: App) =
   pRegisterWindowClass(pTopLevelWindowClass, pWindowWndProc)
   pRegisterWindowClass(pCustomControlWindowClass, pCustomControlWndProc, CS_HREDRAW or CS_VREDRAW)
   pRegisterWindowClass(pContainerWindowClass, pContainerWndProc)
-  pDefaultParentWindow = pCreateWindowEx(0, pTopLevelWindowClass, nil, 0, 0, 0, 0, 0, nil, nil, nil, nil)
+  pDefaultParentWindow = pCreateWindowEx(0, pTopLevelWindowClass, 0, 0, 0, 0, 0, nil, nil, nil, nil)
   app.defaultTextColor = GetSysColor(COLOR_WINDOWTEXT).pRgb32ToColor()
   app.defaultBackgroundColor = GetSysColor(COLOR_BTNFACE).pRgb32ToColor()
   app.defaultFontFamily = "Arial"
@@ -415,15 +415,15 @@ proc init(app: App) =
 
 proc runMainLoop() =
   var msg: Msg
-  while GetMessageA(msg.addr, nil, 0, 0):
+  while GetMessageW(msg.addr, nil, 0, 0):
     discard TranslateMessage(msg.addr)
-    discard DispatchMessageA(msg.addr)
+    discard DispatchMessageW(msg.addr)
 
 proc processEvents(app: App) =
   var msg: Msg
-  while PeekMessageA(msg.addr, nil, 0, 0, PM_REMOVE):
+  while PeekMessageW(msg.addr, nil, 0, 0, PM_REMOVE):
     discard TranslateMessage(msg.addr)
-    discard DispatchMessageA(msg.addr)
+    discard DispatchMessageW(msg.addr)
 
 proc clipboardText(app: App): string =
   if not OpenClipboard(nil):
@@ -892,7 +892,7 @@ method `y=`(window: WindowImpl, y: int) =
 method centerOnScreen(window: WindowImpl) =
   let desktop = GetDesktopWindow()
   var rect: Rect
-  discard SystemParametersInfoA(SPI_GETWORKAREA, 0, rect.addr, 0)
+  discard SystemParametersInfoW(SPI_GETWORKAREA, 0, rect.addr, 0)
   window.fX = rect.left + (rect.right - window.width) div 2
   window.fY = rect.top + (rect.bottom - window.height) div 2
   window.pUpdatePosition()
@@ -1054,7 +1054,7 @@ proc pUpdateFont(control: ControlImpl) =
       700
     else:
       400
-  control.fFont = CreateFontA(control.fontSize.int32, 0, 0, 0, fontWeight, 0, 0, 0, 0, 0, 0, 0, 0, control.fontFamily)
+  control.fFont = CreateFontW(control.fontSize.int32, 0, 0, 0, fontWeight, 0, 0, 0, 0, 0, 0, 0, 0, control.fontFamily.pUtf8ToUtf16)
   discard SendMessageA(control.fHandle, WM_SETFONT, control.fFont, cast[pointer](true))
 
 method setFontFamily(control: ControlImpl, fontFamily: string) =
@@ -1449,7 +1449,6 @@ method `checked=`(checkbox: NativeCheckbox, checked: bool) =
     discard SendMessageA(checkbox.fHandle, BM_SETCHECK, cast[pointer](BST_CHECKED), nil)
   else:
     discard SendMessageA(checkbox.fHandle, BM_SETCHECK, cast[pointer](BST_UNCHECKED), nil)
-  # app.processEvents
 
 
 # ----------------------------------------------------------------------------------------

@@ -383,26 +383,22 @@ proc GlobalAlloc*(uFlags, dwBytes: int32): pointer {.importc: "GlobalAlloc", lib
 #                                      User32 Procs
 # ----------------------------------------------------------------------------------------
 
-proc MessageBoxA*(hWnd: pointer, lpText, lpCaption: cstring, uType: int) {.importc: "MessageBoxA", libUser32.}
 proc MessageBoxW*(hWnd: pointer, lpText, lpCaption: cstring, uType: int) {.importc: "MessageBoxW", libUser32.}
-proc RegisterClassExA*(lpwcx: var WndClassEx): int16 {.importc: "RegisterClassExA", libUser32.}
-proc CreateWindowExA*(dwExStyle: int32, lpClassName, lpWindowName: cstring, dwStyle: int32, x, y, nWidth, nHeight: int, hWndParent, hMenu, hInstance, lpParam: pointer): pointer {.importc: "CreateWindowExA", libUser32.}
+proc RegisterClassExW*(lpwcx: var WndClassEx): int16 {.importc: "RegisterClassExW", libUser32.}
+proc CreateWindowExW*(dwExStyle: int32, lpClassName, lpWindowName: cstring, dwStyle: int32, x, y, nWidth, nHeight: int, hWndParent, hMenu, hInstance, lpParam: pointer): pointer {.importc: "CreateWindowExW", libUser32.}
 proc DestroyWindow*(hWnd: pointer): bool {.importc: "DestroyWindow", libUser32.}
 proc ShowWindow*(hWnd: pointer, nCmdShow: int32): bool {.importc: "ShowWindow", libUser32.}
 proc EnableWindow*(hWnd: pointer, bEnable: bool): bool {.importc: "EnableWindow", libUser32.}
-proc DefWindowProcA*(hWnd: pointer, uMsg: int, wParam, lParam: pointer): pointer {.importc: "DefWindowProcA", libUser32.}
-proc GetMessageA*(lpMsg, hWnd: pointer, wMsgFilterMin, wMsgFilterMax: int32): bool {.importc: "GetMessageA", libUser32.}
-proc PeekMessageA*(lpMsg, hWnd: pointer, wMsgFilterMin, wMsgFilterMax, wRemoveMsg: int32): bool {.importc: "PeekMessageA", libUser32.}
+proc DefWindowProcW*(hWnd: pointer, uMsg: int, wParam, lParam: pointer): pointer {.importc: "DefWindowProcW", libUser32.}
+proc GetMessageW*(lpMsg, hWnd: pointer, wMsgFilterMin, wMsgFilterMax: int32): bool {.importc: "GetMessageW", libUser32.}
+proc PeekMessageW*(lpMsg, hWnd: pointer, wMsgFilterMin, wMsgFilterMax, wRemoveMsg: int32): bool {.importc: "PeekMessageW", libUser32.}
 proc TranslateMessage*(lpMsg: pointer): bool {.importc: "TranslateMessage", libUser32.}
-proc DispatchMessageA*(lpMsg: pointer): pointer {.importc: "DispatchMessageA", libUser32.}
+proc DispatchMessageW*(lpMsg: pointer): pointer {.importc: "DispatchMessageW", libUser32.}
 proc SetParent*(hWndChild, hWndNewParent: pointer): pointer {.importc: "SetParent", libUser32.}
 proc SetWindowLongA*(hWnd: pointer, nIndex, dwNewLong: int32): int32 {.importc: "SetWindowLongA", libUser32.}
 proc GetWindowLongA*(hWnd: pointer, nIndex: int32): int32 {.importc: "GetWindowLongA", libUser32.}
-proc SetWindowTextA*(hWnd: pointer, lpString: cstring): bool {.importc: "SetWindowTextA", libUser32.}
 proc SetWindowTextW*(hWnd: pointer, lpString: cstring): bool {.importc: "SetWindowTextW", libUser32.}
-# proc GetWindowTextA*(hWnd: pointer, lpString: cstring, nMaxCount: int32): int32 {.importc: "GetWindowTextA", libUser32.}
 proc GetWindowTextW*(hWnd: pointer, lpString: cstring, nMaxCount: int32): int32 {.importc: "GetWindowTextW", libUser32.}
-# proc GetWindowTextLengthA*(hWnd: pointer): int32 {.importc: "GetWindowTextLengthA", libUser32.}
 proc GetWindowTextLengthW*(hWnd: pointer): int32 {.importc: "GetWindowTextLengthW", libUser32.}
 proc UpdateWindow*(hWnd: pointer): bool {.importc: "UpdateWindow", libUser32.}
 proc SetWindowPos*(wnd, hWndInsertAfter: pointer, x, y, cx, cy: int32, uFlags: int): bool {.importc: "SetWindowPos", libUser32.}
@@ -413,13 +409,12 @@ proc GetClientRect*(wnd: pointer, lpRect: var Rect): bool {.importc: "GetClientR
 proc BeginPaint*(hWnd: pointer, lpPaint: var PaintStruct): pointer {.importc: "BeginPaint", libUser32.}
 proc EndPaint*(hWnd: pointer, lpPaint: var PaintStruct): bool {.importc: "EndPaint", libUser32.}
 proc SendMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "SendMessageA", libUser32.}
-# proc SendMessageW*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "SendMessageW", libUser32.}
 proc PostMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "PostMessageA", libUser32.}
 proc GetSysColor*(nIndex: int32): RGB32 {.importc: "GetSysColor", libUser32.}
 proc InvalidateRect*(hWnd: pointer, lpRect: ref Rect, bErase: bool): bool {.importc: "InvalidateRect", libUser32.}
 proc PostQuitMessage*(nExitCode: int32) {.importc: "PostQuitMessage", libUser32.}
 proc GetDesktopWindow*(): pointer {.importc: "GetDesktopWindow", libUser32.}
-proc SystemParametersInfoA*(uiAction, uiParam: int32, pvParam: pointer, fWinIni: int32): bool {.importc: "SystemParametersInfoA", libUser32.}
+proc SystemParametersInfoW*(uiAction, uiParam: int32, pvParam: pointer, fWinIni: int32): bool {.importc: "SystemParametersInfoW", libUser32.}
 proc ClientToScreen*(hWnd: pointer, lpPoint: var Point): bool {.importc: "ClientToScreen", libUser32.}
 proc AdjustWindowRect*(lpRect: var Rect, dwStyle: int32, bMenu: bool): bool {.importc: "AdjustWindowRect", libUser32.}
 proc LoadCursorA*(hInstance: pointer, lpCursorName: cstring): pointer {.importc: "LoadCursorA", libUser32.}
@@ -455,12 +450,10 @@ when defined(cpu64):
   # Only available on 64-bit Windows:
   proc GetWindowLongPtrW*(hWnd: pointer, nIndex: int32): pointer {.importc: "GetWindowLongPtrW", libUser32.}
   proc SetWindowLongPtrW*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetWindowLongPtrW", libUser32.}
-  # proc SetClassLongPtrA*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetClassLongPtrA", libUser32.}
 else:
   # Should only be used on 32-bit Windows:
   proc GetWindowLongW*(hWnd: pointer, nIndex: int32): pointer {.importc: "GetWindowLongW", libUser32.}
   proc SetWindowLongW*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetWindowLongW", libUser32.}
-  # proc SetClassLongA*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetClassLongA", libUser32.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -475,7 +468,7 @@ proc TextOutW*(hdc: pointer, nXStart, nYStart: int32, lpString: cstring, cchStri
 proc CreateSolidBrush*(crColor: RGB32): pointer {.importc: "CreateSolidBrush", libGdi32.}
 proc CreatePen*(fnPenStyle, nWidth: int32, crColor: RGB32): pointer {.importc: "CreatePen", libGdi32.}
 # proc GetStockObject*(fnObject: int32): pointer {.importc: "GetStockObject", libGdi32.}
-proc CreateFontA*(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily: int32, lpszFace: cstring): pointer {.importc: "CreateFontA", libGdi32.}
+proc CreateFontW*(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily: int32, lpszFace: cstring): pointer {.importc: "CreateFontW", libGdi32.}
 proc GetTextExtentPoint32W*(hdc: pointer, lpString: cstring, c: int32, lpSize: var Size): bool {.importc: "GetTextExtentPoint32W", libGdi32.}
 proc SetBkMode*(hdc: pointer, iBkMode: int32): int32 {.importc: "SetBkMode", libGdi32.}
 proc SetTextColor*(hdc: pointer, crColor: RGB32): RGB32 {.importc: "SetTextColor", libGdi32.}
