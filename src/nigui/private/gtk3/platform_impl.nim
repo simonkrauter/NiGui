@@ -41,12 +41,12 @@ proc pGdkRGBAToColor(rgba: var GdkRGBA): Color =
   result.blue = uint8(rgba.blue.float * 255)
   result.alpha = uint8(rgba.alpha.float * 255)
 
-proc pWindowDeleteSignal(widgetHandle, event, data: pointer): bool {.cdecl.} =
+proc pWindowDeleteSignal(widgetHandle, event, data: pointer): Gboolean {.cdecl.} =
   let window = cast[WindowImpl](data)
   window.closeClick()
   return true
 
-proc pWindowConfigureSignal(windowHandle, event, data: pointer): bool {.cdecl.} =
+proc pWindowConfigureSignal(windowHandle, event, data: pointer): Gboolean {.cdecl.} =
   # called on resize and move
   let window = cast[WindowImpl](data)
   var x, y: cint
@@ -175,7 +175,7 @@ proc pKeyvalToKey(keyval: cint): Key =
   of 65535: Key_Delete
   else: cast[Key](keyval)
 
-proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
+proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): Gboolean {.cdecl.} =
   let window = cast[WindowImpl](data)
   window.fKeyPressed = pKeyvalToKey(event.keyval)
   internalKeyDown(window.fKeyPressed)
@@ -195,10 +195,10 @@ proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointe
     handleException()
   result = evt.handled
 
-proc pWindowKeyReleaseSignal(widget: pointer, event: var GdkEventKey): bool {.cdecl.} =
+proc pWindowKeyReleaseSignal(widget: pointer, event: var GdkEventKey): Gboolean {.cdecl.} =
   internalKeyUp(pKeyvalToKey(event.keyval))
 
-proc pControlKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
+proc pControlKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): Gboolean {.cdecl.} =
   let control = cast[ControlImpl](data)
   let key = pKeyvalToKey(event.keyval)
   control.fKeyPressed = key
@@ -251,7 +251,7 @@ method focus(control: ControlImpl) =
 method focus(control: NativeTextArea) =
   gtk_widget_grab_focus(control.fTextViewHandle)
 
-proc pDefaultControlButtonPressSignal(widget: pointer, event: var GdkEventButton, data: pointer): bool {.cdecl.} =
+proc pDefaultControlButtonPressSignal(widget: pointer, event: var GdkEventButton, data: pointer): Gboolean {.cdecl.} =
   let control = cast[ControlImpl](data)
   let x = event.x.int
   let y = event.y.int
@@ -274,13 +274,13 @@ proc pDefaultControlButtonPressSignal(widget: pointer, event: var GdkEventButton
   pLastMouseButtonDownControlX = x
   pLastMouseButtonDownControlY = y
 
-proc pCustomControlButtonPressSignal(widget: pointer, event: var GdkEventButton, data: pointer): bool {.cdecl.} =
+proc pCustomControlButtonPressSignal(widget: pointer, event: var GdkEventButton, data: pointer): Gboolean {.cdecl.} =
   discard pDefaultControlButtonPressSignal(widget, event, data)
   let control = cast[ControlImpl](data)
   control.focus()
   result = true # Stop propagation, required to detect clicks
 
-proc pControlButtonReleaseSignal(widget: pointer, event: var GdkEventButton, data: pointer): bool {.cdecl.} =
+proc pControlButtonReleaseSignal(widget: pointer, event: var GdkEventButton, data: pointer): Gboolean {.cdecl.} =
   let control = cast[ControlImpl](data)
   let x = event.x.int
   let y = event.y.int
@@ -305,7 +305,7 @@ proc pControlButtonReleaseSignal(widget: pointer, event: var GdkEventButton, dat
       handleException()
   # result = true # stop propagation
 
-proc pControlChangedSignal(widget: pointer, data: pointer): bool {.cdecl.} =
+proc pControlChangedSignal(widget: pointer, data: pointer): Gboolean {.cdecl.} =
   let control = cast[TextBox](data)
   var evt = new TextChangeEvent
   evt.control = control
@@ -314,7 +314,7 @@ proc pControlChangedSignal(widget: pointer, data: pointer): bool {.cdecl.} =
   except:
     handleException()
 
-# proc pTextAreaEndUserActionSignal(widget: pointer, data: pointer): bool {.cdecl.} =
+# proc pTextAreaEndUserActionSignal(widget: pointer, data: pointer): Gboolean {.cdecl.} =
   # let control = cast[ControlImpl](data)
   # discard
 
@@ -360,7 +360,7 @@ proc processEvents(app: App) =
   while gtk_events_pending() == 1:
     discard gtk_main_iteration()
 
-proc pClipboardTextReceivedFunc(clipboard: pointer, text: cstring, data: pointer): bool {.cdecl.} =
+proc pClipboardTextReceivedFunc(clipboard: pointer, text: cstring, data: pointer): Gboolean {.cdecl.} =
   pClipboardText = $text # string needs to be copied
   pClipboardTextIsSet = true
 
@@ -439,7 +439,7 @@ var
   pTimers = initTable[int64, TimerEntry]()
   pNextTimerId: int = 1
 
-proc pTimerFunction(timer: Timer): bool {.cdecl.} =
+proc pTimerFunction(timer: Timer): Gboolean {.cdecl.} =
   let timerEntry = pTimers.getOrDefault(cast[int](timer))
   var event = new TimerEvent
   event.timer = timer
@@ -448,7 +448,7 @@ proc pTimerFunction(timer: Timer): bool {.cdecl.} =
   pTimers.del(cast[int](timer))
   # result is false to stop timer
 
-proc pRepeatingTimerFunction(timer: Timer): bool {.cdecl.} =
+proc pRepeatingTimerFunction(timer: Timer): Gboolean {.cdecl.} =
   let timerEntry = pTimers.getOrDefault(cast[int](timer))
   var event = new TimerEvent
   event.timer = timer
@@ -763,7 +763,7 @@ proc pWindowDragDataReceivedSignal(widget, context: pointer, x, y: cint, data: p
   event.files = files
   window.handleDropFilesEvent(event)
 
-proc pMainScrollbarDraw(widget: pointer, cr: pointer, data: pointer): bool {.cdecl.} =
+proc pMainScrollbarDraw(widget: pointer, cr: pointer, data: pointer): Gboolean {.cdecl.} =
   # This proc is there to get the scrollbar size
   if fScrollbarSize == -1:
     var scrollbar = gtk_scrolled_window_get_hscrollbar(widget)
@@ -772,11 +772,11 @@ proc pMainScrollbarDraw(widget: pointer, cr: pointer, data: pointer): bool {.cde
     gtk_scrolled_window_set_policy(widget, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC)
     fScrollbarSize = allocation.height
 
-proc pWindowStateEventSignal(widget: pointer, event: var GdkEventWindowState, user_data: pointer): bool {.cdecl.} =
+proc pWindowStateEventSignal(widget: pointer, event: var GdkEventWindowState, user_data: pointer): Gboolean {.cdecl.} =
   let window = cast[WindowImpl](user_data)
   window.fMinimized = (event.new_window_state and GDK_WINDOW_STATE_ICONIFIED) == GDK_WINDOW_STATE_ICONIFIED
 
-proc pWindowFocusOutEventSignal(widget: pointer, event: var GdkEventFocus, user_data: pointer): bool {.cdecl.} =
+proc pWindowFocusOutEventSignal(widget: pointer, event: var GdkEventFocus, user_data: pointer): Gboolean {.cdecl.} =
   internalAllKeysUp()
 
 proc init(window: WindowImpl) =
@@ -887,7 +887,7 @@ method `iconPath=`(window: WindowImpl, iconPath: string) =
 
 method pUpdateScrollBar(control: ControlImpl)
 
-proc pControlDrawSignal(widget: pointer, cr: pointer, data: pointer): bool {.cdecl.} =
+proc pControlDrawSignal(widget: pointer, cr: pointer, data: pointer): Gboolean {.cdecl.} =
   let control = cast[ControlImpl](data)
 
   # Trigger pUpdateScrollBar() in case it's not initialized, which could be because of missing fScrollbarSize
@@ -969,7 +969,7 @@ method `visible=`(control: ControlImpl, visible: bool) =
   else:
     gtk_widget_hide(control.fHandle)
 
-# proc dummy(widget: pointer, event: var GdkEventButton, data: pointer): bool {.cdecl.} =
+# proc dummy(widget: pointer, event: var GdkEventButton, data: pointer): Gboolean {.cdecl.} =
   # echo "dummy"
   # result = true # Stop propagation
 
@@ -1286,7 +1286,7 @@ method `enabled=`(button: NativeButton, enabled: bool) =
 #                                        Checkbox
 # ----------------------------------------------------------------------------------------
 
-proc pControlToggledSignal(widget: pointer, data: pointer): bool {.cdecl.} =
+proc pControlToggledSignal(widget: pointer, data: pointer): Gboolean {.cdecl.} =
   let control = cast[Checkbox](data)
   var evt = new ToggleEvent
   evt.control = control
@@ -1352,7 +1352,7 @@ method naturalWidth(label: NativeLabel): int = label.getTextLineWidth(label.text
 #                                       TextBox
 # ----------------------------------------------------------------------------------------
 
-proc pTextBoxKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): bool {.cdecl.} =
+proc pTextBoxKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): Gboolean {.cdecl.} =
   result = pControlKeyPressSignal(widget, event, data)
 
   # Implement own "copy to clipboard", because by default the clipboard is non-persistent

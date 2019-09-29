@@ -18,6 +18,8 @@ else:
 # ----------------------------------------------------------------------------------------
 
 type
+  Gboolean* = distinct cint
+
   GError* {.byCopy.} = object
     domain*: int32
     code*: cint
@@ -102,6 +104,11 @@ type
     dummy12: cint
     dummy13: cint
     dummy14: pointer
+
+converter gbool*(val: bool): Gboolean = ord(val).Gboolean
+
+converter toBool*(val: Gboolean): bool = int(val) != 0
+
 
 # ----------------------------------------------------------------------------------------
 #                                       Constants
