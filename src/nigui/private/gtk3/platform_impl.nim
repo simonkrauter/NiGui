@@ -1270,7 +1270,7 @@ method `text=`(button: NativeButton, text: string) =
     gtk_label_set_ellipsize(list.data, PANGO_ELLIPSIZE_END)
   app.processEvents()
 
-method naturalWidth(button: NativeButton): int =
+method naturalWidth(button: NativeButton): int {.locks: "unknown".} =
   # Override parent method, to make it big enough for the text to fit in.
   var context = gtk_widget_get_style_context(button.fHandle)
   var padding: GtkBorder
@@ -1306,7 +1306,7 @@ method `text=`(checkbox: NativeCheckbox, text: string) =
   gtk_button_set_label(checkbox.fHandle, text)
   app.processEvents()
 
-method naturalWidth(checkbox: NativeCheckbox): int =
+method naturalWidth(checkbox: NativeCheckbox): int {.locks: "unknown".} =
   # Override parent method, to make it big enough for the text to fit in.
   var context = gtk_widget_get_style_context(checkbox.fHandle)
   var padding: GtkBorder
@@ -1344,7 +1344,7 @@ method `text=`(label: NativeLabel, text: string) =
   gtk_label_set_text(label.fHandle, text)
   app.processEvents()
 
-method naturalWidth(label: NativeLabel): int = label.getTextLineWidth(label.text) + 10
+method naturalWidth(label: NativeLabel): int {.locks: "unknown".} = label.getTextLineWidth(label.text) + 10
 # Override parent method, to make it big enough for the text to fit in.
 
 
@@ -1385,7 +1385,7 @@ method `text=`(textBox: NativeTextBox, text: string) =
   gtk_entry_set_text(textBox.fHandle, text)
   app.processEvents()
 
-method naturalHeight(textBox: NativeTextBox): int = textBox.getTextLineHeight() + 12 # add padding
+method naturalHeight(textBox: NativeTextBox): int {.locks: "unknown".} = textBox.getTextLineHeight() + 12 # add padding
 
 method setSize(textBox: NativeTextBox, width, height: int) =
   gtk_entry_set_width_chars(textBox.fHandle, 1)

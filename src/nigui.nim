@@ -606,12 +606,12 @@ method hide*(window: Window) {.base.}
 method minimized*(window: Window): bool {.base.}
 method `minimized=`*(window: Window, minimized: bool) {.base.}
 
-method minimize*(window: Window)  {.base.}
+method minimize*(window: Window) {.base.}
 
 method control*(window: Window): Control {.base.}
 method `control=`*(window: Window, control: Control) {.base.}
 
-method add*(window: Window, control: Control)  {.base.}
+method add*(window: Window, control: Control) {.base.}
 
 method title*(window: Window): string {.base.}
 method `title=`*(window: Window, title: string) {.base.}
@@ -695,10 +695,10 @@ method height*(control: Control): int {.base.}
 # Set the control's height to a fixed value (sets heightMode to fixed)
 method `height=`*(control: Control, height: int) {.base.}
 
-method minWidth*(control: Control): int {.base.}
+method minWidth*(control: Control): int {.base, locks: "unknown".}
 method `minWidth=`*(control: Control, minWidth: int) {.base.}
 
-method minHeight*(control: Control): int {.base.}
+method minHeight*(control: Control): int {.base, locks: "unknown".}
 method `minHeight=`*(control: Control, minHeight: int) {.base.}
 
 method maxWidth*(control: Control): int {.base.}
@@ -718,9 +718,9 @@ method `y=`*(control: Control, y: int) {.base.}
 
 method setPosition*(control: Control, x, y: int) {.base.}
 
-method naturalWidth*(control: Control): int {.base.}
+method naturalWidth*(control: Control): int {.base, locks: "unknown".}
 
-method naturalHeight*(control: Control): int {.base.}
+method naturalHeight*(control: Control): int {.base, locks: "unknown".}
 
 method wantedWidth*(control: Control): int {.base.}
 
@@ -996,7 +996,7 @@ proc triggerRelayoutIfModeIsAuto(control: Control)
 
 method relayout(control: Control, availableWidth, availableHeight: int) {.base.}
 
-method realignChildControls(control: Control) {.base.}
+method realignChildControls(control: Control) {.base, locks: "unknown".}
 
 method setControlPosition(container: Container, control: Control, x, y: int) {.base.}
 
@@ -2103,7 +2103,7 @@ method minHeight(container: LayoutContainer): int =
   result.inc(container.yScrollbarSpace)
   result = max(result, container.fMinHeight)
 
-method setControlPosition(container: LayoutContainer, control: Control, x, y: int) =
+method setControlPosition(container: LayoutContainer, control: Control, x, y: int) {.locks: "unknown".} =
   raiseError("Controls inside a LayoutContainer cannot be moved manually.")
 
 method layout(container: LayoutContainer): Layout = container.fLayout
@@ -2359,9 +2359,9 @@ method `text=`(button: Button, text: string) =
   button.forceRedraw()
   # should be extended by NativeButton
 
-method naturalWidth(button: Button): int = button.getTextWidth(button.text) + 20.scaleToDpi
+method naturalWidth(button: Button): int {.locks: "unknown".} = button.getTextWidth(button.text) + 20.scaleToDpi
 
-method naturalHeight(button: Button): int = button.getTextLineHeight() * button.text.countLines + 12.scaleToDpi
+method naturalHeight(button: Button): int {.locks: "unknown".} = button.getTextLineHeight() * button.text.countLines + 12.scaleToDpi
 
 method enabled(button: Button): bool = button.fEnabled
 
@@ -2401,9 +2401,9 @@ method `text=`(checkbox: Checkbox, text: string) =
   checkbox.triggerRelayoutIfModeIsAuto()
   checkbox.forceRedraw()
 
-method naturalWidth(checkbox: Checkbox): int = checkbox.getTextWidth(checkbox.text) + 20.scaleToDpi
+method naturalWidth(checkbox: Checkbox): int {.locks: "unknown".} = checkbox.getTextWidth(checkbox.text) + 20.scaleToDpi
 
-method naturalHeight(checkbox: Checkbox): int = checkbox.getTextLineHeight() * checkbox.text.countLines + 12.scaleToDpi
+method naturalHeight(checkbox: Checkbox): int {.locks: "unknown".} = checkbox.getTextLineHeight() * checkbox.text.countLines + 12.scaleToDpi
 
 method enabled(checkbox: Checkbox): bool = checkbox.fEnabled
 
@@ -2461,9 +2461,9 @@ method `text=`(label: Label, text: string) =
   label.triggerRelayoutIfModeIsAuto()
   label.forceRedraw()
 
-method naturalWidth(label: Label): int = label.getTextWidth(label.text)
+method naturalWidth(label: Label): int {.locks: "unknown".} = label.getTextWidth(label.text)
 
-method naturalHeight(label: Label): int = label.getTextLineHeight() * label.text.countLines
+method naturalHeight(label: Label): int {.locks: "unknown".} = label.getTextLineHeight() * label.text.countLines
 
 method `onDraw=`(container: NativeLabel, callback: DrawProc) = raiseError("NativeLabel does not allow onDraw.")
 
@@ -2485,7 +2485,7 @@ proc init(textBox: TextBox) =
   textBox.minHeight = 20.scaleToDpi
   textBox.editable = true
 
-method naturalHeight(textBox: TextBox): int = textBox.getTextLineHeight()
+method naturalHeight(textBox: TextBox): int {.locks: "unknown".} = textBox.getTextLineHeight()
 
 method text(textBox: TextBox): string = discard
   # has to be implemented by NativeTextBox
