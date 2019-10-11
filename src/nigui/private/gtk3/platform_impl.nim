@@ -885,7 +885,7 @@ method `iconPath=`(window: WindowImpl, iconPath: string) =
 #                                       Control
 # ----------------------------------------------------------------------------------------
 
-method pUpdateScrollBar(control: ControlImpl)
+method pUpdateScrollBar(control: ControlImpl) {.base.}
 
 proc pControlDrawSignal(widget: pointer, cr: pointer, data: pointer): Gboolean {.cdecl.} =
   let control = cast[ControlImpl](data)
@@ -931,11 +931,11 @@ proc pUpdateFont(control: ControlImpl) =
   var rgba: GdkRGBA
   control.textColor.pColorToGdkRGBA(rgba)
 
-method pAddButtonPressEvent(control: ControlImpl) =
+method pAddButtonPressEvent(control: ControlImpl) {.base.} =
   gtk_widget_add_events(control.fHandle, GDK_BUTTON_PRESS_MASK)
   discard g_signal_connect_data(control.fHandle, "button-press-event", pCustomControlButtonPressSignal, cast[pointer](control))
 
-method pAddKeyPressEvent(control: ControlImpl) =
+method pAddKeyPressEvent(control: ControlImpl) {.base.} =
   discard g_signal_connect_data(control.fHandle, "key-press-event", pControlKeyPressSignal, cast[pointer](control))
 
 proc init(control: ControlImpl) =
@@ -1171,7 +1171,7 @@ proc init(container: ContainerImpl) =
   gtk_container_add(container.fScrollWndHandle, container.fInnerHandle)
   container.Container.init()
 
-method pUpdateScrollWnd(container: ContainerImpl) =
+method pUpdateScrollWnd(container: ContainerImpl) {.base.} =
   let padding = container.getPadding()
   let width = container.width - padding.left - padding.right
   let height = container.height - padding.top - padding.bottom
@@ -1189,10 +1189,10 @@ method add(container: ContainerImpl, control: Control) =
   gtk_container_add(container.fInnerHandle, cast[ControlImpl](control).fHandle)
   procCall container.Container.add(control)
 
-method paddingLeft(container: ContainerImpl): int = 5 # TODO
-method paddingRight(container: ContainerImpl): int = 5 # TODO
-method paddingTop(container: ContainerImpl): int = 15 # TODO
-method paddingBottom(container: ContainerImpl): int = 5 # TODO
+method paddingLeft(container: ContainerImpl): int {.base.} = 5 # TODO
+method paddingRight(container: ContainerImpl): int {.base.} = 5 # TODO
+method paddingTop(container: ContainerImpl): int {.base.} = 15 # TODO
+method paddingBottom(container: ContainerImpl): int {.base.} = 5 # TODO
 
 method setInnerSize(container: ContainerImpl, width, height: int) =
   procCall container.Container.setInnerSize(width, height)

@@ -463,7 +463,7 @@ type OpenFileDialog* = ref object
 
 proc newOpenFileDialog*(): OpenFileDialog
 
-method run*(dialog: OpenFileDialog)
+method run*(dialog: OpenFileDialog) {.base.}
 
 type SaveFileDialog* = ref object
   title*: string
@@ -474,7 +474,7 @@ type SaveFileDialog* = ref object
 
 proc newSaveFileDialog*(): SaveFileDialog
 
-method run*(dialog: SaveFileDialog)
+method run*(dialog: SaveFileDialog) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -494,60 +494,60 @@ proc stop*(timer: var Timer)
 
 proc newCanvas*(control: Control = nil): CanvasImpl
 
-method destroy*(canvas: Canvas)
+method destroy*(canvas: Canvas) {.base.}
 
-method width*(canvas: Canvas): int
+method width*(canvas: Canvas): int {.base.}
 
-method height*(canvas: Canvas): int
+method height*(canvas: Canvas): int {.base.}
 
-method fontFamily*(canvas: Canvas): string
-method `fontFamily=`*(canvas: Canvas, fontFamily: string)
+method fontFamily*(canvas: Canvas): string {.base.}
+method `fontFamily=`*(canvas: Canvas, fontFamily: string) {.base.}
 
-method fontSize*(canvas: Canvas): float
-method `fontSize=`*(canvas: Canvas, fontSize: float)
+method fontSize*(canvas: Canvas): float {.base.}
+method `fontSize=`*(canvas: Canvas, fontSize: float) {.base.}
 
-method fontBold*(canvas: Canvas): bool
-method `fontBold=`*(canvas: Canvas, fontBold: bool)
+method fontBold*(canvas: Canvas): bool {.base.}
+method `fontBold=`*(canvas: Canvas, fontBold: bool) {.base.}
 
-method textColor*(canvas: Canvas): Color
-method `textColor=`*(canvas: Canvas, color: Color)
+method textColor*(canvas: Canvas): Color {.base.}
+method `textColor=`*(canvas: Canvas, color: Color) {.base.}
 
-method lineColor*(canvas: Canvas): Color
-method `lineColor=`*(canvas: Canvas, color: Color)
+method lineColor*(canvas: Canvas): Color {.base.}
+method `lineColor=`*(canvas: Canvas, color: Color) {.base.}
 
-method lineWidth*(canvas: Canvas): float
-method `lineWidth=`*(canvas: Canvas, width: float)
+method lineWidth*(canvas: Canvas): float {.base.}
+method `lineWidth=`*(canvas: Canvas, width: float) {.base.}
 
-method areaColor*(canvas: Canvas): Color
-method `areaColor=`*(canvas: Canvas, color: Color)
+method areaColor*(canvas: Canvas): Color {.base.}
+method `areaColor=`*(canvas: Canvas, color: Color) {.base.}
 
-method drawText*(canvas: Canvas, text: string, x, y = 0)
+method drawText*(canvas: Canvas, text: string, x, y = 0) {.base.}
 
-method drawTextCentered*(canvas: Canvas, text: string, x, y = 0, width, height = -1)
+method drawTextCentered*(canvas: Canvas, text: string, x, y = 0, width, height = -1) {.base.}
 
-method drawLine*(canvas: Canvas, x1, y1, x2, y2: int)
+method drawLine*(canvas: Canvas, x1, y1, x2, y2: int) {.base.}
 
-method drawRectArea*(canvas: Canvas, x, y, width, height: int)
+method drawRectArea*(canvas: Canvas, x, y, width, height: int) {.base.}
 
-method drawRectOutline*(canvas: Canvas, x, y, width, height: int)
+method drawRectOutline*(canvas: Canvas, x, y, width, height: int) {.base.}
 
-method drawEllipseArea*(canvas: Canvas, x, y, width, height: int)
+method drawEllipseArea*(canvas: Canvas, x, y, width, height: int) {.base.}
 
-method drawEllipseOutline*(canvas: Canvas, x, y, width, height: int)
+method drawEllipseOutline*(canvas: Canvas, x, y, width, height: int) {.base.}
 
-method drawArcOutline*(canvas: Canvas, centerX, centerY: int, radius, startAngle, sweepAngle: float)
+method drawArcOutline*(canvas: Canvas, centerX, centerY: int, radius, startAngle, sweepAngle: float) {.base.}
 
-method fill*(canvas: Canvas)
+method fill*(canvas: Canvas) {.base.}
 
-method drawImage*(canvas: Canvas, image: Image, x, y = 0, width, height = -1)
+method drawImage*(canvas: Canvas, image: Image, x, y = 0, width, height = -1) {.base.}
 
-method setPixel*(canvas: Canvas, x, y: int, color: Color)
+method setPixel*(canvas: Canvas, x, y: int, color: Color) {.base.}
 
-method getTextLineWidth*(canvas: Canvas, text: string): int
+method getTextLineWidth*(canvas: Canvas, text: string): int {.base.}
 
-method getTextLineHeight*(canvas: Canvas): int
+method getTextLineHeight*(canvas: Canvas): int {.base.}
 
-method getTextWidth*(canvas: Canvas, text: string): int
+method getTextWidth*(canvas: Canvas, text: string): int {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -556,25 +556,25 @@ method getTextWidth*(canvas: Canvas, text: string): int
 
 proc newImage*(): Image
 
-method resize*(image: Image, width, height: int)
+method resize*(image: Image, width, height: int) {.base.}
 
-method loadFromFile*(image: Image, filePath: string)
+method loadFromFile*(image: Image, filePath: string) {.base.}
 
-method saveToBitmapFile*(image: Image, filePath: string)
+method saveToBitmapFile*(image: Image, filePath: string) {.base.}
 
-method saveToPngFile*(image: Image, filePath: string)
+method saveToPngFile*(image: Image, filePath: string) {.base.}
 
-method saveToJpegFile*(image: Image, filePath: string, quality = 80)
+method saveToJpegFile*(image: Image, filePath: string, quality = 80) {.base.}
 
-method width*(image: Image): int
+method width*(image: Image): int {.base.}
 
-method height*(image: Image): int
+method height*(image: Image): int {.base.}
 
-method canvas*(image: Image): Canvas
+method canvas*(image: Image): Canvas {.base.}
 
-method beginPixelDataAccess*(image: Image): ptr UncheckedArray[byte]
+method beginPixelDataAccess*(image: Image): ptr UncheckedArray[byte] {.base.}
 
-method endPixelDataAccess*(image: Image)
+method endPixelDataAccess*(image: Image) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -590,75 +590,75 @@ proc init*(window: WindowImpl)
 ## Only needed for own constructors.
 
 proc dispose*(window: var Window)
-method dispose*(window: Window)
+method dispose*(window: Window) {.base.}
 
 proc disposed*(window: Window): bool
 
-method visible*(window: Window): bool
-method `visible=`*(window: Window, visible: bool)
+method visible*(window: Window): bool {.base.}
+method `visible=`*(window: Window, visible: bool) {.base.}
 
-method show*(window: Window)
+method show*(window: Window) {.base.}
 
-method showModal*(window: Window, parent: Window)
+method showModal*(window: Window, parent: Window) {.base.}
 
-method hide*(window: Window)
+method hide*(window: Window) {.base.}
 
-method minimized*(window: Window): bool
-method `minimized=`*(window: Window, minimized: bool)
+method minimized*(window: Window): bool {.base.}
+method `minimized=`*(window: Window, minimized: bool) {.base.}
 
-method minimize*(window: Window)
+method minimize*(window: Window)  {.base.}
 
-method control*(window: Window): Control
-method `control=`*(window: Window, control: Control)
+method control*(window: Window): Control {.base.}
+method `control=`*(window: Window, control: Control) {.base.}
 
-method add*(window: Window, control: Control)
+method add*(window: Window, control: Control)  {.base.}
 
-method title*(window: Window): string
-method `title=`*(window: Window, title: string)
+method title*(window: Window): string {.base.}
+method `title=`*(window: Window, title: string) {.base.}
 
-method x*(window: Window): int
-method `x=`*(window: Window, x: int)
+method x*(window: Window): int {.base.}
+method `x=`*(window: Window, x: int) {.base.}
 
-method y*(window: Window): int
-method `y=`*(window: Window, y: int)
+method y*(window: Window): int {.base.}
+method `y=`*(window: Window, y: int) {.base.}
 
-method centerOnScreen*(window: Window)
+method centerOnScreen*(window: Window) {.base.}
 
-method width*(window: Window): int
-method `width=`*(window: Window, width: int)
+method width*(window: Window): int {.base.}
+method `width=`*(window: Window, width: int) {.base.}
 
-method height*(window: Window): int
-method `height=`*(window: Window, height: int)
+method height*(window: Window): int {.base.}
+method `height=`*(window: Window, height: int) {.base.}
 
-method clientWidth*(window: Window): int
+method clientWidth*(window: Window): int {.base.}
 
-method clientHeight*(window: Window): int
+method clientHeight*(window: Window): int {.base.}
 
-method iconPath*(window: Window): string
-method `iconPath=`*(window: Window, iconPath: string)
+method iconPath*(window: Window): string {.base.}
+method `iconPath=`*(window: Window, iconPath: string) {.base.}
 
-method closeClick*(window: Window)
+method closeClick*(window: Window) {.base.}
 
-method handleResizeEvent*(window: Window, event: ResizeEvent)
+method handleResizeEvent*(window: Window, event: ResizeEvent) {.base.}
 
-method handleKeyDownEvent*(window: Window, event: KeyboardEvent)
+method handleKeyDownEvent*(window: Window, event: KeyboardEvent) {.base.}
 
-method handleDropFilesEvent*(window: Window, event: DropFilesEvent)
+method handleDropFilesEvent*(window: Window, event: DropFilesEvent) {.base.}
 
-method onDispose*(window: Window): WindowDisposeProc
-method `onDispose=`*(window: Window, callback: WindowDisposeProc)
+method onDispose*(window: Window): WindowDisposeProc {.base.}
+method `onDispose=`*(window: Window, callback: WindowDisposeProc) {.base.}
 
-method onCloseClick*(window: Window): CloseClickProc
-method `onCloseClick=`*(window: Window, callback: CloseClickProc)
+method onCloseClick*(window: Window): CloseClickProc {.base.}
+method `onCloseClick=`*(window: Window, callback: CloseClickProc) {.base.}
 
-method onResize*(window: Window): ResizeProc
-method `onResize=`*(window: Window, callback: ResizeProc)
+method onResize*(window: Window): ResizeProc {.base.}
+method `onResize=`*(window: Window, callback: ResizeProc) {.base.}
 
-method onDropFiles*(window: Window): DropFilesProc
-method `onDropFiles=`*(window: Window, callback: DropFilesProc)
+method onDropFiles*(window: Window): DropFilesProc {.base.}
+method `onDropFiles=`*(window: Window, callback: DropFilesProc) {.base.}
 
-method onKeyDown*(window: Window): KeyboardProc
-method `onKeyDown=`*(window: Window, callback: KeyboardProc)
+method onKeyDown*(window: Window): KeyboardProc {.base.}
+method `onKeyDown=`*(window: Window, callback: KeyboardProc) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -671,143 +671,143 @@ proc init*(control: Control)
 proc init*(control: ControlImpl)
 
 proc dispose*(control: var Control)
-method dispose*(control: Control)
+method dispose*(control: Control) {.base.}
 
 proc disposed*(control: Control): bool
 
-method visible*(control: Control): bool
-method `visible=`*(control: Control, visible: bool)
-method show*(control: Control)
-method hide*(control: Control)
+method visible*(control: Control): bool {.base.}
+method `visible=`*(control: Control, visible: bool) {.base.}
+method show*(control: Control) {.base.}
+method hide*(control: Control) {.base.}
 
 # Allow the outside to walk over child widgets
-method childControls*(control: Control): seq[Control]
+method childControls*(control: Control): seq[Control] {.base.}
 
-method parentControl*(control: Control): Control
+method parentControl*(control: Control): Control {.base.}
 
-method parentWindow*(control: Control): WindowImpl
+method parentWindow*(control: Control): WindowImpl {.base.}
 
-method width*(control: Control): int
+method width*(control: Control): int {.base.}
 # Set the control's width to a fixed value (sets widthMode to fixed)
-method `width=`*(control: Control, width: int)
+method `width=`*(control: Control, width: int) {.base.}
 
-method height*(control: Control): int
+method height*(control: Control): int {.base.}
 # Set the control's height to a fixed value (sets heightMode to fixed)
-method `height=`*(control: Control, height: int)
+method `height=`*(control: Control, height: int) {.base.}
 
-method minWidth*(control: Control): int
-method `minWidth=`*(control: Control, minWidth: int)
+method minWidth*(control: Control): int {.base.}
+method `minWidth=`*(control: Control, minWidth: int) {.base.}
 
-method minHeight*(control: Control): int
-method `minHeight=`*(control: Control, minHeight: int)
+method minHeight*(control: Control): int {.base.}
+method `minHeight=`*(control: Control, minHeight: int) {.base.}
 
-method maxWidth*(control: Control): int
-method `maxWidth=`*(control: Control, maxWidth: int)
+method maxWidth*(control: Control): int {.base.}
+method `maxWidth=`*(control: Control, maxWidth: int) {.base.}
 
-method maxHeight*(control: Control): int
-method `maxHeight=`*(control: Control, maxHeight: int)
+method maxHeight*(control: Control): int {.base.}
+method `maxHeight=`*(control: Control, maxHeight: int) {.base.}
 
 # Set the control's width and height without changing widthMode or heightMode
-method setSize*(control: Control, width, height: int)
+method setSize*(control: Control, width, height: int) {.base.}
 
-method x*(control: Control): int
-method `x=`*(control: Control, x: int)
+method x*(control: Control): int {.base.}
+method `x=`*(control: Control, x: int) {.base.}
 
-method y*(control: Control): int
-method `y=`*(control: Control, y: int)
+method y*(control: Control): int {.base.}
+method `y=`*(control: Control, y: int) {.base.}
 
-method setPosition*(control: Control, x, y: int)
+method setPosition*(control: Control, x, y: int) {.base.}
 
-method naturalWidth*(control: Control): int
+method naturalWidth*(control: Control): int {.base.}
 
-method naturalHeight*(control: Control): int
+method naturalHeight*(control: Control): int {.base.}
 
-method wantedWidth*(control: Control): int
+method wantedWidth*(control: Control): int {.base.}
 
-method wantedHeight*(control: Control): int
+method wantedHeight*(control: Control): int {.base.}
 
-method focus*(control: Control)
+method focus*(control: Control) {.base.}
 
-method getTextLineWidth*(control: Control, text: string): int
+method getTextLineWidth*(control: Control, text: string): int {.base.}
 
-method getTextLineHeight*(control: Control): int
+method getTextLineHeight*(control: Control): int {.base.}
 
-method getTextWidth*(control: Control, text: string): int
+method getTextWidth*(control: Control, text: string): int {.base.}
 
-method `widthMode=`*(control: Control, mode: WidthMode)
-method widthMode*(control: Control): WidthMode
+method `widthMode=`*(control: Control, mode: WidthMode) {.base.}
+method widthMode*(control: Control): WidthMode {.base.}
 
-method heightMode*(control: Control): HeightMode
-method `heightMode=`*(control: Control, mode: HeightMode)
+method heightMode*(control: Control): HeightMode {.base.}
+method `heightMode=`*(control: Control, mode: HeightMode) {.base.}
 
-method visibleWidth*(control: Control): int
+method visibleWidth*(control: Control): int {.base.}
 
-method visibleHeight*(control: Control): int
+method visibleHeight*(control: Control): int {.base.}
 
-method xScrollPos*(control: Control): int
-method `xScrollPos=`*(control: Control, xScrollPos: int)
+method xScrollPos*(control: Control): int {.base.}
+method `xScrollPos=`*(control: Control, xScrollPos: int) {.base.}
 
-method yScrollPos*(control: Control): int
-method `yScrollPos=`*(control: Control, yScrollPos: int)
+method yScrollPos*(control: Control): int {.base.}
+method `yScrollPos=`*(control: Control, yScrollPos: int) {.base.}
 
-method scrollableWidth*(control: Control): int
-method `scrollableWidth=`*(control: Control, scrollableWidth: int)
+method scrollableWidth*(control: Control): int {.base.}
+method `scrollableWidth=`*(control: Control, scrollableWidth: int) {.base.}
 
-method scrollableHeight*(control: Control): int
-method `scrollableHeight=`*(control: Control, scrollableHeight: int)
+method scrollableHeight*(control: Control): int {.base.}
+method `scrollableHeight=`*(control: Control, scrollableHeight: int) {.base.}
 
-method fontFamily*(control: Control): string
-method `fontFamily=`*(control: Control, fontFamily: string)
-method setFontFamily*(control: Control, fontFamily: string)
+method fontFamily*(control: Control): string {.base.}
+method `fontFamily=`*(control: Control, fontFamily: string) {.base.}
+method setFontFamily*(control: Control, fontFamily: string) {.base.}
 
-method fontSize*(control: Control): float
-method `fontSize=`*(control: Control, fontSize: float)
-method setFontSize*(control: Control, fontSize: float)
+method fontSize*(control: Control): float {.base.}
+method `fontSize=`*(control: Control, fontSize: float) {.base.}
+method setFontSize*(control: Control, fontSize: float) {.base.}
 
-method fontBold*(control: Control): bool
-method `fontBold=`*(control: Control, fontBold: bool)
-method setFontBold*(control: Control, fontBold: bool)
+method fontBold*(control: Control): bool {.base.}
+method `fontBold=`*(control: Control, fontBold: bool) {.base.}
+method setFontBold*(control: Control, fontBold: bool) {.base.}
 
-method backgroundColor*(control: Control): Color
-method `backgroundColor=`*(control: Control, color: Color)
-method setBackgroundColor*(control: Control, color: Color)
-method initStyle*(control: Control)
+method backgroundColor*(control: Control): Color {.base.}
+method `backgroundColor=`*(control: Control, color: Color) {.base.}
+method setBackgroundColor*(control: Control, color: Color) {.base.}
+method initStyle*(control: Control) {.base.}
 
-method textColor*(control: Control): Color
-method `textColor=`*(control: Control, color: Color)
-method setTextColor*(control: Control, color: Color)
+method textColor*(control: Control): Color {.base.}
+method `textColor=`*(control: Control, color: Color) {.base.}
+method setTextColor*(control: Control, color: Color) {.base.}
 
-method forceRedraw*(control: Control)
+method forceRedraw*(control: Control) {.base.}
 
-method canvas*(control: Control): Canvas
+method canvas*(control: Control): Canvas {.base.}
 
-method handleDrawEvent*(control: Control, event: DrawEvent)
+method handleDrawEvent*(control: Control, event: DrawEvent) {.base.}
 
-method handleMouseButtonDownEvent*(control: Control, event: MouseEvent)
+method handleMouseButtonDownEvent*(control: Control, event: MouseEvent) {.base.}
 
-method handleMouseButtonUpEvent*(control: Control, event: MouseEvent)
+method handleMouseButtonUpEvent*(control: Control, event: MouseEvent) {.base.}
 
-method handleClickEvent*(control: Control, event: ClickEvent)
+method handleClickEvent*(control: Control, event: ClickEvent) {.base.}
 
-method handleKeyDownEvent*(control: Control, event: KeyboardEvent)
+method handleKeyDownEvent*(control: Control, event: KeyboardEvent) {.base.}
 
-method onDispose*(control: Control): ControlDisposeProc
-method `onDispose=`*(control: Control, callback: ControlDisposeProc)
+method onDispose*(control: Control): ControlDisposeProc {.base.}
+method `onDispose=`*(control: Control, callback: ControlDisposeProc) {.base.}
 
-method onDraw*(control: Control): DrawProc
-method `onDraw=`*(control: Control, callback: DrawProc)
+method onDraw*(control: Control): DrawProc {.base.}
+method `onDraw=`*(control: Control, callback: DrawProc) {.base.}
 
-method onMouseButtonDown*(control: Control): MouseButtonProc
-method `onMouseButtonDown=`*(control: Control, callback: MouseButtonProc)
+method onMouseButtonDown*(control: Control): MouseButtonProc {.base.}
+method `onMouseButtonDown=`*(control: Control, callback: MouseButtonProc) {.base.}
 
-method onMouseButtonUp*(control: Control): MouseButtonProc
-method `onMouseButtonUp=`*(control: Control, callback: MouseButtonProc)
+method onMouseButtonUp*(control: Control): MouseButtonProc {.base.}
+method `onMouseButtonUp=`*(control: Control, callback: MouseButtonProc) {.base.}
 
-method onClick*(control: Control): ClickProc
-method `onClick=`*(control: Control, callback: ClickProc)
+method onClick*(control: Control): ClickProc {.base.}
+method `onClick=`*(control: Control, callback: ClickProc) {.base.}
 
-method onKeyDown*(control: Control): KeyboardProc
-method `onKeyDown=`*(control: Control, callback: KeyboardProc)
+method onKeyDown*(control: Control): KeyboardProc {.base.}
+method `onKeyDown=`*(control: Control, callback: KeyboardProc) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -819,15 +819,15 @@ proc newContainer*(): Container
 proc init*(container: Container)
 proc init*(container: ContainerImpl)
 
-method frame*(container: Container): Frame
-method `frame=`*(container: Container, frame: Frame)
+method frame*(container: Container): Frame {.base.}
+method `frame=`*(container: Container, frame: Frame) {.base.}
 
-method add*(container: Container, control: Control)
-method remove*(container: Container, control: Control)
+method add*(container: Container, control: Control) {.base.}
+method remove*(container: Container, control: Control) {.base.}
 
-method getPadding*(container: Container): Spacing
+method getPadding*(container: Container): Spacing {.base.}
 
-method setInnerSize*(container: Container, width, height: int)
+method setInnerSize*(container: Container, width, height: int) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -836,20 +836,20 @@ method setInnerSize*(container: Container, width, height: int)
 
 proc newLayoutContainer*(layout: Layout): LayoutContainer
 
-method layout*(container: LayoutContainer): Layout
-method `layout=`*(container: LayoutContainer, layout: Layout)
+method layout*(container: LayoutContainer): Layout {.base.}
+method `layout=`*(container: LayoutContainer, layout: Layout) {.base.}
 
-method xAlign*(container: LayoutContainer): XAlign
-method `xAlign=`*(container: LayoutContainer, xAlign: XAlign)
+method xAlign*(container: LayoutContainer): XAlign {.base.}
+method `xAlign=`*(container: LayoutContainer, xAlign: XAlign) {.base.}
 
-method yAlign*(container: LayoutContainer): YAlign
-method `yAlign=`*(container: LayoutContainer, yAlign: YAlign)
+method yAlign*(container: LayoutContainer): YAlign {.base.}
+method `yAlign=`*(container: LayoutContainer, yAlign: YAlign) {.base.}
 
-method padding*(container: LayoutContainer): int
-method `padding=`*(container: LayoutContainer, padding: int)
+method padding*(container: LayoutContainer): int {.base.}
+method `padding=`*(container: LayoutContainer, padding: int) {.base.}
 
-method spacing*(container: LayoutContainer): int
-method `spacing=`*(container: LayoutContainer, spacing: int)
+method spacing*(container: LayoutContainer): int {.base.}
+method `spacing=`*(container: LayoutContainer, spacing: int) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -861,10 +861,10 @@ proc newFrame*(text = ""): Frame
 proc init*(frame: Frame)
 proc init*(frame: NativeFrame)
 
-method text*(frame: Frame): string
-method `text=`*(frame: Frame, text: string)
+method text*(frame: Frame): string {.base.}
+method `text=`*(frame: Frame, text: string) {.base.}
 
-method getPadding*(frame: Frame): Spacing
+method getPadding*(frame: Frame): Spacing {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -876,11 +876,11 @@ proc newButton*(text = ""): Button
 proc init*(button: Button)
 proc init*(button: NativeButton)
 
-method text*(button: Button): string
-method `text=`*(button: Button, text: string)
+method text*(button: Button): string {.base.}
+method `text=`*(button: Button, text: string) {.base.}
 
-method enabled*(button: Button): bool
-method `enabled=`*(button: Button, enabled: bool)
+method enabled*(button: Button): bool {.base.}
+method `enabled=`*(button: Button, enabled: bool) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -892,20 +892,20 @@ proc newCheckbox*(text = ""): Checkbox
 proc init*(checkbox: Checkbox)
 proc init*(checkbox: NativeCheckbox)
 
-method text*(checkbox: Checkbox): string
-method `text=`*(checkbox: Checkbox, text: string)
+method text*(checkbox: Checkbox): string {.base.}
+method `text=`*(checkbox: Checkbox, text: string) {.base.}
 
-method enabled*(checkbox: Checkbox): bool
-method `enabled=`*(checkbox: Checkbox, enabled: bool)
+method enabled*(checkbox: Checkbox): bool {.base.}
+method `enabled=`*(checkbox: Checkbox, enabled: bool) {.base.}
 
-method checked*(checkbox: Checkbox): bool
+method checked*(checkbox: Checkbox): bool {.base.}
 
-method `checked=`*(checkbox: Checkbox, checked: bool)
+method `checked=`*(checkbox: Checkbox, checked: bool) {.base.}
 
-method onToggle*(checkbox: Checkbox): ToggleProc
-method `onToggle=`*(checkbox: Checkbox, callback: ToggleProc)
+method onToggle*(checkbox: Checkbox): ToggleProc {.base.}
+method `onToggle=`*(checkbox: Checkbox, callback: ToggleProc) {.base.}
 
-method handleToggleEvent*(checkbox: Checkbox, event: ToggleEvent)
+method handleToggleEvent*(checkbox: Checkbox, event: ToggleEvent) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -917,8 +917,8 @@ proc newLabel*(text = ""): Label
 proc init*(label: Label)
 proc init*(label: NativeLabel)
 
-method text*(label: Label): string
-method `text=`*(label: Label, text: string)
+method text*(label: Label): string {.base.}
+method `text=`*(label: Label, text: string) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -930,28 +930,28 @@ proc newTextBox*(text = ""): TextBox
 proc init*(textBox: TextBox)
 proc init*(textBox: NativeTextBox)
 
-method text*(textBox: TextBox): string
-method `text=`*(textBox: TextBox, text: string)
+method text*(textBox: TextBox): string {.base.}
+method `text=`*(textBox: TextBox, text: string) {.base.}
 
-method editable*(textBox: TextBox): bool
-method `editable=`*(textBox: TextBox, editable: bool)
+method editable*(textBox: TextBox): bool {.base.}
+method `editable=`*(textBox: TextBox, editable: bool) {.base.}
 
-method cursorPos*(textBox: TextBox): int
-method `cursorPos=`*(textBox: TextBox, cursorPos: int)
+method cursorPos*(textBox: TextBox): int {.base.}
+method `cursorPos=`*(textBox: TextBox, cursorPos: int) {.base.}
 
-method selectionStart*(textBox: TextBox): int
-method `selectionStart=`*(textBox: TextBox, selectionStart: int)
+method selectionStart*(textBox: TextBox): int {.base.}
+method `selectionStart=`*(textBox: TextBox, selectionStart: int) {.base.}
 
-method selectionEnd*(textBox: TextBox): int
-method `selectionEnd=`*(textBox: TextBox, selectionEnd: int)
+method selectionEnd*(textBox: TextBox): int {.base.}
+method `selectionEnd=`*(textBox: TextBox, selectionEnd: int) {.base.}
 
-method selectedText*(textBox: TextBox): string
-method `selectedText=`*(textBox: TextBox, text: string)
+method selectedText*(textBox: TextBox): string {.base.}
+method `selectedText=`*(textBox: TextBox, text: string) {.base.}
 
-method handleTextChangeEvent*(textBox: TextBox, event: TextChangeEvent)
+method handleTextChangeEvent*(textBox: TextBox, event: TextChangeEvent) {.base.}
 
-method onTextChange*(textBox: TextBox): TextChangeProc
-method `onTextChange=`*(textBox: TextBox, callback: TextChangeProc)
+method onTextChange*(textBox: TextBox): TextChangeProc {.base.}
+method `onTextChange=`*(textBox: TextBox, callback: TextChangeProc) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -963,13 +963,13 @@ proc newTextArea*(text = ""): TextArea
 proc init*(textArea: TextArea)
 proc init*(textArea: NativeTextArea)
 
-method addText*(textArea: TextArea, text: string)
-method addLine*(textArea: TextArea, text = "")
+method addText*(textArea: TextArea, text: string) {.base.}
+method addLine*(textArea: TextArea, text = "") {.base.}
 
-method scrollToBottom*(textArea: TextArea)
+method scrollToBottom*(textArea: TextArea) {.base.}
 
-method wrap*(textArea: TextArea): bool
-method `wrap=`*(textArea: TextArea, wrap: bool)
+method wrap*(textArea: TextArea): bool {.base.}
+method `wrap=`*(textArea: TextArea, wrap: bool) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -984,21 +984,21 @@ proc runMainLoop()
 
 proc init(window: Window)
 
-method destroy(window: Window)
+method destroy(window: Window) {.base.}
 
 proc triggerRelayout(window: Window)
 
-method destroy(control: Control)
+method destroy(control: Control) {.base.}
 
 proc triggerRelayout(control: Control)
 
 proc triggerRelayoutIfModeIsAuto(control: Control)
 
-method relayout(control: Control, availableWidth, availableHeight: int)
+method relayout(control: Control, availableWidth, availableHeight: int) {.base.}
 
-method realignChildControls(control: Control)
+method realignChildControls(control: Control) {.base.}
 
-method setControlPosition(container: Container, control: Control, x, y: int)
+method setControlPosition(container: Container, control: Control, x, y: int) {.base.}
 
 
 # ========================================================================================
@@ -1684,11 +1684,11 @@ method getTextWidth(control: Control, text: string): int =
   for line in text.splitLines:
     result = max(result, control.getTextLineWidth(line))
 
-method xScrollbarSpace(control: Control): int =
+method xScrollbarSpace(control: Control): int {.base.} =
   if control.fYScrollEnabled:
     result.inc(fScrollbarSize)
 
-method yScrollbarSpace(control: Control): int =
+method yScrollbarSpace(control: Control): int {.base.} =
   if control.fXScrollEnabled:
     result.inc(fScrollbarSize)
 
