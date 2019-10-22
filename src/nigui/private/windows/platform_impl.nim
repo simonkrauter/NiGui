@@ -470,6 +470,7 @@ method run*(dialog: OpenFileDialog) =
   dialog.files = @[]
   var ofn: OpenFileName
   ofn.lStructSize = OpenFileName.sizeOf.int32
+  ofn.lpstrTitle = dialog.title.pUtf8ToUtf16()
   ofn.nMaxFile = maxCharacters
   ofn.lpstrInitialDir = dialog.directory.pUtf8ToUtf16()
   ofn.Flags = OFN_FILEMUSTEXIST
@@ -502,6 +503,7 @@ method run(dialog: SaveFileDialog) =
   const maxCharacters = 500
   var ofn: OpenFileName
   ofn.lStructSize = OpenFileName.sizeOf.int32
+  ofn.lpstrTitle = dialog.title.pUtf8ToUtf16()
   ofn.nMaxFile = maxCharacters
   ofn.lpstrInitialDir = dialog.directory.pUtf8ToUtf16()
   if dialog.defaultExtension.len > 0:
