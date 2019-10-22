@@ -81,8 +81,6 @@ proc pUnicodeCharToUtf8(unicode: int): string =
   widestring[1] = chr(unicode div 256)
   result = widestring.pUtf16ToUtf8
 
-proc pUtf16ToUnicode(s: string): int = s[0].ord + s[1].ord * 256
-
 proc pShowWindow(hWnd: pointer, nCmdShow: int32) = discard ShowWindow(hWnd, nCmdShow)
 
 proc pSetWindowLong(hWnd: pointer, nIndex, dwNewLong: int32) =
@@ -567,7 +565,6 @@ proc startRepeatingTimer(milliSeconds: int, timerProc: TimerProc, data: pointer 
 
 proc stop(timer: var Timer) =
   if cast[int](timer) != inactiveTimer:
-    let timerEntry = pTimers.getOrDefault(cast[int](timer))
     pTimers.del(cast[int](timer))
     discard KillTimer(nil, cast[pointer](timer))
     timer = cast[Timer](inactiveTimer)
@@ -892,7 +889,6 @@ method `y=`(window: WindowImpl, y: int) =
   window.pUpdatePosition()
 
 method centerOnScreen(window: WindowImpl) =
-  let desktop = GetDesktopWindow()
   var rect: Rect
   discard SystemParametersInfoW(SPI_GETWORKAREA, 0, rect.addr, 0)
   window.fX = rect.left + (rect.right - window.width) div 2
