@@ -654,7 +654,7 @@ method `fontBold=`(canvas: CanvasImpl, fontBold: bool) =
   procCall canvas.Canvas.`fontBold=`(fontBold)
   canvas.fFont = nil
 
-method getTextLineWidth(canvas: CanvasImpl, text: string): int =
+method getTextLineWidth(canvas: CanvasImpl, text: string): int {.locks: "unknown".} =
   if canvas.fCairoContext == nil:
     raiseError("Canvas is not in drawing state.")
   var layout = pango_cairo_create_layout(canvas.fCairoContext)
@@ -667,7 +667,7 @@ method getTextLineWidth(canvas: CanvasImpl, text: string): int =
   pango_layout_get_pixel_size(layout, width, height)
   result = width
 
-method getTextLineHeight(canvas: CanvasImpl): int =
+method getTextLineHeight(canvas: CanvasImpl): int {.locks: "unknown".} =
   if canvas.fCairoContext == nil:
     raiseError("Canvas is not in drawing state.")
   var layout = pango_cairo_create_layout(canvas.fCairoContext)
@@ -854,7 +854,7 @@ method `y=`(window: WindowImpl, y: int) =
   procCall window.Window.`y=`(y)
   window.pUpdatePosition()
 
-method centerOnScreen(window: WindowImpl) =
+method centerOnScreen(window: WindowImpl) {.locks: "unknown".} =
   let screen = gdk_screen_get_default()
   let monitor = gdk_screen_get_primary_monitor(screen)
   var rect: GdkRectangle
@@ -1115,14 +1115,14 @@ method `setBackgroundColor`(control: ControlImpl, color: Color) =
   color.pColorToGdkRGBA(rgba)
   gtk_widget_override_background_color(control.fHandle, GTK_STATE_FLAG_NORMAL, rgba)
 
-method getTextLineWidth(control: ControlImpl, text: string): int =
+method getTextLineWidth(control: ControlImpl, text: string): int {.locks: "unknown".} =
   var layout = gtk_widget_create_pango_layout(control.fHandle, text)
   var width: cint = 0
   var height: cint = 0
   pango_layout_get_pixel_size(layout, width, height)
   result = width
 
-method getTextLineHeight(control: ControlImpl): int =
+method getTextLineHeight(control: ControlImpl): int {.locks: "unknown".} =
   var layout = gtk_widget_create_pango_layout(control.fHandle, "a")
 
   # Because the widget's font size is not always regarded, we have to set the font here again:
@@ -1379,9 +1379,9 @@ method initStyle(textBox: NativeTextBox) =
   textBox.fUseDefaultBackgroundColor = false
   textBox.fUseDefaultTextColor = false
 
-method text(textBox: NativeTextBox): string = $gtk_entry_get_text(textBox.fHandle)
+method text(textBox: NativeTextBox): string {.locks: "unknown".} = $gtk_entry_get_text(textBox.fHandle)
 
-method `text=`(textBox: NativeTextBox, text: string) =
+method `text=`(textBox: NativeTextBox, text: string) {.locks: "unknown".} =
   gtk_entry_set_text(textBox.fHandle, text)
   app.processEvents()
 
@@ -1453,17 +1453,17 @@ method setSize(textBox: NativeTextArea, width, height: int) =
   # Need to override method of NativeTextBox
   procCall textBox.ControlImpl.setSize(width, height)
 
-method text(textArea: NativeTextArea): string =
+method text(textArea: NativeTextArea): string {.locks: "unknown".} =
   var startIter, endIter: GtkTextIter
   gtk_text_buffer_get_start_iter(textArea.fBufferHandle, startIter)
   gtk_text_buffer_get_end_iter(textArea.fBufferHandle, endIter)
   result = $gtk_text_buffer_get_text(textArea.fBufferHandle, startIter, endIter, true)
 
-method `text=`(textArea: NativeTextArea, text: string) =
+method `text=`(textArea: NativeTextArea, text: string) {.locks: "unknown".} =
   gtk_text_buffer_set_text(textArea.fBufferHandle, text, text.len.cint)
   app.processEvents()
 
-method addText(textArea: NativeTextArea, text: string) =
+method addText(textArea: NativeTextArea, text: string) {.locks: "unknown".} =
   # overide base method for better performance and to prevent automatic scrolling to top
   var iter: GtkTextIter
   gtk_text_buffer_get_end_iter(textArea.fBufferHandle, iter)
