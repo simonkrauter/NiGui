@@ -1317,9 +1317,10 @@ method add(container: ContainerImpl, control: Control) =
   procCall container.Container.add(control)
   pSetParent(cast[ControlImpl](control).fHandle, container.fInnerHandle)
 
-method remove(container: ContainerImpl, control: ControlImpl) =
+method remove(container: ContainerImpl, control: Control) =
+  # Overwrite base method
   procCall container.Container.remove(control)
-  pSetParent(control.fHandle, pDefaultParentWindow)
+  pSetParent(cast[ControlImpl](control).fHandle, pDefaultParentWindow)
 
 method setInnerSize(container: ContainerImpl, width, height: int) =
   procCall container.Container.setInnerSize(width, height)
