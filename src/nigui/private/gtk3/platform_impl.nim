@@ -400,7 +400,7 @@ proc alert(window: Window, message: string, title = "Message") =
 
 method run*(dialog: OpenFileDialog) =
   dialog.files = @[]
-  var chooser = gtk_file_chooser_dialog_new(nil, nil, GTK_FILE_CHOOSER_ACTION_OPEN, "Cancel", GTK_RESPONSE_CANCEL, "Open", GTK_RESPONSE_ACCEPT, nil)
+  var chooser = gtk_file_chooser_dialog_new(dialog.title, nil, GTK_FILE_CHOOSER_ACTION_OPEN, "Cancel", GTK_RESPONSE_CANCEL, "Open", GTK_RESPONSE_ACCEPT, nil)
   # Issue: When a title is passed, the dialog is shown without a title
   discard gtk_file_chooser_set_current_folder(chooser, dialog.directory)
   gtk_file_chooser_set_select_multiple(chooser, dialog.multiple)
@@ -413,7 +413,7 @@ method run*(dialog: OpenFileDialog) =
   gtk_widget_destroy(chooser)
 
 method run(dialog: SaveFileDialog) =
-  var chooser = gtk_file_chooser_dialog_new(nil, nil, GTK_FILE_CHOOSER_ACTION_SAVE, "Cancel", GTK_RESPONSE_CANCEL, "Save", GTK_RESPONSE_ACCEPT, nil)
+  var chooser = gtk_file_chooser_dialog_new(dialog.title, nil, GTK_FILE_CHOOSER_ACTION_SAVE, "Cancel", GTK_RESPONSE_CANCEL, "Save", GTK_RESPONSE_ACCEPT, nil)
   # Issue: When a title is passed, the dialog is shown without a title
   let res = gtk_dialog_run(chooser)
   discard gtk_file_chooser_set_current_folder(chooser, dialog.directory)
