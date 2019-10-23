@@ -494,32 +494,32 @@ proc stop*(timer: var Timer)
 
 proc newCanvas*(control: Control = nil): CanvasImpl
 
-method destroy*(canvas: Canvas) {.base.}
+method destroy*(canvas: Canvas) {.base, locks: "unknown".}
 
 method width*(canvas: Canvas): int {.base.}
 
 method height*(canvas: Canvas): int {.base.}
 
 method fontFamily*(canvas: Canvas): string {.base.}
-method `fontFamily=`*(canvas: Canvas, fontFamily: string) {.base.}
+method `fontFamily=`*(canvas: Canvas, fontFamily: string) {.base, locks: "unknown".}
 
 method fontSize*(canvas: Canvas): float {.base.}
-method `fontSize=`*(canvas: Canvas, fontSize: float) {.base.}
+method `fontSize=`*(canvas: Canvas, fontSize: float) {.base, locks: "unknown".}
 
 method fontBold*(canvas: Canvas): bool {.base.}
-method `fontBold=`*(canvas: Canvas, fontBold: bool) {.base.}
+method `fontBold=`*(canvas: Canvas, fontBold: bool) {.base, locks: "unknown".}
 
 method textColor*(canvas: Canvas): Color {.base.}
-method `textColor=`*(canvas: Canvas, color: Color) {.base.}
+method `textColor=`*(canvas: Canvas, color: Color) {.base, locks: "unknown".}
 
 method lineColor*(canvas: Canvas): Color {.base.}
-method `lineColor=`*(canvas: Canvas, color: Color) {.base.}
+method `lineColor=`*(canvas: Canvas, color: Color) {.base, locks: "unknown".}
 
 method lineWidth*(canvas: Canvas): float {.base.}
 method `lineWidth=`*(canvas: Canvas, width: float) {.base.}
 
 method areaColor*(canvas: Canvas): Color {.base.}
-method `areaColor=`*(canvas: Canvas, color: Color) {.base.}
+method `areaColor=`*(canvas: Canvas, color: Color) {.base, locks: "unknown".}
 
 method drawText*(canvas: Canvas, text: string, x, y = 0) {.base.}
 
@@ -543,9 +543,9 @@ method drawImage*(canvas: Canvas, image: Image, x, y = 0, width, height = -1) {.
 
 method setPixel*(canvas: Canvas, x, y: int, color: Color) {.base.}
 
-method getTextLineWidth*(canvas: Canvas, text: string): int {.base.}
+method getTextLineWidth*(canvas: Canvas, text: string): int {.base, locks: "unknown".}
 
-method getTextLineHeight*(canvas: Canvas): int {.base.}
+method getTextLineHeight*(canvas: Canvas): int {.base, locks: "unknown".}
 
 method getTextWidth*(canvas: Canvas, text: string): int {.base.}
 
@@ -609,33 +609,33 @@ method `minimized=`*(window: Window, minimized: bool) {.base.}
 method minimize*(window: Window) {.base.}
 
 method control*(window: Window): Control {.base.}
-method `control=`*(window: Window, control: Control) {.base.}
+method `control=`*(window: Window, control: Control) {.base, locks: "unknown".}
 
 method add*(window: Window, control: Control) {.base.}
 
 method title*(window: Window): string {.base.}
-method `title=`*(window: Window, title: string) {.base.}
+method `title=`*(window: Window, title: string) {.base, locks: "unknown".}
 
 method x*(window: Window): int {.base.}
-method `x=`*(window: Window, x: int) {.base.}
+method `x=`*(window: Window, x: int) {.base, locks: "unknown".}
 
 method y*(window: Window): int {.base.}
-method `y=`*(window: Window, y: int) {.base.}
+method `y=`*(window: Window, y: int) {.base, locks: "unknown".}
 
-method centerOnScreen*(window: Window) {.base.}
+method centerOnScreen*(window: Window) {.base, locks: "unknown".}
 
 method width*(window: Window): int {.base.}
-method `width=`*(window: Window, width: int) {.base.}
+method `width=`*(window: Window, width: int) {.base, locks: "unknown".}
 
 method height*(window: Window): int {.base.}
-method `height=`*(window: Window, height: int) {.base.}
+method `height=`*(window: Window, height: int) {.base, locks: "unknown".}
 
 method clientWidth*(window: Window): int {.base.}
 
 method clientHeight*(window: Window): int {.base.}
 
 method iconPath*(window: Window): string {.base.}
-method `iconPath=`*(window: Window, iconPath: string) {.base.}
+method `iconPath=`*(window: Window, iconPath: string) {.base, locks: "unknown".}
 
 method closeClick*(window: Window) {.base.}
 
@@ -716,7 +716,7 @@ method `x=`*(control: Control, x: int) {.base.}
 method y*(control: Control): int {.base.}
 method `y=`*(control: Control, y: int) {.base.}
 
-method setPosition*(control: Control, x, y: int) {.base.}
+method setPosition*(control: Control, x, y: int) {.base, locks: "unknown".}
 
 method naturalWidth*(control: Control): int {.base, locks: "unknown".}
 
@@ -728,9 +728,9 @@ method wantedHeight*(control: Control): int {.base.}
 
 method focus*(control: Control) {.base.}
 
-method getTextLineWidth*(control: Control, text: string): int {.base.}
+method getTextLineWidth*(control: Control, text: string): int {.base, locks: "unknown".}
 
-method getTextLineHeight*(control: Control): int {.base.}
+method getTextLineHeight*(control: Control): int {.base, locks: "unknown".}
 
 method getTextWidth*(control: Control, text: string): int {.base.}
 
@@ -745,10 +745,10 @@ method visibleWidth*(control: Control): int {.base.}
 method visibleHeight*(control: Control): int {.base.}
 
 method xScrollPos*(control: Control): int {.base.}
-method `xScrollPos=`*(control: Control, xScrollPos: int) {.base.}
+method `xScrollPos=`*(control: Control, xScrollPos: int) {.base, locks: "unknown".}
 
 method yScrollPos*(control: Control): int {.base.}
-method `yScrollPos=`*(control: Control, yScrollPos: int) {.base.}
+method `yScrollPos=`*(control: Control, yScrollPos: int) {.base, locks: "unknown".}
 
 method scrollableWidth*(control: Control): int {.base.}
 method `scrollableWidth=`*(control: Control, scrollableWidth: int) {.base.}
@@ -762,11 +762,11 @@ method setFontFamily*(control: Control, fontFamily: string) {.base.}
 
 method fontSize*(control: Control): float {.base.}
 method `fontSize=`*(control: Control, fontSize: float) {.base.}
-method setFontSize*(control: Control, fontSize: float) {.base.}
+method setFontSize*(control: Control, fontSize: float) {.base, locks: "unknown".}
 
 method fontBold*(control: Control): bool {.base.}
 method `fontBold=`*(control: Control, fontBold: bool) {.base.}
-method setFontBold*(control: Control, fontBold: bool) {.base.}
+method setFontBold*(control: Control, fontBold: bool) {.base, locks: "unknown".}
 
 method backgroundColor*(control: Control): Color {.base.}
 method `backgroundColor=`*(control: Control, color: Color) {.base.}
@@ -827,7 +827,7 @@ method remove*(container: Container, control: Control) {.base.}
 
 method getPadding*(container: Container): Spacing {.base.}
 
-method setInnerSize*(container: Container, width, height: int) {.base.}
+method setInnerSize*(container: Container, width, height: int) {.base, locks: "unknown".}
 
 
 # ----------------------------------------------------------------------------------------
@@ -862,9 +862,9 @@ proc init*(frame: Frame)
 proc init*(frame: NativeFrame)
 
 method text*(frame: Frame): string {.base.}
-method `text=`*(frame: Frame, text: string) {.base.}
+method `text=`*(frame: Frame, text: string) {.base, locks: "unknown".}
 
-method getPadding*(frame: Frame): Spacing {.base.}
+method getPadding*(frame: Frame): Spacing {.base, locks: "unknown".}
 
 
 # ----------------------------------------------------------------------------------------
@@ -930,8 +930,8 @@ proc newTextBox*(text = ""): TextBox
 proc init*(textBox: TextBox)
 proc init*(textBox: NativeTextBox)
 
-method text*(textBox: TextBox): string {.base.}
-method `text=`*(textBox: TextBox, text: string) {.base.}
+method text*(textBox: TextBox): string {.base, locks: "unknown".}
+method `text=`*(textBox: TextBox, text: string) {.base, locks: "unknown".}
 
 method editable*(textBox: TextBox): bool {.base.}
 method `editable=`*(textBox: TextBox, editable: bool) {.base.}
@@ -988,7 +988,7 @@ method destroy(window: Window) {.base.}
 
 proc triggerRelayout(window: Window)
 
-method destroy(control: Control) {.base.}
+method destroy(control: Control) {.base, locks: "unknown".}
 
 proc triggerRelayout(control: Control)
 
