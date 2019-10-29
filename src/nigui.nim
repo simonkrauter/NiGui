@@ -76,11 +76,19 @@ type
     Key_CapsLock   = 20
     Key_Escape     = 27
     Key_Space      = 32
-    Key_NumberSign = 35
+    Key_ExclamationMark = 33
+    Key_DoubleQuotes    = 34
+    Key_NumberSign      = 35
+    Key_Dollar     = 36
+    Key_Percent    = 37
+    Key_Ampersand  = 38
+    Key_OpenParen  = 40
+    Key_CloseParen = 41
     Key_Plus       = 43
     Key_Comma      = 44
     Key_Minus      = 45
     Key_Point      = 46
+    Key_Divide     = 47
     Key_Number0    = 48
     Key_Number1    = 49
     Key_Number2    = 50
@@ -92,6 +100,10 @@ type
     Key_Number8    = 56
     Key_Number9    = 57
     Key_Less       = 60
+    Key_Equal      = 61
+    Key_Greater    = 62
+    Key_QuestionMark = 63
+    Key_AtSign     = 64
     Key_A          = 65
     Key_B          = 66
     Key_C          = 67
@@ -187,6 +199,7 @@ type
     Key_ShiftR
     Key_Print
     Key_NumpadEnter
+    Key_AltGr      = 65027
 
 const
   inactiveTimer* = 0
