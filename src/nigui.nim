@@ -489,6 +489,15 @@ proc newSaveFileDialog*(): SaveFileDialog
 
 method run*(dialog: SaveFileDialog) {.base.}
 
+type SelectDirectoryDialog* = ref object
+  title*: string
+  startDirectory*: string
+  selectedDirectory*: string
+
+proc newSelectDirectoryDialog*(): SelectDirectoryDialog
+
+method run*(dialog: SelectDirectoryDialog) {.base.}
+
 
 # ----------------------------------------------------------------------------------------
 #                                        Timers
@@ -1166,6 +1175,11 @@ proc newSaveFileDialog(): SaveFileDialog =
   result = new SaveFileDialog
   result.title = "Save File"
   result.directory = getCurrentDir()
+
+proc newSelectDirectoryDialog(): SelectDirectoryDialog =
+  result = new SelectDirectoryDialog
+  result.title = "Select a Folder"
+  result.startDirectory = getCurrentDir()
 
 proc isDown(key: Key): bool = fDownKeys.contains(key)
 

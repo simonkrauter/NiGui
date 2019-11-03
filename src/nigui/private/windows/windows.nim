@@ -34,6 +34,8 @@ const
   ACTCTX_FLAG_ASSEMBLY_DIRECTORY_VALID* = 4
   ACTCTX_FLAG_RESOURCE_NAME_VALID* = 8
   ACTCTX_FLAG_SET_PROCESS_DEFAULT* = 16
+  BIF_RETURNONLYFSDIRS* = 0x00000001
+  BIF_NEWDIALOGSTYLE* = 0x00000040
   BN_CLICKED* = 0
   BM_SETSTYLE* = 244
   BM_SETIMAGE* = 247
@@ -348,6 +350,17 @@ type
     Scan0*: ptr UncheckedArray[byte]
     Reserved: pointer
 
+  BrowseInfo* = object
+    hwndOwner*: pointer
+    pidlRoot*: pointer
+    pszDisplayName*: cstring
+    lpszTitle*: cstring
+    ulFlags*: uint
+    lpfn*: pointer
+    lParam*: pointer
+    iImage*: int32
+
+
 
 # ----------------------------------------------------------------------------------------
 #                               Replacement for Windows Macros
@@ -529,6 +542,8 @@ proc GdipBitmapUnlockBits*(bitmap: pointer, lockedBitmapData: var BitmapData): i
 proc DragAcceptFiles*(hWnd: pointer, fAccept: bool) {.importc: "DragAcceptFiles", libShell32.}
 proc DragQueryFileW*(hDrop: pointer, iFile: uint32, lpszFile: cstring, cch: int32): int32 {.importc: "DragQueryFileW", libShell32.}
 proc DragFinish*(hDrop: pointer) {.importc: "DragFinish", libShell32.}
+proc SHBrowseForFolderW*(lpbi: var BrowseInfo): pointer {.importc: "SHBrowseForFolderW", libShell32.}
+proc SHGetPathFromIDListW*(pidl: pointer, pszPath: cstring) {.importc: "SHGetPathFromIDListW", libShell32.}
 
 
 # ----------------------------------------------------------------------------------------

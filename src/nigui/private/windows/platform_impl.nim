@@ -499,6 +499,7 @@ method run*(dialog: OpenFileDialog) =
 
 method run(dialog: SaveFileDialog) =
   const maxCharacters = 500
+  dialog.file = ""
   var ofn: OpenFileName
   ofn.lStructSize = OpenFileName.sizeOf.int32
   ofn.lpstrTitle = dialog.title.pUtf8ToUtf16()
@@ -517,10 +518,22 @@ method run(dialog: SaveFileDialog) =
   if ret:
     dialog.file = pUtf16ToUtf8(s, true)
   else:
-    dialog.file = ""
     let e = CommDlgExtendedError()
     if e != 0:
       raiseError("CommDlg Error Code: " & $e)
+
+method run*(dialog: SelectDirectoryDialog) =
+  ## Notes: `dialog.startDirectory` is not supported.
+  const maxCharacters = 5000
+  dialog.selectedDirectory = ""
+  var bi: BrowseInfo
+  bi.lpszTitle = dialog.title.pUtf8ToUtf16()
+  bi.ulFlags = BIF_RETURNONLYFSDIRS or BIF_NEWDIALOGSTYLE
+  let pidl = SHBrowseForFolderW(bi)
+  if pidl != nil:
+    var s = newString(maxCharacters * 2)
+    SHGetPathFromIDListW(pidl, s)
+    dialog.selectedDirectory = pUtf16ToUtf8(s, true)
 
 
 # ----------------------------------------------------------------------------------------

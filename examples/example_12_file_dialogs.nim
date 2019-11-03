@@ -20,7 +20,7 @@ button1.onClick = proc(event: ClickEvent) =
   var dialog = newOpenFileDialog()
   dialog.title = "Test Open"
   dialog.multiple = true
-  dialog.directory = "/run/media/user/Data/Temp/Downloads/"
+  # dialog.directory = ""
   dialog.run()
   textArea.addLine($dialog.files.len & " files selected")
   if dialog.files.len > 0:
@@ -32,13 +32,25 @@ buttons.add(button2)
 button2.onClick = proc(event: ClickEvent) =
   var dialog = SaveFileDialog()
   dialog.title = "Test Save"
-  dialog.directory = "/run/media/user/Data/Temp/Downloads/"
+  # dialog.directory = ""
   dialog.defaultName = "default.txt"
   dialog.run()
   if dialog.file == "":
-    textArea.addLine("No path selected")
+    textArea.addLine("No file selected")
   else:
     textArea.addLine(dialog.file)
+
+var button3 = newButton("Select Directory ...")
+buttons.add(button3)
+button3.onClick = proc(event: ClickEvent) =
+  var dialog = SelectDirectoryDialog()
+  dialog.title = "Test Select Directory"
+  # dialog.startDirectory = ""
+  dialog.run()
+  if dialog.selectedDirectory == "":
+    textArea.addLine("No directory selected")
+  else:
+    textArea.addLine(dialog.selectedDirectory)
 
 window.show()
 app.run()
