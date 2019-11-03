@@ -199,7 +199,7 @@ type
     Key_ShiftR
     Key_Print
     Key_NumpadEnter
-    Key_AltGr      = 65027
+    Key_AltGr
 
 const
   inactiveTimer* = 0

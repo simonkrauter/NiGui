@@ -103,6 +103,7 @@ proc pKeyvalToKey(keyval: cint): Key =
   of 228: Key_AE
   of 246: Key_OE
   of 252: Key_UE
+  of 65027: Key_AltGr
   of 65106: Key_Circumflex
   of 65288: Key_Backspace
   of 65289: Key_Tab
