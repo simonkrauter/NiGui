@@ -331,7 +331,7 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
     let window = cast[Window](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if window != nil and pHandleWMKEYDOWN(window, nil, wParam, lParam):
       return
-  of WM_KEYUP:
+  of WM_KEYUP, WM_SYSKEYUP:
     internalKeyUp(pWMParamsToKey(wParam, lParam))
   of WM_CHAR:
     let window = cast[Window](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
