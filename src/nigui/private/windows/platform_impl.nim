@@ -156,11 +156,8 @@ proc pEnableVisualStyles() =
   actCtx.lpSource = "shell32.dll"
   actCtx.lpAssemblyDirectory = dir
   actCtx.lpResourceName = cast[cstring](124)
-  var context = CreateActCtxA(actCtx.addr)
+  var context = CreateActCtxA(actCtx)
   if context == INVALID_HANDLE_VALUE: pRaiseLastOSError()
-  # has no effect:
-  # var ulpActivationCookie = false
-  # if not ActivateActCtx(context, ulpActivationCookie.addr): pRaiseLastOSError()
 
 proc pRegisterWindowClass(className: string, wndProc: pointer, style: int32 = 0) =
   var class: WndClassEx

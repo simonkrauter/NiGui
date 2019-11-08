@@ -383,8 +383,7 @@ proc hiWord*(param: pointer): int =
 proc LoadLibraryA*(lpFileName: cstring): pointer {.importc: "LoadLibraryA", libKernel32.}
 # proc GetModuleHandleA*(lpModuleName: cstring): pointer {.importc: "GetModuleHandleA", libKernel32.}
 proc GetLastError*(): int {.importc: "GetLastError", libKernel32.}
-proc CreateActCtxA*(pActCtx: pointer): pointer {.importc: "CreateActCtxA", libKernel32.}
-proc ActivateActCtx*(pActCtx, lpCookie: pointer): bool {.importc: "ActivateActCtx", libKernel32.}
+proc CreateActCtxA*(pActCtx: var ActCtx): pointer {.importc: "CreateActCtxA", libKernel32.}
 proc GetSystemDirectoryA*(lpBuffer: pointer, uSize: int32): int32 {.importc: "GetSystemDirectoryA", libKernel32.}
 proc MultiByteToWideChar*(CodePage, dwFlags: int32, lpMultiByteStr: cstring, cbMultiByte: int32, lpWideCharStr: cstring, cchWideChar: int32): int32 {.importc: "MultiByteToWideChar", libKernel32.}
 proc WideCharToMultiByte*(CodePage, dwFlags: int32, lpWideCharStr: cstring, cchWideChar: int32, lpMultiByteStr: cstring, cbMultiByte: int32, lpDefaultChar: cstring, lpUsedDefaultChar: pointer): int32 {.importc: "WideCharToMultiByte", libKernel32.}
