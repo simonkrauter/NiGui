@@ -845,7 +845,7 @@ method frame*(container: Container): Frame {.base.}
 method `frame=`*(container: Container, frame: Frame) {.base.}
 
 method add*(container: Container, control: Control) {.base.}
-method remove*(container: Container, control: Control) {.base.}
+method remove*(container: Container, control: Control) {.base, locks: "unknown".}
 
 method getPadding*(container: Container): Spacing {.base.}
 
