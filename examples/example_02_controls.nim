@@ -21,6 +21,11 @@ container.add(checkbox)
 var label = newLabel("Label")
 container.add(label)
 
+# Add a Progress Bar control:
+var progressBar = newProgressBar()
+progressBar.value = 0.5
+container.add(progressBar)
+
 # Add a TextBox control:
 var textBox = newTextBox("TextBox")
 container.add(textBox)

@@ -377,6 +377,9 @@ type
   Label* = ref object of ControlImpl
     fText: string
 
+  ProgressBar* = ref object of ControlImpl
+    fValue: float # should be between 0.0 and 1.0
+
   TextBox* = ref object of ControlImpl
     fEditable: bool
     fOnTextChange: TextChangeProc
@@ -941,6 +944,20 @@ proc init*(label: NativeLabel)
 
 method text*(label: Label): string {.base.}
 method `text=`*(label: Label, text: string) {.base.}
+
+
+# ----------------------------------------------------------------------------------------
+#                                      ProgressBar
+# ----------------------------------------------------------------------------------------
+
+proc newProgressBar*(): ProgressBar
+
+proc init*(progressBar: ProgressBar)
+proc init*(progressBar: NativeProgressBar)
+
+method value*(progressBar: ProgressBar): float {.base.}
+method `value=`*(progressBar: ProgressBar, value: float) {.base.}
+## value should be between 0.0 and 1.0
 
 
 # ----------------------------------------------------------------------------------------
@@ -2493,6 +2510,27 @@ method naturalWidth(label: Label): int {.locks: "unknown".} = label.getTextWidth
 method naturalHeight(label: Label): int {.locks: "unknown".} = label.getTextLineHeight() * label.text.countLines
 
 method `onDraw=`(container: NativeLabel, callback: DrawProc) = raiseError("NativeLabel does not allow onDraw.")
+
+
+# ----------------------------------------------------------------------------------------
+#                                      ProgressBar
+# ----------------------------------------------------------------------------------------
+
+proc newProgressBar(): ProgressBar =
+  result = new NativeProgressBar
+  result.NativeProgressBar.init()
+
+proc init(progressBar: ProgressBar) =
+  progressBar.ControlImpl.init()
+  progressBar.fWidthMode = WidthMode_Expand
+  progressBar.height = 15.scaleToDpi
+
+method value*(progressBar: ProgressBar): float = progressBar.fValue
+
+method `value=`*(progressBar: ProgressBar, value: float) =
+  # should be overridden by native control
+  progressBar.fValue = value
+  progressBar.forceRedraw()
 
 
 # ----------------------------------------------------------------------------------------

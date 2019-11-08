@@ -15,4 +15,6 @@ type
 
   NativeLabel* = ref object of Label
 
+  NativeProgressBar* = ref object of ProgressBar
+
   NativeTextBox* = ref object of TextBox

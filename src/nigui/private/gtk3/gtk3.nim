@@ -335,6 +335,9 @@ proc gtk_label_set_ellipsize*(label: pointer, mode: cint) {.importc: "gtk_label_
 proc gtk_label_set_xalign*(label: pointer, xalign: cfloat) {.importc: "gtk_label_set_xalign", libgtk3.}
 proc gtk_label_set_yalign*(label: pointer, yalign: cfloat) {.importc: "gtk_label_set_yalign", libgtk3.}
 
+proc gtk_progress_bar_new*(): pointer {.importc: "gtk_progress_bar_new", libgtk3.}
+proc gtk_progress_bar_set_fraction*(pbar: pointer, fraction: cdouble) {.importc: "gtk_progress_bar_set_fraction", libgtk3.}
+
 # proc gtk_box_new*(orientation: GtkOrientation, spacing: cint): pointer {.importc: "gtk_box_new", libgtk3.}
 proc gtk_box_pack_start*(box, child: pointer, expand, fill: cint, padding: cint) {.importc: "gtk_box_pack_start", libgtk3.}
 

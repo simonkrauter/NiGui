@@ -1476,6 +1476,23 @@ method `text=`(label: NativeLabel, text: string) =
 
 
 # ----------------------------------------------------------------------------------------
+#                                      ProgressBar
+# ----------------------------------------------------------------------------------------
+
+const pProgressBarMaxValue = 10_000
+
+proc init(progressBar: NativeProgressBar) =
+  progressBar.fHandle = pCreateWindowExWithUserdata("msctls_progress32", WS_CHILD, 0, pDefaultParentWindow, cast[pointer](progressBar))
+  discard SendMessageA(progressBar.fHandle, PBM_SETRANGE32, cast[pointer](0), cast[pointer](pProgressBarMaxValue))
+  progressBar.ProgressBar.init()
+
+method `value=`(progressBar: NativeProgressBar, value: float) =
+  procCall progressBar.ProgressBar.`value=`(value)
+  discard SendMessageA(progressBar.fHandle, PBM_SETPOS, cast[pointer]((value * pProgressBarMaxValue).int32), nil)
+  app.processEvents()
+
+
+# ----------------------------------------------------------------------------------------
 #                                       TextBox
 # ----------------------------------------------------------------------------------------
 

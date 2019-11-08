@@ -1357,6 +1357,21 @@ method naturalWidth(label: NativeLabel): int {.locks: "unknown".} = label.getTex
 
 
 # ----------------------------------------------------------------------------------------
+#                                      ProgressBar
+# ----------------------------------------------------------------------------------------
+
+proc init(progressBar: NativeProgressBar) =
+  progressBar.fHandle = gtk_progress_bar_new()
+  progressBar.ProgressBar.init()
+  progressBar.height = 8.scaleToDpi # adjust control height to bar height
+
+method `value=`(progressBar: NativeProgressBar, value: float) =
+  procCall progressBar.ProgressBar.`value=`(value)
+  gtk_progress_bar_set_fraction(progressBar.fHandle, value)
+  app.processEvents()
+
+
+# ----------------------------------------------------------------------------------------
 #                                       TextBox
 # ----------------------------------------------------------------------------------------
 
