@@ -396,6 +396,8 @@ proc pEnableHighDpiSupport() =
   fDefaultFontSize = defaultFontSizeForDefaultDpi.scaleToDpi
 
 proc init(app: App) =
+  if pDefaultParentWindow != nil:
+    raiseError("'app.init()' must not be called a second time.")
   pInitGdiplus()
   pEnableVisualStyles()
   pRegisterWindowClass(pTopLevelWindowClass, pWindowWndProc)
@@ -844,7 +846,7 @@ method endPixelDataAccess(image: Image) =
 
 proc init(window: WindowImpl) =
   if pDefaultParentWindow == nil:
-    raiseError("You need to call 'app.init()' at first.")
+    raiseError("'app.init()' needs to be called before creating a Window.")
   var dwStyle: int32 = WS_OVERLAPPEDWINDOW
   window.fHandle = pCreateWindowExWithUserdata(pTopLevelWindowClass, dwStyle, 0, nil, cast[pointer](window))
   DragAcceptFiles(window.fHandle, true)
