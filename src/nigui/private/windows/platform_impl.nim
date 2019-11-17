@@ -132,6 +132,10 @@ proc pSetWindowLongPtr(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointe
   else:
     result = SetWindowLongW(hWnd, nIndex, dwNewLong)
 
+proc pGetWindowLong(hWnd: pointer, nIndex: int32): int32 =
+  result = GetWindowLongA(hWnd, nIndex)
+  if result == 0: pRaiseLastOSError()
+
 # proc pGetStockObject(fnObject: int32): pointer =
   # result = GetStockObject(fnObject)
   # if result == nil: pRaiseLastOSError()
@@ -942,6 +946,27 @@ method `iconPath=`(window: WindowImpl, iconPath: string) =
   pCheckGdiplusStatus(GdipGetHicon(bitmap, icon))
   discard SendMessageA(window.fHandle, WM_SETICON, cast[pointer](ICON_BIG), icon)
   discard SendMessageA(window.fHandle, WM_SETICON, cast[pointer](ICON_SMALL), icon)
+
+method `resizable=`(window: WindowImpl, resizable: bool) =
+  procCall window.Window.`resizable=`(resizable)
+  var style = pGetWindowLong(window.fHandle, GWL_STYLE)
+  if resizable: style = style or WS_THICKFRAME
+  else: style = style and not WS_THICKFRAME
+  pSetWindowLong(window.fHandle, GWL_STYLE, style)
+
+method `minimizable=`(window: WindowImpl, minimizable: bool) =
+  procCall window.Window.`minimizable=`(minimizable)
+  var style = pGetWindowLong(window.fHandle, GWL_STYLE)
+  if minimizable: style = style or WS_MINIMIZEBOX
+  else: style = style and not WS_MINIMIZEBOX
+  pSetWindowLong(window.fHandle, GWL_STYLE, style)
+
+method `maximizable=`(window: WindowImpl, maximizable: bool) =
+  procCall window.Window.`maximizable=`(maximizable)
+  var style = pGetWindowLong(window.fHandle, GWL_STYLE)
+  if maximizable: style = style or WS_MAXIMIZEBOX
+  else: style = style and not WS_MAXIMIZEBOX
+  pSetWindowLong(window.fHandle, GWL_STYLE, style)
 
 
 # ----------------------------------------------------------------------------------------

@@ -219,6 +219,7 @@ type
     fMinimized: bool
     fWidth, fHeight: int
     fClientWidth, fClientHeight: int
+    fResizable, fMinimizable, fMaximizable: bool
     fX, fY: int
     fControl: Control
     fIconPath: string
@@ -658,6 +659,15 @@ method `height=`*(window: Window, height: int) {.base, locks: "unknown".}
 method clientWidth*(window: Window): int {.base.}
 
 method clientHeight*(window: Window): int {.base.}
+
+method resizable*(window: Window): bool {.base.}
+method `resizable=`*(window: Window, resizable: bool) {.base, locks: "unknown".}
+
+method minimizable*(window: Window): bool {.base.}
+method `minimizable=`*(window: Window, minimizable: bool) {.base, locks: "unknown".}
+
+method maximizable*(window: Window): bool {.base.}
+method `maximizable=`*(window: Window, maximizable: bool) {.base, locks: "unknown".}
 
 method iconPath*(window: Window): string {.base.}
 method `iconPath=`*(window: Window, iconPath: string) {.base, locks: "unknown".}
@@ -1332,6 +1342,9 @@ proc init(window: Window) =
   window.height = 480 # trigger resize
   window.fX = -1 # window will be centered on screen
   window.fY = -1
+  window.fResizable = true
+  window.fMinimizable = true
+  window.fMaximizable = true
   window.title = getAppFilename().extractFilename().changeFileExt("")
   var defaultIconPath = getAppFilename().changeFileExt("") & ".png"
   if defaultIconPath.fileExists():
@@ -1440,6 +1453,21 @@ method `height=`(window: Window, height: int) =
 method clientWidth(window: Window): int = window.fClientWidth
 
 method clientHeight(window: Window): int = window.fClientHeight
+
+method resizable(window: Window): bool = window.fResizable
+
+method minimizable(window: Window): bool = window.fMinimizable
+
+method maximizable(window: Window): bool = window.fMaximizable
+
+method `resizable=`(window: Window, resizable: bool) =
+  window.fResizable = resizable
+
+method `minimizable=`(window: Window, minimizable: bool) =
+  window.fMinimizable = minimizable
+
+method `maximizable=`(window: Window, maximizable: bool) =
+  window.fMaximizable = maximizable
 
 proc triggerRelayout(window: Window) =
   if window.control == nil:
