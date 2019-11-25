@@ -939,7 +939,7 @@ method `iconPath=`(window: WindowImpl, iconPath: string) =
   var bitmap: pointer
   pGdipCreateBitmapFromFileWrapped(iconPath, bitmap)
   var icon: pointer
-  pCheckGdiplusStatus(GdipGetHicon(bitmap, icon))
+  pCheckGdiplusStatus(GdipCreateHICONFromBitmap(bitmap, icon))
   discard SendMessageA(window.fHandle, WM_SETICON, cast[pointer](ICON_BIG), icon)
   discard SendMessageA(window.fHandle, WM_SETICON, cast[pointer](ICON_SMALL), icon)
 

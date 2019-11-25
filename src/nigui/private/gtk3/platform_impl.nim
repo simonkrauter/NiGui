@@ -409,7 +409,7 @@ method run*(dialog: OpenFileDialog) =
     let list = gtk_file_chooser_get_filenames(chooser)
     let count = g_slist_length(list)
     for i in 0..count - 1:
-      dialog.files.add($g_slist_nth_data_string(list, i))
+      dialog.files.add($g_slist_nth_data(list, i))
   gtk_widget_destroy(chooser)
 
 method run(dialog: SaveFileDialog) =

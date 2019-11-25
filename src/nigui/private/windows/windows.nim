@@ -382,178 +382,178 @@ proc hiWord*(param: pointer): int =
 #                                      Kernel32 Procs
 # ----------------------------------------------------------------------------------------
 
-proc LoadLibraryA*(lpFileName: cstring): pointer {.importc: "LoadLibraryA", libKernel32.}
-# proc GetModuleHandleA*(lpModuleName: cstring): pointer {.importc: "GetModuleHandleA", libKernel32.}
-proc GetLastError*(): int {.importc: "GetLastError", libKernel32.}
-proc CreateActCtxA*(pActCtx: var ActCtx): pointer {.importc: "CreateActCtxA", libKernel32.}
-proc GetSystemDirectoryA*(lpBuffer: pointer, uSize: int32): int32 {.importc: "GetSystemDirectoryA", libKernel32.}
-proc MultiByteToWideChar*(CodePage, dwFlags: int32, lpMultiByteStr: cstring, cbMultiByte: int32, lpWideCharStr: cstring, cchWideChar: int32): int32 {.importc: "MultiByteToWideChar", libKernel32.}
-proc WideCharToMultiByte*(CodePage, dwFlags: int32, lpWideCharStr: cstring, cchWideChar: int32, lpMultiByteStr: cstring, cbMultiByte: int32, lpDefaultChar: cstring, lpUsedDefaultChar: pointer): int32 {.importc: "WideCharToMultiByte", libKernel32.}
-proc GlobalLock*(hMem: pointer): pointer {.importc: "GlobalLock", libKernel32.}
-proc GlobalUnlock*(hMem: pointer): bool {.importc: "GlobalUnlock", libKernel32.}
-proc GlobalAlloc*(uFlags, dwBytes: int32): pointer {.importc: "GlobalAlloc", libKernel32.}
+proc LoadLibraryA*(lpFileName: cstring): pointer {.importc, libKernel32.}
+# proc GetModuleHandleA*(lpModuleName: cstring): pointer {.importc, libKernel32.}
+proc GetLastError*(): int {.importc, libKernel32.}
+proc CreateActCtxA*(pActCtx: var ActCtx): pointer {.importc, libKernel32.}
+proc GetSystemDirectoryA*(lpBuffer: pointer, uSize: int32): int32 {.importc, libKernel32.}
+proc MultiByteToWideChar*(CodePage, dwFlags: int32, lpMultiByteStr: cstring, cbMultiByte: int32, lpWideCharStr: cstring, cchWideChar: int32): int32 {.importc, libKernel32.}
+proc WideCharToMultiByte*(CodePage, dwFlags: int32, lpWideCharStr: cstring, cchWideChar: int32, lpMultiByteStr: cstring, cbMultiByte: int32, lpDefaultChar: cstring, lpUsedDefaultChar: pointer): int32 {.importc, libKernel32.}
+proc GlobalLock*(hMem: pointer): pointer {.importc, libKernel32.}
+proc GlobalUnlock*(hMem: pointer): bool {.importc, libKernel32.}
+proc GlobalAlloc*(uFlags, dwBytes: int32): pointer {.importc, libKernel32.}
 
 
 # ----------------------------------------------------------------------------------------
 #                                      User32 Procs
 # ----------------------------------------------------------------------------------------
 
-proc MessageBoxW*(hWnd: pointer, lpText, lpCaption: cstring, uType: int) {.importc: "MessageBoxW", libUser32.}
-proc RegisterClassExW*(lpwcx: var WndClassEx): int16 {.importc: "RegisterClassExW", libUser32.}
-proc CreateWindowExW*(dwExStyle: int32, lpClassName, lpWindowName: cstring, dwStyle: int32, x, y, nWidth, nHeight: int, hWndParent, hMenu, hInstance, lpParam: pointer): pointer {.importc: "CreateWindowExW", libUser32.}
-proc DestroyWindow*(hWnd: pointer): bool {.importc: "DestroyWindow", libUser32.}
-proc ShowWindow*(hWnd: pointer, nCmdShow: int32): bool {.importc: "ShowWindow", libUser32.}
-proc EnableWindow*(hWnd: pointer, bEnable: bool): bool {.importc: "EnableWindow", libUser32.}
-proc DefWindowProcW*(hWnd: pointer, uMsg: int, wParam, lParam: pointer): pointer {.importc: "DefWindowProcW", libUser32.}
-proc GetMessageW*(lpMsg, hWnd: pointer, wMsgFilterMin, wMsgFilterMax: int32): bool {.importc: "GetMessageW", libUser32.}
-proc PeekMessageW*(lpMsg, hWnd: pointer, wMsgFilterMin, wMsgFilterMax, wRemoveMsg: int32): bool {.importc: "PeekMessageW", libUser32.}
-proc TranslateMessage*(lpMsg: pointer): bool {.importc: "TranslateMessage", libUser32.}
-proc DispatchMessageW*(lpMsg: pointer): pointer {.importc: "DispatchMessageW", libUser32.}
-proc SetParent*(hWndChild, hWndNewParent: pointer): pointer {.importc: "SetParent", libUser32.}
-proc SetWindowLongA*(hWnd: pointer, nIndex, dwNewLong: int32): int32 {.importc: "SetWindowLongA", libUser32.}
-proc GetWindowLongA*(hWnd: pointer, nIndex: int32): int32 {.importc: "GetWindowLongA", libUser32.}
-proc SetWindowTextW*(hWnd: pointer, lpString: cstring): bool {.importc: "SetWindowTextW", libUser32.}
-proc GetWindowTextW*(hWnd: pointer, lpString: cstring, nMaxCount: int32): int32 {.importc: "GetWindowTextW", libUser32.}
-proc GetWindowTextLengthW*(hWnd: pointer): int32 {.importc: "GetWindowTextLengthW", libUser32.}
-proc UpdateWindow*(hWnd: pointer): bool {.importc: "UpdateWindow", libUser32.}
-proc SetWindowPos*(wnd, hWndInsertAfter: pointer, x, y, cx, cy: int32, uFlags: int): bool {.importc: "SetWindowPos", libUser32.}
-proc MoveWindow*(wnd: pointer, x, y, nWidth, nHeight: int32, bRepaint: bool): bool {.importc: "MoveWindow", libUser32.}
-proc SetFocus*(hWnd: pointer): pointer {.importc: "SetFocus", libUser32.}
-proc GetWindowRect*(wnd: pointer, lpRect: var Rect): bool {.importc: "GetWindowRect", libUser32.}
-proc GetClientRect*(wnd: pointer, lpRect: var Rect): bool {.importc: "GetClientRect", libUser32.}
-proc BeginPaint*(hWnd: pointer, lpPaint: var PaintStruct): pointer {.importc: "BeginPaint", libUser32.}
-proc EndPaint*(hWnd: pointer, lpPaint: var PaintStruct): bool {.importc: "EndPaint", libUser32.}
-proc SendMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "SendMessageA", libUser32.}
-proc PostMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc: "PostMessageA", libUser32.}
-proc GetSysColor*(nIndex: int32): RGB32 {.importc: "GetSysColor", libUser32.}
-proc InvalidateRect*(hWnd: pointer, lpRect: ref Rect, bErase: bool): bool {.importc: "InvalidateRect", libUser32.}
-proc PostQuitMessage*(nExitCode: int32) {.importc: "PostQuitMessage", libUser32.}
-proc GetDesktopWindow*(): pointer {.importc: "GetDesktopWindow", libUser32.}
-proc SystemParametersInfoW*(uiAction, uiParam: int32, pvParam: pointer, fWinIni: int32): bool {.importc: "SystemParametersInfoW", libUser32.}
-proc ClientToScreen*(hWnd: pointer, lpPoint: var Point): bool {.importc: "ClientToScreen", libUser32.}
-proc AdjustWindowRect*(lpRect: var Rect, dwStyle: int32, bMenu: bool): bool {.importc: "AdjustWindowRect", libUser32.}
-proc LoadCursorA*(hInstance: pointer, lpCursorName: cstring): pointer {.importc: "LoadCursorA", libUser32.}
-proc SetScrollInfo*(hWnd: pointer, fnBar: int32, lpsi: var ScrollInfo, fRedraw: bool): int32 {.importc: "SetScrollInfo", libUser32.}
-proc GetMonitorInfoA*(hMonitor: pointer, lpmi: var MonitorInfo): bool {.importc: "GetMonitorInfoA", libUser32.}
-proc MonitorFromRect*(lprc: var Rect, dwFlags: int32): pointer {.importc: "MonitorFromRect", libUser32.}
-proc GetSystemMetrics*(nIndex: int32): int32 {.importc: "GetSystemMetrics", libUser32.}
-proc CallWindowProcW*(lpPrevWndFunc, hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.importc: "CallWindowProcW", libUser32.}
-proc IsDialogMessageW*(hDlg, lpMsg: pointer): bool {.importc: "IsDialogMessageW", libUser32.}
-proc GetNextDlgTabItem*(hDlg, hCtl: pointer, bPrevious: bool): pointer {.importc: "GetNextDlgTabItem", libUser32.}
-proc GetParent*(hWnd: pointer): pointer {.importc: "GetParent", libUser32.}
-proc GetDC*(hWnd: pointer): pointer {.importc: "GetDC", libUser32.}
-# proc DrawTextW*(hdc: pointer, lpchText: cstring, nCount: int32, lpRect: var Rect, uFormat: int32): int32 {.importc: "DrawTextW", libUser32.}
-proc GetKeyboardState*(lpKeyState: var KeyState): bool {.importc: "GetKeyboardState", libUser32.}
-proc ToUnicode*(wVirtKey, wScanCode: int32, lpKeyState: var KeyState, pwszBuff: cstring, cchBuff, wFlags: int32): int32 {.importc: "ToUnicode", libUser32.}
-proc ShowScrollBar*(hWnd: pointer, wBar: int32, bShow: bool): bool {.importc: "ShowScrollBar", libUser32.}
-proc LoadImageW*(hinst: pointer, lpszName: cstring, uType, cxDesired, cyDesired, fuLoad: int32): int32 {.importc: "LoadImageW", libUser32.}
-proc SetTimer*(hWnd, nIDEvent: pointer, uElapse: int32, lpTimerFunc: pointer): pointer {.importc: "SetTimer", libUser32.}
-proc KillTimer*(hWnd, nIDEvent: pointer): bool {.importc: "KillTimer", libUser32.}
-proc FillRect*(hDC: pointer, lprc: var Rect, hbr: pointer): int32 {.importc: "FillRect", libUser32.}
-proc FrameRect*(hDC: pointer, lprc: var Rect, hbr: pointer): int32 {.importc: "FrameRect", libUser32.}
-proc GetKeyState*(nVirtKey: int32): int16 {.importc: "GetKeyState", libUser32.}
-proc OpenClipboard*(hWndNewOwner: pointer): bool {.importc: "OpenClipboard", libUser32.}
-proc CloseClipboard*(): bool {.importc: "CloseClipboard", libUser32.}
-proc GetClipboardData*(uFormat: int32): pointer {.importc: "GetClipboardData", libUser32.}
-proc SetClipboardData*(uFormat: int32, hMem: pointer): pointer {.importc: "SetClipboardData", libUser32.}
-proc EmptyClipboard*(): bool {.importc: "EmptyClipboard", libUser32.}
-proc MapVirtualKeyW*(uCode, uMapType: int32): int32 {.importc: "MapVirtualKeyW", libUser32.}
+proc MessageBoxW*(hWnd: pointer, lpText, lpCaption: cstring, uType: int) {.importc, libUser32.}
+proc RegisterClassExW*(lpwcx: var WndClassEx): int16 {.importc, libUser32.}
+proc CreateWindowExW*(dwExStyle: int32, lpClassName, lpWindowName: cstring, dwStyle: int32, x, y, nWidth, nHeight: int, hWndParent, hMenu, hInstance, lpParam: pointer): pointer {.importc, libUser32.}
+proc DestroyWindow*(hWnd: pointer): bool {.importc, libUser32.}
+proc ShowWindow*(hWnd: pointer, nCmdShow: int32): bool {.importc, libUser32.}
+proc EnableWindow*(hWnd: pointer, bEnable: bool): bool {.importc, libUser32.}
+proc DefWindowProcW*(hWnd: pointer, uMsg: int, wParam, lParam: pointer): pointer {.importc, libUser32.}
+proc GetMessageW*(lpMsg, hWnd: pointer, wMsgFilterMin, wMsgFilterMax: int32): bool {.importc, libUser32.}
+proc PeekMessageW*(lpMsg, hWnd: pointer, wMsgFilterMin, wMsgFilterMax, wRemoveMsg: int32): bool {.importc, libUser32.}
+proc TranslateMessage*(lpMsg: pointer): bool {.importc, libUser32.}
+proc DispatchMessageW*(lpMsg: pointer): pointer {.importc, libUser32.}
+proc SetParent*(hWndChild, hWndNewParent: pointer): pointer {.importc, libUser32.}
+proc SetWindowLongA*(hWnd: pointer, nIndex, dwNewLong: int32): int32 {.importc, libUser32.}
+proc GetWindowLongA*(hWnd: pointer, nIndex: int32): int32 {.importc, libUser32.}
+proc SetWindowTextW*(hWnd: pointer, lpString: cstring): bool {.importc, libUser32.}
+proc GetWindowTextW*(hWnd: pointer, lpString: cstring, nMaxCount: int32): int32 {.importc, libUser32.}
+proc GetWindowTextLengthW*(hWnd: pointer): int32 {.importc, libUser32.}
+proc UpdateWindow*(hWnd: pointer): bool {.importc, libUser32.}
+proc SetWindowPos*(wnd, hWndInsertAfter: pointer, x, y, cx, cy: int32, uFlags: int): bool {.importc, libUser32.}
+proc MoveWindow*(wnd: pointer, x, y, nWidth, nHeight: int32, bRepaint: bool): bool {.importc, libUser32.}
+proc SetFocus*(hWnd: pointer): pointer {.importc, libUser32.}
+proc GetWindowRect*(wnd: pointer, lpRect: var Rect): bool {.importc, libUser32.}
+proc GetClientRect*(wnd: pointer, lpRect: var Rect): bool {.importc, libUser32.}
+proc BeginPaint*(hWnd: pointer, lpPaint: var PaintStruct): pointer {.importc, libUser32.}
+proc EndPaint*(hWnd: pointer, lpPaint: var PaintStruct): bool {.importc, libUser32.}
+proc SendMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc, libUser32.}
+proc PostMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc, libUser32.}
+proc GetSysColor*(nIndex: int32): RGB32 {.importc, libUser32.}
+proc InvalidateRect*(hWnd: pointer, lpRect: ref Rect, bErase: bool): bool {.importc, libUser32.}
+proc PostQuitMessage*(nExitCode: int32) {.importc, libUser32.}
+proc GetDesktopWindow*(): pointer {.importc, libUser32.}
+proc SystemParametersInfoW*(uiAction, uiParam: int32, pvParam: pointer, fWinIni: int32): bool {.importc, libUser32.}
+proc ClientToScreen*(hWnd: pointer, lpPoint: var Point): bool {.importc, libUser32.}
+proc AdjustWindowRect*(lpRect: var Rect, dwStyle: int32, bMenu: bool): bool {.importc, libUser32.}
+proc LoadCursorA*(hInstance: pointer, lpCursorName: cstring): pointer {.importc, libUser32.}
+proc SetScrollInfo*(hWnd: pointer, fnBar: int32, lpsi: var ScrollInfo, fRedraw: bool): int32 {.importc, libUser32.}
+proc GetMonitorInfoA*(hMonitor: pointer, lpmi: var MonitorInfo): bool {.importc, libUser32.}
+proc MonitorFromRect*(lprc: var Rect, dwFlags: int32): pointer {.importc, libUser32.}
+proc GetSystemMetrics*(nIndex: int32): int32 {.importc, libUser32.}
+proc CallWindowProcW*(lpPrevWndFunc, hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.importc, libUser32.}
+proc IsDialogMessageW*(hDlg, lpMsg: pointer): bool {.importc, libUser32.}
+proc GetNextDlgTabItem*(hDlg, hCtl: pointer, bPrevious: bool): pointer {.importc, libUser32.}
+proc GetParent*(hWnd: pointer): pointer {.importc, libUser32.}
+proc GetDC*(hWnd: pointer): pointer {.importc, libUser32.}
+# proc DrawTextW*(hdc: pointer, lpchText: cstring, nCount: int32, lpRect: var Rect, uFormat: int32): int32 {.importc, libUser32.}
+proc GetKeyboardState*(lpKeyState: var KeyState): bool {.importc, libUser32.}
+proc ToUnicode*(wVirtKey, wScanCode: int32, lpKeyState: var KeyState, pwszBuff: cstring, cchBuff, wFlags: int32): int32 {.importc, libUser32.}
+proc ShowScrollBar*(hWnd: pointer, wBar: int32, bShow: bool): bool {.importc, libUser32.}
+proc LoadImageW*(hinst: pointer, lpszName: cstring, uType, cxDesired, cyDesired, fuLoad: int32): int32 {.importc, libUser32.}
+proc SetTimer*(hWnd, nIDEvent: pointer, uElapse: int32, lpTimerFunc: pointer): pointer {.importc, libUser32.}
+proc KillTimer*(hWnd, nIDEvent: pointer): bool {.importc, libUser32.}
+proc FillRect*(hDC: pointer, lprc: var Rect, hbr: pointer): int32 {.importc, libUser32.}
+proc FrameRect*(hDC: pointer, lprc: var Rect, hbr: pointer): int32 {.importc, libUser32.}
+proc GetKeyState*(nVirtKey: int32): int16 {.importc, libUser32.}
+proc OpenClipboard*(hWndNewOwner: pointer): bool {.importc, libUser32.}
+proc CloseClipboard*(): bool {.importc, libUser32.}
+proc GetClipboardData*(uFormat: int32): pointer {.importc, libUser32.}
+proc SetClipboardData*(uFormat: int32, hMem: pointer): pointer {.importc, libUser32.}
+proc EmptyClipboard*(): bool {.importc, libUser32.}
+proc MapVirtualKeyW*(uCode, uMapType: int32): int32 {.importc, libUser32.}
 
 type GetDpiForWindowType* = proc(hWnd: pointer): int32 {.gcsafe, stdcall.} # not available on Windows 7
 
 when defined(cpu64):
   # Only available on 64-bit Windows:
-  proc GetWindowLongPtrW*(hWnd: pointer, nIndex: int32): pointer {.importc: "GetWindowLongPtrW", libUser32.}
-  proc SetWindowLongPtrW*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetWindowLongPtrW", libUser32.}
+  proc GetWindowLongPtrW*(hWnd: pointer, nIndex: int32): pointer {.importc, libUser32.}
+  proc SetWindowLongPtrW*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc, libUser32.}
 else:
   # Should only be used on 32-bit Windows:
-  proc GetWindowLongW*(hWnd: pointer, nIndex: int32): pointer {.importc: "GetWindowLongW", libUser32.}
-  proc SetWindowLongW*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc: "SetWindowLongW", libUser32.}
+  proc GetWindowLongW*(hWnd: pointer, nIndex: int32): pointer {.importc, libUser32.}
+  proc SetWindowLongW*(hWnd: pointer, nIndex: int32, dwNewLong: pointer): pointer {.importc, libUser32.}
 
 
 # ----------------------------------------------------------------------------------------
 #                                       GDI Procs
 # ----------------------------------------------------------------------------------------
 
-proc DeleteDC*(hdc: pointer): bool {.importc: "DeleteDC", libGdi32.}
-proc DeleteObject*(hObject: pointer): bool {.importc: "DeleteObject", libGdi32.}
-proc GetCurrentObject*(hdc: pointer, uObjectType: int32): pointer {.importc: "GetCurrentObject", libGdi32.}
-proc SelectObject*(hdc, hgdiobj: pointer): pointer {.importc: "SelectObject", libGdi32.}
-proc TextOutW*(hdc: pointer, nXStart, nYStart: int32, lpString: cstring, cchString: int32): bool {.importc: "TextOutW", libGdi32.}
-proc CreateSolidBrush*(crColor: RGB32): pointer {.importc: "CreateSolidBrush", libGdi32.}
-proc CreatePen*(fnPenStyle, nWidth: int32, crColor: RGB32): pointer {.importc: "CreatePen", libGdi32.}
-# proc GetStockObject*(fnObject: int32): pointer {.importc: "GetStockObject", libGdi32.}
-proc CreateFontW*(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily: int32, lpszFace: cstring): pointer {.importc: "CreateFontW", libGdi32.}
-proc GetTextExtentPoint32W*(hdc: pointer, lpString: cstring, c: int32, lpSize: var Size): bool {.importc: "GetTextExtentPoint32W", libGdi32.}
-proc SetBkMode*(hdc: pointer, iBkMode: int32): int32 {.importc: "SetBkMode", libGdi32.}
-proc SetTextColor*(hdc: pointer, crColor: RGB32): RGB32 {.importc: "SetTextColor", libGdi32.}
-proc SetBkColor*(hdc: pointer, crColor: RGB32): RGB32 {.importc: "SetBkColor", libGdi32.}
-proc MoveToEx*(hdc: pointer, x, y: int32, lpPoint: pointer): bool {.importc: "MoveToEx", libGdi32.}
-proc LineTo*(hdc: pointer, nXEnd, nYEnd: int): bool {.importc: "LineTo", libGdi32.}
-proc CreateCompatibleDC*(hdc: pointer): pointer {.importc: "CreateCompatibleDC", libGdi32.}
-proc SetPixel*(hdc: pointer, x, y: int32, crColor: RGB32): int32 {.importc: "SetPixel", libGdi32.}
-# proc BitBlt*(hdcDest: pointer, nXDest, nYDest, nWidth, nHeight: int32, hdcSrc: pointer, nXSrc, nYSrc, dwRop: int32): bool {.importc: "BitBlt", libGdi32.}
+proc DeleteDC*(hdc: pointer): bool {.importc, libGdi32.}
+proc DeleteObject*(hObject: pointer): bool {.importc, libGdi32.}
+proc GetCurrentObject*(hdc: pointer, uObjectType: int32): pointer {.importc, libGdi32.}
+proc SelectObject*(hdc, hgdiobj: pointer): pointer {.importc, libGdi32.}
+proc TextOutW*(hdc: pointer, nXStart, nYStart: int32, lpString: cstring, cchString: int32): bool {.importc, libGdi32.}
+proc CreateSolidBrush*(crColor: RGB32): pointer {.importc, libGdi32.}
+proc CreatePen*(fnPenStyle, nWidth: int32, crColor: RGB32): pointer {.importc, libGdi32.}
+# proc GetStockObject*(fnObject: int32): pointer {.importc, libGdi32.}
+proc CreateFontW*(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily: int32, lpszFace: cstring): pointer {.importc, libGdi32.}
+proc GetTextExtentPoint32W*(hdc: pointer, lpString: cstring, c: int32, lpSize: var Size): bool {.importc, libGdi32.}
+proc SetBkMode*(hdc: pointer, iBkMode: int32): int32 {.importc, libGdi32.}
+proc SetTextColor*(hdc: pointer, crColor: RGB32): RGB32 {.importc, libGdi32.}
+proc SetBkColor*(hdc: pointer, crColor: RGB32): RGB32 {.importc, libGdi32.}
+proc MoveToEx*(hdc: pointer, x, y: int32, lpPoint: pointer): bool {.importc, libGdi32.}
+proc LineTo*(hdc: pointer, nXEnd, nYEnd: int): bool {.importc, libGdi32.}
+proc CreateCompatibleDC*(hdc: pointer): pointer {.importc, libGdi32.}
+proc SetPixel*(hdc: pointer, x, y: int32, crColor: RGB32): int32 {.importc, libGdi32.}
+# proc BitBlt*(hdcDest: pointer, nXDest, nYDest, nWidth, nHeight: int32, hdcSrc: pointer, nXSrc, nYSrc, dwRop: int32): bool {.importc, libGdi32.}
 
 
 # ----------------------------------------------------------------------------------------
 #                                       GDI+ Procs
 # ----------------------------------------------------------------------------------------
 
-proc GdiplusStartup*(token: var pointer, input: var GdiplusStartupInput, output: pointer): int32 {.importc: "GdiplusStartup", libGdiplus.}
-proc GdipCreateBitmapFromFile*(filename: cstring, bitmap: var pointer): int32 {.importc: "GdipCreateBitmapFromFile", libGdiplus.}
-# proc GdipLoadImageFromFile*(filename: cstring, image: var pointer): int32 {.importc: "GdipLoadImageFromFile", libGdiplus.}
-proc GdipGetHicon*(bitmap: pointer, hicon: var pointer): int32 {.importc: "GdipCreateHICONFromBitmap", libGdiplus.}
-proc GdipCreateFromHDC*(hdc: pointer, graphics: var pointer): int32 {.importc: "GdipCreateFromHDC", libGdiplus.}
-proc GdipDeleteGraphics*(graphics: pointer): int32 {.importc: "GdipDeleteGraphics", libGdiplus.}
-proc GdipDrawImageRectI*(graphics, image: pointer, x, y, width, height: int32): int32 {.importc: "GdipDrawImageRectI", libGdiplus.}
-proc GdipGetImageWidth*(image: pointer, width: var int32): int32 {.importc: "GdipGetImageWidth", libGdiplus.}
-proc GdipGetImageHeight*(image: pointer, height: var int32): int32 {.importc: "GdipGetImageHeight", libGdiplus.}
-# proc GdipGetImageDimension*(image: pointer, width, height: var float): int32 {.importc: "GdipGetImageDimension", libGdiplus.}
-proc GdipCreateBitmapFromGraphics*(width, height: int32, target: pointer, bitmap: var pointer): int32 {.importc: "GdipCreateBitmapFromGraphics", libGdiplus.}
-proc GdipBitmapSetPixel*(bitmap: pointer, x, y: int32, color: ARGB): int32 {.importc: "GdipBitmapSetPixel", libGdiplus.}
-proc GdipSaveImageToFile*(image: pointer, filename: cstring, clsidEncoder, encoderParams: pointer): int32 {.importc: "GdipSaveImageToFile", libGdiplus.}
-# proc GdipGetImageEncodersSize*(numEncoders, size: var int32): int32 {.importc: "GdipGetImageEncodersSize", libGdiplus.}
-# proc GdipGetImageEncoders*(numEncoders, size: int32, encoders: pointer): int32 {.importc: "GdipGetImageEncoders", libGdiplus.}
-proc GdipGetImageGraphicsContext*(image: pointer, graphics: var pointer): int32 {.importc: "GdipGetImageGraphicsContext", libGdiplus.} # does not exist
-proc GdipDisposeImage*(image: pointer): int32 {.importc: "GdipDisposeImage", libGdiplus.}
-proc GdipFillRectangleI*(graphics, brush: pointer, x, y, width, height: int32): int32 {.importc: "GdipFillRectangleI", libGdiplus.}
-proc GdipDrawRectangleI*(graphics, pen: pointer, x, y, width, height: int32): int32 {.importc: "GdipDrawRectangleI", libGdiplus.}
-proc GdipDrawLineI*(graphics, pen: pointer, x1, y1, x2, y2: int32): int32 {.importc: "GdipDrawLineI", libGdiplus.}
-proc GdipDrawArc*(graphics, pen: pointer, x, y, width, height, startAngle, sweepAngle: cfloat): int32 {.importc: "GdipDrawArc", libGdiplus.}
-proc GdipFillEllipseI*(graphics, brush: pointer, x, y, width, height: int32): int32 {.importc: "GdipFillEllipseI", libGdiplus.}
-proc GdipDrawEllipseI*(graphics, pen: pointer, x, y, width, height: int32): int32 {.importc: "GdipDrawEllipseI", libGdiplus.}
-proc GdipCreateSolidFill*(color: ARGB, brush: var pointer): int32 {.importc: "GdipCreateSolidFill", libGdiplus.}
-proc GdipDeleteBrush*(brush: pointer): int32 {.importc: "GdipDeleteBrush", libGdiplus.}
-proc GdipCreatePen1*(color: ARGB, width: cfloat, unit: int32, pen: var pointer): int32 {.importc: "GdipCreatePen1", libGdiplus.}
-proc GdipDeletePen*(pen: pointer): int32 {.importc: "GdipDeletePen", libGdiplus.}
-proc GdipDrawString*(graphics: pointer, `string`: cstring, length: int32, font: pointer, layoutRect: var RectF, stringFormat, brush: pointer): int32 {.importc: "GdipDrawString", libGdiplus.}
-proc GdipMeasureString*(graphics: pointer, `string`: cstring, length: int32, font: pointer, layoutRect: var RectF, stringFormat: pointer, boundingBox: var RectF, codepointsFitted, linesFilled: pointer): int32 {.importc: "GdipMeasureString", libGdiplus.}
-proc GdipCreateFont*(fontFamily: pointer, emSize: cfloat, style, unit: int32, font: var pointer): int32 {.importc: "GdipCreateFont", libGdiplus.}
-proc GdipDeleteFont*(font: pointer): int32 {.importc: "GdipDeleteFont", libGdiplus.}
-proc GdipCreateFontFamilyFromName*(name: cstring, fontCollection: pointer, fontFamily: var pointer): int32 {.importc: "GdipCreateFontFamilyFromName", libGdiplus.}
-proc GdipDeleteFontFamily*(fontFamily: pointer): int32 {.importc: "GdipDeleteFontFamily", libGdiplus.}
-proc GdipBitmapLockBits*(bitmap: pointer, rect: var Rect, flags: int32, format: int32, lockedBitmapData: var BitmapData): int32 {.importc: "GdipBitmapLockBits", libGdiplus.}
-proc GdipBitmapUnlockBits*(bitmap: pointer, lockedBitmapData: var BitmapData): int32 {.importc: "GdipBitmapUnlockBits", libGdiplus.}
+proc GdiplusStartup*(token: var pointer, input: var GdiplusStartupInput, output: pointer): int32 {.importc, libGdiplus.}
+proc GdipCreateBitmapFromFile*(filename: cstring, bitmap: var pointer): int32 {.importc, libGdiplus.}
+# proc GdipLoadImageFromFile*(filename: cstring, image: var pointer): int32 {.importc, libGdiplus.}
+proc GdipCreateHICONFromBitmap*(bitmap: pointer, hicon: var pointer): int32 {.importc, libGdiplus.}
+proc GdipCreateFromHDC*(hdc: pointer, graphics: var pointer): int32 {.importc, libGdiplus.}
+proc GdipDeleteGraphics*(graphics: pointer): int32 {.importc, libGdiplus.}
+proc GdipDrawImageRectI*(graphics, image: pointer, x, y, width, height: int32): int32 {.importc, libGdiplus.}
+proc GdipGetImageWidth*(image: pointer, width: var int32): int32 {.importc, libGdiplus.}
+proc GdipGetImageHeight*(image: pointer, height: var int32): int32 {.importc, libGdiplus.}
+# proc GdipGetImageDimension*(image: pointer, width, height: var float): int32 {.importc, libGdiplus.}
+proc GdipCreateBitmapFromGraphics*(width, height: int32, target: pointer, bitmap: var pointer): int32 {.importc, libGdiplus.}
+proc GdipBitmapSetPixel*(bitmap: pointer, x, y: int32, color: ARGB): int32 {.importc, libGdiplus.}
+proc GdipSaveImageToFile*(image: pointer, filename: cstring, clsidEncoder, encoderParams: pointer): int32 {.importc, libGdiplus.}
+# proc GdipGetImageEncodersSize*(numEncoders, size: var int32): int32 {.importc, libGdiplus.}
+# proc GdipGetImageEncoders*(numEncoders, size: int32, encoders: pointer): int32 {.importc, libGdiplus.}
+proc GdipGetImageGraphicsContext*(image: pointer, graphics: var pointer): int32 {.importc, libGdiplus.} # does not exist
+proc GdipDisposeImage*(image: pointer): int32 {.importc, libGdiplus.}
+proc GdipFillRectangleI*(graphics, brush: pointer, x, y, width, height: int32): int32 {.importc, libGdiplus.}
+proc GdipDrawRectangleI*(graphics, pen: pointer, x, y, width, height: int32): int32 {.importc, libGdiplus.}
+proc GdipDrawLineI*(graphics, pen: pointer, x1, y1, x2, y2: int32): int32 {.importc, libGdiplus.}
+proc GdipDrawArc*(graphics, pen: pointer, x, y, width, height, startAngle, sweepAngle: cfloat): int32 {.importc, libGdiplus.}
+proc GdipFillEllipseI*(graphics, brush: pointer, x, y, width, height: int32): int32 {.importc, libGdiplus.}
+proc GdipDrawEllipseI*(graphics, pen: pointer, x, y, width, height: int32): int32 {.importc, libGdiplus.}
+proc GdipCreateSolidFill*(color: ARGB, brush: var pointer): int32 {.importc, libGdiplus.}
+proc GdipDeleteBrush*(brush: pointer): int32 {.importc, libGdiplus.}
+proc GdipCreatePen1*(color: ARGB, width: cfloat, unit: int32, pen: var pointer): int32 {.importc, libGdiplus.}
+proc GdipDeletePen*(pen: pointer): int32 {.importc, libGdiplus.}
+proc GdipDrawString*(graphics: pointer, `string`: cstring, length: int32, font: pointer, layoutRect: var RectF, stringFormat, brush: pointer): int32 {.importc, libGdiplus.}
+proc GdipMeasureString*(graphics: pointer, `string`: cstring, length: int32, font: pointer, layoutRect: var RectF, stringFormat: pointer, boundingBox: var RectF, codepointsFitted, linesFilled: pointer): int32 {.importc, libGdiplus.}
+proc GdipCreateFont*(fontFamily: pointer, emSize: cfloat, style, unit: int32, font: var pointer): int32 {.importc, libGdiplus.}
+proc GdipDeleteFont*(font: pointer): int32 {.importc, libGdiplus.}
+proc GdipCreateFontFamilyFromName*(name: cstring, fontCollection: pointer, fontFamily: var pointer): int32 {.importc, libGdiplus.}
+proc GdipDeleteFontFamily*(fontFamily: pointer): int32 {.importc, libGdiplus.}
+proc GdipBitmapLockBits*(bitmap: pointer, rect: var Rect, flags: int32, format: int32, lockedBitmapData: var BitmapData): int32 {.importc, libGdiplus.}
+proc GdipBitmapUnlockBits*(bitmap: pointer, lockedBitmapData: var BitmapData): int32 {.importc, libGdiplus.}
 
 
 # ----------------------------------------------------------------------------------------
 #                                       Shell32 Procs
 # ----------------------------------------------------------------------------------------
 
-proc DragAcceptFiles*(hWnd: pointer, fAccept: bool) {.importc: "DragAcceptFiles", libShell32.}
-proc DragQueryFileW*(hDrop: pointer, iFile: uint32, lpszFile: cstring, cch: int32): int32 {.importc: "DragQueryFileW", libShell32.}
-proc DragFinish*(hDrop: pointer) {.importc: "DragFinish", libShell32.}
-proc SHBrowseForFolderW*(lpbi: var BrowseInfo): pointer {.importc: "SHBrowseForFolderW", libShell32.}
-proc SHGetPathFromIDListW*(pidl: pointer, pszPath: cstring) {.importc: "SHGetPathFromIDListW", libShell32.}
+proc DragAcceptFiles*(hWnd: pointer, fAccept: bool) {.importc, libShell32.}
+proc DragQueryFileW*(hDrop: pointer, iFile: uint32, lpszFile: cstring, cch: int32): int32 {.importc, libShell32.}
+proc DragFinish*(hDrop: pointer) {.importc, libShell32.}
+proc SHBrowseForFolderW*(lpbi: var BrowseInfo): pointer {.importc, libShell32.}
+proc SHGetPathFromIDListW*(pidl: pointer, pszPath: cstring) {.importc, libShell32.}
 
 
 # ----------------------------------------------------------------------------------------
 #                                       Comdlg32 Procs
 # ----------------------------------------------------------------------------------------
 
-proc CommDlgExtendedError*(): int32 {.importc: "CommDlgExtendedError", libComdlg32.}
-proc GetOpenFileNameW*(lpofn: var OpenFileName): bool {.importc: "GetOpenFileNameW", libComdlg32.}
-proc GetSaveFileNameW*(lpofn: var OpenFileName): bool {.importc: "GetSaveFileNameW", libComdlg32.}
+proc CommDlgExtendedError*(): int32 {.importc, libComdlg32.}
+proc GetOpenFileNameW*(lpofn: var OpenFileName): bool {.importc, libComdlg32.}
+proc GetSaveFileNameW*(lpofn: var OpenFileName): bool {.importc, libComdlg32.}
 
 
 # ----------------------------------------------------------------------------------------
