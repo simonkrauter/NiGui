@@ -10,6 +10,12 @@ import windows
 import tables
 import dynlib
 
+# Link resource file to enable visual styles (without this, controls have Windows 95 look):
+when defined(cpu64):
+  {.link: currentSourcePath().parentDir() / "manifest_x64.res".}
+else:
+  {.link: currentSourcePath().parentDir() / "manifest_x86.res".}
+
 
 # ----------------------------------------------------------------------------------------
 #                                    Internal Things
@@ -144,20 +150,6 @@ proc pCreateWindowExWithUserdata(lpClassName: string, dwStyle, dwExStyle: int32,
   # discard SendMessageA(result, WM_SETFONT, pGetStockObject(DEFAULT_GUI_FONT), cast[pointer](true))
   # Set window proc:
   # discard pSetWindowLongPtr(result, GWLP_WNDPROC, pCommonWndProc)
-
-proc pEnableVisualStyles() =
-  # Without this, controls have style of Windows 95
-  const MaxLength = 500
-  var dir = newString(MaxLength)
-  if GetSystemDirectoryA(dir[0].addr, MaxLength) == 0: pRaiseLastOSError()
-  var actCtx: ActCtx
-  actCtx.cbSize = ActCtx.sizeof.int32
-  actCtx.dwFlags = ACTCTX_FLAG_RESOURCE_NAME_VALID or ACTCTX_FLAG_SET_PROCESS_DEFAULT or ACTCTX_FLAG_ASSEMBLY_DIRECTORY_VALID
-  actCtx.lpSource = "shell32.dll"
-  actCtx.lpAssemblyDirectory = dir
-  actCtx.lpResourceName = cast[cstring](124)
-  var context = CreateActCtxA(actCtx)
-  if context == INVALID_HANDLE_VALUE: pRaiseLastOSError()
 
 proc pRegisterWindowClass(className: string, wndProc: pointer, style: int32 = 0) =
   var class: WndClassEx
@@ -399,7 +391,6 @@ proc init(app: App) =
   if pDefaultParentWindow != nil:
     raiseError("'app.init()' must not be called a second time.")
   pInitGdiplus()
-  pEnableVisualStyles()
   pRegisterWindowClass(pTopLevelWindowClass, pWindowWndProc)
   pRegisterWindowClass(pCustomControlWindowClass, pCustomControlWndProc, CS_HREDRAW or CS_VREDRAW)
   pRegisterWindowClass(pContainerWindowClass, pContainerWndProc)

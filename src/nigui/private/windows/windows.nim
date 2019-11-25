@@ -31,9 +31,9 @@
 # ----------------------------------------------------------------------------------------
 
 const
-  ACTCTX_FLAG_ASSEMBLY_DIRECTORY_VALID* = 4
-  ACTCTX_FLAG_RESOURCE_NAME_VALID* = 8
-  ACTCTX_FLAG_SET_PROCESS_DEFAULT* = 16
+  # ACTCTX_FLAG_ASSEMBLY_DIRECTORY_VALID* = 4
+  # ACTCTX_FLAG_RESOURCE_NAME_VALID* = 8
+  # ACTCTX_FLAG_SET_PROCESS_DEFAULT* = 16
   BIF_RETURNONLYFSDIRS* = 0x00000001
   BIF_NEWDIALOGSTYLE* = 0x00000040
   BN_CLICKED* = 0
@@ -385,8 +385,8 @@ proc hiWord*(param: pointer): int =
 proc LoadLibraryA*(lpFileName: cstring): pointer {.importc, libKernel32.}
 # proc GetModuleHandleA*(lpModuleName: cstring): pointer {.importc, libKernel32.}
 proc GetLastError*(): int {.importc, libKernel32.}
-proc CreateActCtxA*(pActCtx: var ActCtx): pointer {.importc, libKernel32.}
-proc GetSystemDirectoryA*(lpBuffer: pointer, uSize: int32): int32 {.importc, libKernel32.}
+# proc CreateActCtxA*(pActCtx: var ActCtx): pointer {.importc, libKernel32.}
+# proc GetSystemDirectoryA*(lpBuffer: pointer, uSize: int32): int32 {.importc, libKernel32.}
 proc MultiByteToWideChar*(CodePage, dwFlags: int32, lpMultiByteStr: cstring, cbMultiByte: int32, lpWideCharStr: cstring, cchWideChar: int32): int32 {.importc, libKernel32.}
 proc WideCharToMultiByte*(CodePage, dwFlags: int32, lpWideCharStr: cstring, cchWideChar: int32, lpMultiByteStr: cstring, cbMultiByte: int32, lpDefaultChar: cstring, lpUsedDefaultChar: pointer): int32 {.importc, libKernel32.}
 proc GlobalLock*(hMem: pointer): pointer {.importc, libKernel32.}
