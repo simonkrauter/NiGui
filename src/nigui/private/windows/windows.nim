@@ -429,7 +429,7 @@ proc GetSysColor*(nIndex: int32): RGB32 {.importc, libUser32.}
 proc InvalidateRect*(hWnd: pointer, lpRect: ref Rect, bErase: bool): bool {.importc, libUser32.}
 proc PostQuitMessage*(nExitCode: int32) {.importc, libUser32.}
 proc GetDesktopWindow*(): pointer {.importc, libUser32.}
-proc SystemParametersInfoW*(uiAction, uiParam: int32, pvParam: pointer, fWinIni: int32): bool {.importc, libUser32.}
+# proc SystemParametersInfoW*(uiAction, uiParam: int32, pvParam: pointer, fWinIni: int32): bool {.importc, libUser32.}
 proc ClientToScreen*(hWnd: pointer, lpPoint: var Point): bool {.importc, libUser32.}
 proc AdjustWindowRect*(lpRect: var Rect, dwStyle: int32, bMenu: bool): bool {.importc, libUser32.}
 proc LoadCursorA*(hInstance: pointer, lpCursorName: cstring): pointer {.importc, libUser32.}
@@ -458,6 +458,8 @@ proc GetClipboardData*(uFormat: int32): pointer {.importc, libUser32.}
 proc SetClipboardData*(uFormat: int32, hMem: pointer): pointer {.importc, libUser32.}
 proc EmptyClipboard*(): bool {.importc, libUser32.}
 proc MapVirtualKeyW*(uCode, uMapType: int32): int32 {.importc, libUser32.}
+proc GetCursorPos*(lpPoint: var Point): bool {.importc, libUser32.}
+proc MonitorFromPoint*(pt: Point, dwFlags: int32): pointer {.importc, libUser32.}
 
 type GetDpiForWindowType* = proc(hWnd: pointer): int32 {.gcsafe, stdcall.} # not available on Windows 7
 

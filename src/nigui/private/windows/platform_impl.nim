@@ -892,18 +892,16 @@ method `y=`(window: WindowImpl, y: int) =
   window.pUpdatePosition()
 
 method centerOnScreen(window: WindowImpl) =
-  var rect: Rect
-  discard SystemParametersInfoW(SPI_GETWORKAREA, 0, rect.addr, 0)
-  window.fX = rect.left + (rect.right - window.width) div 2
-  window.fY = rect.top + (rect.bottom - window.height) div 2
-  window.pUpdatePosition()
-
-  # TODO: regard multiple monitors
-  # var m = MonitorFromRect(rect, 0)
-  # var mi: MonitorInfo
-  # discard GetMonitorInfoA(m, mi)
-  # echo "GetMonitorInfoA: " & $mi.rcMonitor.left
-  # echo "GetMonitorInfoA: " & $mi.rcWork.left
+  # center on the screen which has the mouse cursor
+  var cursorPos: Point
+  discard GetCursorPos(cursorPos)
+  var monitorHandle = MonitorFromPoint(cursorPos, 0)
+  var mi: MonitorInfo
+  mi.cbSize = MonitorInfo.sizeOf.int32
+  if GetMonitorInfoA(monitorHandle, mi):
+    window.fX = mi.rcWork.left + (mi.rcWork.right - mi.rcWork.left - window.width) div 2
+    window.fY = mi.rcWork.top + (mi.rcWork.bottom - mi.rcWork.top - window.height) div 2
+    window.pUpdatePosition()
 
 method `width=`*(window: WindowImpl, width: int) =
   procCall window.Window.`width=`(width)
