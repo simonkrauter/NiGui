@@ -64,5 +64,9 @@ control1.onDraw = proc (event: DrawEvent) =
   canvas.drawImage(image2, 120, 120, 50)
   # Draws an image stretched
 
+control1.onMouseButtonDown = proc (event: MouseEvent) =
+  echo(event.button, " (", event.x, ", ", event.y, ")")
+  # Shows where the mouse is clicked in control-relative coordinates
+
 window.show()
 app.run()
