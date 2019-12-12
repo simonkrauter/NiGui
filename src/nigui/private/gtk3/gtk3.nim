@@ -4,10 +4,8 @@
 
 when defined(windows):
   const libgtk3Path* = "libgtk-3-0.dll"
-elif defined(gtk_quartz):
-  const libgtk3Path* = "libgtk-3.0.dylib"
 elif defined(macosx):
-  const libgtk3Path* = "libgtk-x11-3.0.dylib"
+  const libgtk3Path* = "libgtk-3.0.dylib"
 else:
   const libgtk3Path* = "libgtk-3.so(|.0)"
 
