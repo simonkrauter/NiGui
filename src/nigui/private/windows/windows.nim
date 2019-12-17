@@ -216,6 +216,7 @@ const
   PROCESS_PER_MONITOR_DPI_AWARE* = 2
   FontStyleRegular* = 0
   FontStyleBold* = 1
+  TextRenderingHint_AntiAlias* = 4
 
 
 # ----------------------------------------------------------------------------------------
@@ -536,6 +537,7 @@ proc GdipCreateFontFamilyFromName*(name: cstring, fontCollection: pointer, fontF
 proc GdipDeleteFontFamily*(fontFamily: pointer): int32 {.importc, libGdiplus.}
 proc GdipBitmapLockBits*(bitmap: pointer, rect: var Rect, flags: int32, format: int32, lockedBitmapData: var BitmapData): int32 {.importc, libGdiplus.}
 proc GdipBitmapUnlockBits*(bitmap: pointer, lockedBitmapData: var BitmapData): int32 {.importc, libGdiplus.}
+proc GdipSetTextRenderingHint*(graphics: pointer, mode: int32): int32 {.importc, libGdiplus.}
 
 
 # ----------------------------------------------------------------------------------------

@@ -766,6 +766,7 @@ method resize(image: Image, width, height: int) =
   pCheckGdiplusStatus(GdipGetImageGraphicsContext(canvas.fBitmap, canvas.fGraphics)) # it's a new Graphic
   image.canvas.fWidth = width
   image.canvas.fHeight = height
+  pCheckGdiplusStatus(GdipSetTextRenderingHint(canvas.fGraphics, TextRenderingHint_AntiAlias))
 
 method loadFromFile(image: Image, filePath: string) =
   let canvas = cast[CanvasImpl](image.canvas)
