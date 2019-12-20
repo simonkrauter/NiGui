@@ -67,6 +67,7 @@ Compile and run one of the included example programs.
 Show cases
 ----------
 * [NiCalc](https://github.com/trustable-code/NiCalc) - Simple calculator
+* [Gravitate](https://www.qtrac.eu/gravitate.html) - Samegame/tilefall-like game
 
 Contributing
 ------------
