@@ -316,7 +316,7 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
     event.window = window
     event.files = files
     window.handleDropFilesEvent(event)
-  of WM_KEYDOWN:
+  of WM_KEYDOWN, WM_SYSKEYDOWN:
     let window = cast[Window](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if window != nil and pHandleWMKEYDOWN(window, nil, wParam, lParam):
       return
@@ -1128,15 +1128,15 @@ proc pCommonControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
 
   # Note: A WM_KEYDOWN is sent for every key, for some (mostly visual) keys WM_CHAR is sent in addition.
   # To discard a character in text input, WM_CHAR must return without calling the default window proc.
-  # Because we should not to trigger two events for one key press, WM_KEYDOWN must ignore all keys,
+  # Because we should not trigger two events for one key press, WM_KEYDOWN must ignore all keys,
   # which are handled by WM_CHAR.
 
-  of WM_KEYDOWN:
+  of WM_KEYDOWN, WM_SYSKEYDOWN:
     let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if control != nil and pHandleWMKEYDOWN(control.parentWindow, control, wParam, lParam):
       return PWndProcResult_False
 
-  of WM_KEYUP:
+  of WM_KEYUP, WM_SYSKEYUP:
     internalKeyUp(pWMParamsToKey(wParam, lParam))
     # return nil # key is still inserted in text area
 
