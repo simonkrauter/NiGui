@@ -464,6 +464,8 @@ proc downKeys*(): seq[Key]
 proc scaleToDpi*(val: int): int
 proc scaleToDpi*(val: float): float
 
+proc convertLineBreaks*(str: string): string
+
 
 # ----------------------------------------------------------------------------------------
 #                                       Dialogs
@@ -1204,6 +1206,18 @@ proc downKeys(): seq[Key] = fDownKeys
 
 proc scaleToDpi(val: int): int = (val * fSystemDpi) div defaultDpi
 proc scaleToDpi(val: float): float = val * fSystemDpi.float / defaultDpi.float
+
+proc convertLineBreaks(str: string): string =
+  ## Converts \n line breaks (LF) to \p line breaks (CRLF on Windows)
+  when useWindows():
+    for i in 0..str.high:
+      let curr = str[i]
+      if curr == '\n' and (i == 0 or str[i - 1] != '\r'):
+        result.add("\p")
+      else:
+        result.add(curr)
+  else:
+    result = str
 
 proc internalKeyDown(key: Key) =
   if not fDownKeys.contains(key):
