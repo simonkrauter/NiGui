@@ -217,6 +217,7 @@ type
     fTitle: string
     fVisible: bool
     fMinimized: bool
+    fAlwaysOnTop: bool
     fWidth, fHeight: int
     fClientWidth, fClientHeight: int
     fX, fY: int
@@ -634,6 +635,9 @@ method minimized*(window: Window): bool {.base.}
 method `minimized=`*(window: Window, minimized: bool) {.base.}
 
 method minimize*(window: Window) {.base.}
+
+method alwaysOnTop*(window: Window): bool {.base.}
+method `alwaysOnTop=`*(window: Window, alwaysOnTop: bool) {.base.}
 
 method control*(window: Window): Control {.base.}
 method `control=`*(window: Window, control: Control) {.base, locks: "unknown".}
@@ -1422,6 +1426,12 @@ method `minimized=`(window: Window, minimized: bool) =
 
 method minimize(window: Window) =
   window.fMinimized = true
+  # should be extended by WindowImpl
+
+method alwaysOnTop(window: Window): bool = window.fAlwaysOnTop
+
+method `alwaysOnTop=`(window: Window, alwaysOnTop: bool) =
+  window.fAlwaysOnTop = alwaysOnTop
   # should be extended by WindowImpl
 
 method x(window: Window): int = window.fX

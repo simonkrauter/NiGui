@@ -259,6 +259,7 @@ proc gtk_window_set_icon_from_file*(window: pointer, filename: cstring, err: poi
 proc gtk_window_iconify*(window: pointer) {.importc, libgtk3.}
 proc gtk_window_deiconify*(window: pointer) {.importc, libgtk3.}
 proc gtk_window_present*(window: pointer) {.importc, libgtk3.}
+proc gtk_window_set_keep_above*(window: pointer, setting: bool) {.importc, libgtk3.}
 
 proc gdk_window_begin_paint_rect*(window: pointer, rectangle: var GdkRectangle) {.importc, libgtk3.}
 proc gdk_window_begin_paint_region*(window: pointer, region: pointer) {.importc, libgtk3.}

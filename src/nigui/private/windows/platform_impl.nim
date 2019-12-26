@@ -112,8 +112,8 @@ proc pGetWindowText(hWnd: pointer): string =
   if res != characters: pRaiseLastOSError()
   result = result.pUtf16ToUtf8
 
-proc pSetWindowPos(wnd: pointer, x, y, cx, cy: int, uFlags: int32 = 0) =
-  var result = SetWindowPos(wnd, nil, x.int32, y.int32, cx.int32, cy.int32, uFlags)
+proc pSetWindowPos(wnd: pointer, x, y, cx, cy: int, uFlags: int32 = 0, hWndInsertAfter = 0) =
+  var result = SetWindowPos(wnd, cast[pointer](hWndInsertAfter), x.int32, y.int32, cx.int32, cy.int32, uFlags)
   if not result: pRaiseLastOSError()
 
 proc pGetClientRect(wnd: pointer): Rect =
@@ -876,6 +876,13 @@ method showModal(window: WindowImpl, parent: Window) =
 method minimize(window: WindowImpl) =
   procCall window.Window.minimize()
   pShowWindow(window.fHandle, SW_MINIMIZE)
+
+method `alwaysOnTop=`(window: WindowImpl, alwaysOnTop: bool) =
+  procCall window.Window.`alwaysOnTop=`(alwaysOnTop)
+  if alwaysOnTop:
+    pSetWindowPos(window.fHandle, -1, -1, -1, -1, SWP_NOSIZE or SWP_NOMOVE, HWND_TOPMOST)
+  else:
+    pSetWindowPos(window.fHandle, -1, -1, -1, -1, SWP_NOSIZE or SWP_NOMOVE, HWND_NOTOPMOST)
 
 proc pUpdatePosition(window: WindowImpl) =
   pSetWindowPos(window.fHandle, window.x, window.y, -1, -1, SWP_NOSIZE)

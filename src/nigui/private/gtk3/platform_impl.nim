@@ -842,6 +842,10 @@ method minimize(window: WindowImpl) =
   procCall window.Window.minimize()
   gtk_window_iconify(window.fHandle)
 
+method `alwaysOnTop=`(window: WindowImpl, alwaysOnTop: bool) =
+  procCall window.Window.`alwaysOnTop=`(alwaysOnTop)
+  gtk_window_set_keep_above(window.fHandle, alwaysOnTop)
+
 method `width=`*(window: WindowImpl, width: int) =
   procCall window.Window.`width=`(width)
   gtk_window_resize(window.fHandle, window.width.cint, window.height.cint)
