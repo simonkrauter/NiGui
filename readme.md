@@ -22,6 +22,12 @@ NiGui has it's own layout manager for automatic resizing and positioning of cont
 The NiGui source code has no dependencies except Nim's standard library. Platform bindings are included.<br>
 Generated binaries (exe files) include NiGui and do not need external libraries.
 
+Screenshots
+-------------
+
+Example program with native controls running under Windows 10 and Xubuntu: 
+<a href="https://github.com/trustable-code/NiGui/blob/master/screenshots.png"><img src="https://raw.githubusercontent.com/trustable-code/NiGui/master/screenshots.png" width="600"></a>
+
 Current state
 -------------
 NiGui is currently work in progress. Very basic things work, many things are missing.
