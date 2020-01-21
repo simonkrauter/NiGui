@@ -25,7 +25,7 @@ Generated binaries (exe files) include NiGui and do not need external libraries.
 Screenshots
 -------------
 
-Example program with native controls running under Windows 10 and Xubuntu: 
+Example program with native controls running under Windows 10 and Xubuntu:
 <a href="https://github.com/trustable-code/NiGui/blob/master/screenshots.png"><img src="https://raw.githubusercontent.com/trustable-code/NiGui/master/screenshots.png" width="600"></a>
 
 Current state
@@ -95,4 +95,4 @@ License
 -------
 NiGui is FLOSS (free and open-source software).<br>
 All files in this repository are licensed under the [MIT License](https://opensource.org/licenses/MIT). As a result you may use any compatible license (essentially any license) for your own programs developed with NiGui. You are explicitly permitted to develop commercial applications using NiGui.<br>
-Copyright 2017 Simon Krauter
+Copyright 2017-2020 Simon Krauter and contributors
