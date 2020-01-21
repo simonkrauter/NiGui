@@ -1951,15 +1951,15 @@ method add(container: Container, control: Control) =
   container.triggerRelayout()
 
 method remove(container: Container, control: Control) =
-  discard
-  # if container != control.fParentControl:
-    # raiseError("control can not be removed because it is not member of the container")
-  # else:
-    # let startIndex = control.fIndex
-    # container.childControls.del(control.fIndex)
-    # for i in startIndex..container.childControls.high:
-      # container.childControl[i].fIndex = i
-    # control.parentControl = nil
+  if cast[Control](container) != control.fParentControl:
+    raiseError("control can not be removed because it is not member of the container")
+  else:
+    let startIndex = control.fIndex
+    container.fChildControls.del(container.fChildControls.find(control))
+    for i in startIndex..container.childControls.high:
+      container.childControls[i].fIndex = i
+    container.triggerRelayout()
+    control.fParentControl = nil
 
 method setControlPosition(container: Container, control: Control, x, y: int) =
   control.setPosition(x, y)
