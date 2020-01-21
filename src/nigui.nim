@@ -1947,7 +1947,7 @@ method add(container: Container, control: Control) =
     raiseError("Control can be added only to one container.")
   container.fChildControls.add(control)
   control.fParentControl = container
-  control.fIndex = 0
+  control.fIndex = container.fChildControls.high
   container.triggerRelayout()
 
 method remove(container: Container, control: Control) =
@@ -1955,7 +1955,7 @@ method remove(container: Container, control: Control) =
     raiseError("control can not be removed because it is not member of the container")
   else:
     let startIndex = control.fIndex
-    container.fChildControls.del(container.fChildControls.find(control))
+    container.fChildControls.delete(startIndex)
     for i in startIndex..container.childControls.high:
       container.childControls[i].fIndex = i
     container.triggerRelayout()
