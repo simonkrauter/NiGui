@@ -1509,7 +1509,7 @@ proc pTextBoxWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): point
   result = CallWindowProcW(pTextBoxOrigWndProc, hWnd, uMsg, wParam, lParam)
 
 proc init(textBox: NativeTextBox) =
-  textBox.fHandle = pCreateWindowExWithUserdata("EDIT", WS_CHILD or WS_TABSTOP, WS_EX_CLIENTEDGE, pDefaultParentWindow, cast[pointer](textBox))
+  textBox.fHandle = pCreateWindowExWithUserdata("EDIT", WS_CHILD or WS_TABSTOP or ES_AUTOHSCROLL, WS_EX_CLIENTEDGE, pDefaultParentWindow, cast[pointer](textBox))
   pTextBoxOrigWndProc = pSetWindowLongPtr(textBox.fHandle, GWLP_WNDPROC, pTextBoxWndProc)
   textBox.TextBox.init()
 
