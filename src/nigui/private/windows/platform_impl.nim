@@ -1464,7 +1464,7 @@ method `checked=`(checkbox: NativeCheckbox, checked: bool) =
 # ----------------------------------------------------------------------------------------
 
 proc init(label: NativeLabel) =
-  label.fHandle = pCreateWindowExWithUserdata("STATIC", WS_CHILD, 0, pDefaultParentWindow, cast[pointer](label))
+  label.fHandle = pCreateWindowExWithUserdata("STATIC", WS_CHILD or SS_CENTERIMAGE, 0, pDefaultParentWindow, cast[pointer](label))
   label.Label.init()
 
 method `text=`(label: NativeLabel, text: string) =
