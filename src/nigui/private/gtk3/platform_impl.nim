@@ -623,6 +623,10 @@ method drawImage(canvas: Canvas, image: Image, x, y = 0, width, height = -1) =
     cairo_translate(cr, x.cdouble, y.cdouble)
     cairo_scale(cr, drawWith / image.width, drawHeight / image.height)
     cairo_set_source_surface(cr, imageCanvas.fSurface, 0, 0)
+    case canvas.interpolationMode:
+      of InterpolationMode_Default:         discard
+      of InterpolationMode_NearestNeighbor: cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_NEAREST)
+      of InterpolationMode_Bilinear:        cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_BILINEAR)
     cairo_paint(cr)
     cairo_restore(cr)
 

@@ -748,6 +748,17 @@ method getTextLineWidth(canvas: CanvasImpl, text: string): int = canvas.pGetText
 
 method getTextLineHeight(canvas: CanvasImpl): int = canvas.pGetTextSize("a").cy
 
+method `interpolationMode=`(canvas: CanvasImpl, mode: InterpolationMode) =
+  procCall canvas.Canvas.`interpolationMode=`(mode)
+  if canvas.fGraphics == nil:
+    raiseError("Canvas is not in drawing state.")
+  let nativeMode =
+    case mode:
+      of InterpolationMode_Default:         windows.InterpolationMode_Default
+      of InterpolationMode_NearestNeighbor: windows.InterpolationMode_NearestNeighbor
+      of InterpolationMode_Bilinear:        windows.InterpolationMode_Bilinear
+  pCheckGdiplusStatus(GdipSetInterpolationMode(canvas.fGraphics, nativeMode.int32))
+
 
 # ----------------------------------------------------------------------------------------
 #                                        Image

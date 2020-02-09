@@ -201,6 +201,11 @@ type
     Key_NumpadEnter
     Key_AltGr
 
+  InterpolationMode* = enum
+    InterpolationMode_Default
+    InterpolationMode_NearestNeighbor
+    InterpolationMode_Bilinear
+
 const
   inactiveTimer* = 0
 
@@ -277,6 +282,7 @@ type
     fLineColor: Color
     fLineWidth: float
     fAreaColor: Color
+    fInterpolationMode: InterpolationMode
 
   Image* = ref object of RootObj
     fCanvas: Canvas
@@ -576,6 +582,9 @@ method getTextLineWidth*(canvas: Canvas, text: string): int {.base, locks: "unkn
 method getTextLineHeight*(canvas: Canvas): int {.base, locks: "unknown".}
 
 method getTextWidth*(canvas: Canvas, text: string): int {.base.}
+
+method interpolationMode*(canvas: Canvas): InterpolationMode {.base.}
+method `interpolationMode=`*(canvas: Canvas, mode: InterpolationMode) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -1316,6 +1325,10 @@ method drawTextCentered(canvas: Canvas, text: string, x, y = 0, width, height = 
   canvas.drawText(text, rx, ry)
 
 method fill(canvas: Canvas) = canvas.drawRectArea(0, 0, canvas.width, canvas.height)
+
+method interpolationMode(canvas: Canvas): InterpolationMode = canvas.fInterpolationMode
+
+method `interpolationMode=`(canvas: Canvas, mode: InterpolationMode) = canvas.fInterpolationMode = mode
 
 
 # ----------------------------------------------------------------------------------------

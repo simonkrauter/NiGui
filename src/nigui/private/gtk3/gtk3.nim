@@ -179,6 +179,10 @@ const
   CAIRO_FORMAT_ARGB32* = 0
   # [..]
 
+  # cairo_filter_t:
+  CAIRO_FILTER_NEAREST* = 3
+  CAIRO_FILTER_BILINEAR* = 4
+
   # GtkFileChooserAction:
   GTK_FILE_CHOOSER_ACTION_OPEN* = 0
   GTK_FILE_CHOOSER_ACTION_SAVE* = 1
@@ -482,6 +486,8 @@ proc cairo_create*(target: pointer): pointer {.importc, libgtk3.}
 proc cairo_get_target*(cr: pointer): pointer {.importc, libgtk3.}
 proc cairo_set_source_rgb*(cr: pointer, red, green, blue: cdouble) {.importc, libgtk3.}
 proc cairo_set_source_surface*(cr, surface: pointer, x, y: cdouble) {.importc, libgtk3.}
+proc cairo_get_source*(cr: pointer): pointer {.importc, libgtk3.}
+proc cairo_pattern_set_filter*(pattern: pointer, filter: cint) {.importc, libgtk3.}
 proc cairo_fill*(cr: pointer) {.importc, libgtk3.}
 proc cairo_stroke*(cr: pointer) {.importc, libgtk3.}
 proc cairo_rectangle*(cr: pointer, x, y, width, height: cdouble) {.importc, libgtk3.}

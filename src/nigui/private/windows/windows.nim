@@ -75,6 +75,9 @@ const
   ICON_BIG* = 1
   IDC_ARROW* = 32512
   INVALID_HANDLE_VALUE* = cast[pointer](-1)
+  InterpolationMode_Default* = 0
+  InterpolationMode_Bilinear* = 3
+  InterpolationMode_NearestNeighbor* = 5
   IMAGE_BITMAP* = 0
   IMAGE_ICON* = 1
   # LR_LOADFROMFILE* = 16
@@ -542,6 +545,7 @@ proc GdipDeleteFontFamily*(fontFamily: pointer): int32 {.importc, libGdiplus.}
 proc GdipBitmapLockBits*(bitmap: pointer, rect: var Rect, flags: int32, format: int32, lockedBitmapData: var BitmapData): int32 {.importc, libGdiplus.}
 proc GdipBitmapUnlockBits*(bitmap: pointer, lockedBitmapData: var BitmapData): int32 {.importc, libGdiplus.}
 proc GdipSetTextRenderingHint*(graphics: pointer, mode: int32): int32 {.importc, libGdiplus.}
+proc GdipSetInterpolationMode*(graphics: pointer, interpolationMode: int32): int32 {.importc, libGdiplus.}
 
 
 # ----------------------------------------------------------------------------------------
