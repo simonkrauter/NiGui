@@ -781,6 +781,9 @@ proc pMainScrollbarDraw(widget: pointer, cr: pointer, data: pointer): Gboolean {
     gtk_widget_get_allocation(scrollbar, allocation)
     gtk_scrolled_window_set_policy(widget, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC)
     fScrollbarSize = allocation.height
+    for window in windowList:
+      if window.control != nil:
+        window.control.triggerRelayoutDownwards()
 
 proc pWindowStateEventSignal(widget: pointer, event: var GdkEventWindowState, user_data: pointer): Gboolean {.cdecl.} =
   let window = cast[WindowImpl](user_data)
@@ -900,6 +903,10 @@ method `iconPath=`(window: WindowImpl, iconPath: string) =
 # ----------------------------------------------------------------------------------------
 
 method pUpdateScrollBar(control: ControlImpl) {.base.}
+
+method triggerRelayout(control: ControlImpl) =
+  procCall control.Control.triggerRelayout()
+  control.pUpdateScrollBar()
 
 proc pControlDrawSignal(widget: pointer, cr: pointer, data: pointer): Gboolean {.cdecl.} =
   let control = cast[ControlImpl](data)
@@ -1226,9 +1233,7 @@ method pUpdateScrollBar(container: ContainerImpl) =
     return
 
   if fScrollbarSize == -1:
-      return
-
-  # echo "container.pUpdateScrollBar"
+    return
 
   container.fXScrollEnabled = false
   container.fYScrollEnabled = false

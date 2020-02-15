@@ -1044,7 +1044,9 @@ proc triggerRelayout(window: Window)
 
 method destroy(control: Control) {.base, locks: "unknown".}
 
-proc triggerRelayout(control: Control)
+method triggerRelayout(control: Control)
+
+method triggerRelayoutDownwards(control: Control)
 
 proc triggerRelayoutIfModeIsAuto(control: Control)
 
@@ -1699,7 +1701,7 @@ method parentWindow(control: Control): WindowImpl =
   else:
     result = control.parentControl.parentWindow
 
-proc triggerRelayout(control: Control) =
+method triggerRelayout(control: Control) =
   var con = control
   while con.parentControl != nil:
     con = con.parentControl
@@ -1708,6 +1710,9 @@ proc triggerRelayout(control: Control) =
   if control.parentControl != nil:
     control.parentControl.triggerRelayout()
   control.realignChildControls()
+
+method triggerRelayoutDownwards(control: Control) =
+  control.triggerRelayout()
 
 proc triggerRelayoutIfModeIsAuto(control: Control) =
   if control.widthMode == WidthMode_Auto or control.heightMode == HeightMode_Auto:
@@ -2082,6 +2087,10 @@ method realignChildControls(container: Container) =
   if innerHeight == -1:
     innerHeight = container.height
   container.updateInnerSize(innerWidth - padding.left - padding.right - container.xScrollbarSpace, innerHeight - padding.top - padding.bottom - container.yScrollbarSpace)
+
+method triggerRelayoutDownwards(container: Container) =
+  for control in container.childControls:
+    control.triggerRelayoutDownwards()
 
 method `onDraw=`(container: ContainerImpl, callback: DrawProc) = raiseError("ContainerImpl does not allow onDraw.")
 
