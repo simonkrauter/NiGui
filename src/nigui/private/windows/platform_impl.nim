@@ -46,6 +46,7 @@ proc pRgb32ToColor(color: RGB32): Color =
   result.red = color.red
   result.green = color.green
   result.blue = color.blue
+  result.alpha = 255
 
 proc pColorToARGB(color: Color): ARGB =
   result.red = color.red
