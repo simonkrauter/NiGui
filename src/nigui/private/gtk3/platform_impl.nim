@@ -322,8 +322,6 @@ proc pControlChangedSignal(widget: pointer, data: pointer): Gboolean {.cdecl.} =
 proc pSetDragDest(widget: pointer) =
   var target: GtkTargetEntry
   target.target = "text/uri-list"
-  target.flags = 0
-  target.info = 0
   gtk_drag_dest_set(widget, GTK_DEST_DEFAULT_ALL, target.addr, 1, GDK_ACTION_COPY)
 
 proc pCreateFont(fontFamily: string, fontSize: float, fontBold: bool): pointer =
@@ -674,8 +672,8 @@ method getTextLineWidth(canvas: CanvasImpl, text: string): int {.locks: "unknown
   if canvas.fFont == nil:
     canvas.pUpdateFont()
   pango_layout_set_font_description(layout, canvas.fFont)
-  var width: cint = 0
-  var height: cint = 0
+  var width: cint
+  var height: cint
   pango_layout_get_pixel_size(layout, width, height)
   result = width
 
@@ -687,8 +685,8 @@ method getTextLineHeight(canvas: CanvasImpl): int {.locks: "unknown".} =
   if canvas.fFont == nil:
     canvas.pUpdateFont()
   pango_layout_set_font_description(layout, canvas.fFont)
-  var width: cint = 0
-  var height: cint = 0
+  var width: cint
+  var height: cint
   pango_layout_get_pixel_size(layout, width, height)
   result = height
 
@@ -1133,8 +1131,8 @@ method `setBackgroundColor`(control: ControlImpl, color: Color) =
 
 method getTextLineWidth(control: ControlImpl, text: string): int {.locks: "unknown".} =
   var layout = gtk_widget_create_pango_layout(control.fHandle, text)
-  var width: cint = 0
-  var height: cint = 0
+  var width: cint
+  var height: cint
   pango_layout_get_pixel_size(layout, width, height)
   result = width
 
@@ -1145,8 +1143,8 @@ method getTextLineHeight(control: ControlImpl): int {.locks: "unknown".} =
   var font = pCreateFont(control.fontFamily, control.fontSize, control.fontBold)
   pango_layout_set_font_description(layout, font)
 
-  var width: cint = 0
-  var height: cint = 0
+  var width: cint
+  var height: cint
   pango_layout_get_pixel_size(layout, width, height)
   result = height
 

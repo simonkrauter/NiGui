@@ -1013,13 +1013,11 @@ method pUpdateScrollBar(control: ControlImpl) =
     var si: ScrollInfo
     si.cbSize = ScrollInfo.sizeOf.int32
     si.fMask = SIF_ALL
-    si.nMin = 0
     si.nMax = control.fScrollableWidth.int32
     if control.fYScrollEnabled:
       si.nMax.inc(fScrollbarSize)
     si.nPage = control.width.int32
     si.nPos = control.fXScrollPos.int32
-    si.nTrackPos = 0
     discard SetScrollInfo(control.fHandle, SB_HORZ, si, false)
     # Ensure that scroll pos is within range:
     control.fXScrollPos = max(min(control.fXScrollPos, si.nMax - control.width), 0)
@@ -1031,13 +1029,11 @@ method pUpdateScrollBar(control: ControlImpl) =
     var si: ScrollInfo
     si.cbSize = ScrollInfo.sizeOf.int32
     si.fMask = SIF_ALL
-    si.nMin = 0
     si.nMax = control.fScrollableHeight.int32
     if control.fXScrollEnabled:
       si.nMax.inc(fScrollbarSize)
     si.nPage = control.height.int32
     si.nPos = control.fYScrollPos.int32
-    si.nTrackPos = 0
     discard SetScrollInfo(control.fHandle, SB_VERT, si, false)
     # Ensure that scroll pos is within range:
     control.fYScrollPos = max(min(control.fYScrollPos, si.nMax - control.height), 0)
