@@ -675,7 +675,7 @@ method getTextLineWidth(canvas: CanvasImpl, text: string): int {.locks: "unknown
   var width: cint
   var height: cint
   pango_layout_get_pixel_size(layout, width, height)
-  result = width
+  result = width + 2
 
 method getTextLineHeight(canvas: CanvasImpl): int {.locks: "unknown".} =
   if canvas.fCairoContext == nil:
