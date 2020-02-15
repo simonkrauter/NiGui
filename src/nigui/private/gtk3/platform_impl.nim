@@ -1141,7 +1141,7 @@ method getTextLineWidth(control: ControlImpl, text: string): int {.locks: "unkno
   var width: cint
   var height: cint
   pango_layout_get_pixel_size(layout, width, height)
-  result = width
+  result = width + 2
 
 method getTextLineHeight(control: ControlImpl): int {.locks: "unknown".} =
   var layout = gtk_widget_create_pango_layout(control.fHandle, "a")
