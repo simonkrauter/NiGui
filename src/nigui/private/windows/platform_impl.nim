@@ -630,7 +630,7 @@ method drawText(canvas: Canvas, text: string, x, y = 0) =
   if canvasImpl.fFontBrush == nil:
     pCheckGdiplusStatus(GdipCreateSolidFill(canvas.textColor.pColorToARGB(), canvasImpl.fFontBrush))
   var rect: RectF
-  rect.x = x.float
+  rect.x = (x - 2).float
   rect.y = y.float
   pCheckGdiplusStatus(GdipDrawString(canvasImpl.fGraphics, text.pUtf8ToUtf16(), -1, canvasImpl.fFont, rect, nil, canvasImpl.fFontBrush))
 
