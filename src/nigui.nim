@@ -35,6 +35,16 @@ type
     YAlign_Center
     YAlign_Spread
 
+  XTextAlign* = enum
+    XTextAlign_Left
+    XTextAlign_Right
+    XTextAlign_Center
+
+  YTextAlign* = enum
+    YTextAlign_Top
+    YTextAlign_Bottom
+    YTextAlign_Center
+
   WidthMode* = enum
     WidthMode_Static
     WidthMode_Auto
@@ -383,6 +393,8 @@ type
 
   Label* = ref object of ControlImpl
     fText: string
+    fXTextAlign: XTextAlign
+    fYTextAlign: YTextAlign
 
   ProgressBar* = ref object of ControlImpl
     fValue: float # should be between 0.0 and 1.0
@@ -960,6 +972,12 @@ proc init*(label: NativeLabel)
 method text*(label: Label): string {.base.}
 method `text=`*(label: Label, text: string) {.base.}
 
+method xTextAlign*(label: Label): XTextAlign
+method `xTextAlign=`*(label: Label, xTextAlign: XTextAlign)
+
+method yTextAlign*(label: Label): YTextAlign
+method `yTextAlign=`*(label: Label, yTextAlign: YTextAlign)
+
 
 # ----------------------------------------------------------------------------------------
 #                                      ProgressBar
@@ -1322,8 +1340,8 @@ method drawTextCentered(canvas: Canvas, text: string, x, y = 0, width, height = 
   var h = height
   if h == -1:
     h = canvas.height
-  let rx = x + (w - canvas.getTextWidth(text)) div 2
-  let ry = y + (h - canvas.getTextLineHeight()) div 2
+  let rx = x + max((w - canvas.getTextWidth(text)) div 2, 0)
+  let ry = y + max((h - canvas.getTextLineHeight() * text.countLines) div 2, 0)
   canvas.drawText(text, rx, ry)
 
 method fill(canvas: Canvas) = canvas.drawRectArea(0, 0, canvas.width, canvas.height)
@@ -2542,6 +2560,8 @@ proc init(label: Label) =
   label.fHeightMode = HeightMode_Auto
   label.minWidth = 10.scaleToDpi
   label.minHeight = 10.scaleToDpi
+  label.fXTextAlign = XTextAlign_Left
+  label.fYTextAlign = YTextAlign_Center
 
 method text(label: Label): string = label.fText
 
@@ -2555,7 +2575,46 @@ method naturalWidth(label: Label): int {.locks: "unknown".} = label.getTextWidth
 
 method naturalHeight(label: Label): int {.locks: "unknown".} = label.getTextLineHeight() * label.text.countLines
 
-method `onDraw=`(container: NativeLabel, callback: DrawProc) = raiseError("NativeLabel does not allow onDraw.")
+method xTextAlign(label: Label): XTextAlign = label.fXTextAlign
+
+method `xTextAlign=`(label: Label, xTextAlign: XTextAlign) =
+  label.fXTextAlign = xTextAlign
+  label.forceRedraw()
+
+method yTextAlign(label: Label): YTextAlign = label.fYTextAlign
+
+method `yTextAlign=`(label: Label, yTextAlign: YTextAlign) =
+  label.fYTextAlign = yTextAlign
+  label.forceRedraw()
+
+method handleDrawEvent(label: Label, event: DrawEvent) =
+  # Use a custom draw for labels, because Windows does not support vertical text aligment.
+  let callback = label.onDraw
+  if callback != nil:
+    callback(event)
+    return
+  label.canvas.fontFamily = label.fontFamily
+  label.canvas.fontSize = label.fontSize
+  label.canvas.textColor = label.textColor
+  label.canvas.areaColor = label.backgroundColor
+  label.canvas.fill()
+  let x =
+    case label.xTextAlign
+    of XTextAlign_Left:
+      0
+    of XTextAlign_Center:
+      (label.width - label.naturalWidth) div 2
+    of XTextAlign_Right:
+      label.width - label.naturalWidth
+  let y =
+    case label.yTextAlign
+    of YTextAlign_Top:
+      0
+    of YTextAlign_Center:
+      (label.height - label.naturalHeight) div 2
+    of YTextAlign_Bottom:
+      label.height - label.naturalHeight
+  label.canvas.drawText(label.text, x, y)
 
 
 # ----------------------------------------------------------------------------------------

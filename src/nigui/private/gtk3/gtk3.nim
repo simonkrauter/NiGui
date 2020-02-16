@@ -331,12 +331,12 @@ proc gtk_button_box_set_layout*(widget: pointer, layout_style: cint) {.importc, 
 # proc gtk_message_dialog_new*(parent: pointer, flags: GtkDialogFlags, `type`: GtkMessageType, buttons: GtkButtonsType, message_format: cstring): pointer {.importc, libgtk3.}
 
 proc gtk_label_new*(str: cstring): pointer {.importc, libgtk3.}
-proc gtk_label_set_text*(label: pointer, str: cstring) {.importc, libgtk3.}
+# proc gtk_label_set_text*(label: pointer, str: cstring) {.importc, libgtk3.}
 # proc gtk_label_get_text*(label: pointer): cstring {.importc, libgtk3.}
 proc gtk_label_set_ellipsize*(label: pointer, mode: cint) {.importc, libgtk3.}
 # proc gtk_label_set_justify*(label: pointer, jtype: cint) {.importc, libgtk3.}
-proc gtk_label_set_xalign*(label: pointer, xalign: cfloat) {.importc, libgtk3.}
-proc gtk_label_set_yalign*(label: pointer, yalign: cfloat) {.importc, libgtk3.}
+# proc gtk_label_set_xalign*(label: pointer, xalign: cfloat) {.importc, libgtk3.}
+# proc gtk_label_set_yalign*(label: pointer, yalign: cfloat) {.importc, libgtk3.}
 
 proc gtk_progress_bar_new*(): pointer {.importc, libgtk3.}
 proc gtk_progress_bar_set_fraction*(pbar: pointer, fraction: cdouble) {.importc, libgtk3.}

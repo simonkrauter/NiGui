@@ -1356,19 +1356,8 @@ method pAddButtonPressEvent(checkbox: NativeCheckbox) = discard # don't override
 # ----------------------------------------------------------------------------------------
 
 proc init(label: NativeLabel) =
-  label.fHandle = gtk_label_new("")
-  gtk_label_set_xalign(label.fHandle, 0)
-  gtk_label_set_yalign(label.fHandle, 0.5)
-  gtk_label_set_ellipsize(label.fHandle, PANGO_ELLIPSIZE_END)
   label.Label.init()
-
-method `text=`(label: NativeLabel, text: string) =
-  procCall label.Label.`text=`(text)
-  gtk_label_set_text(label.fHandle, text)
-  app.processEvents()
-
-method naturalWidth(label: NativeLabel): int {.locks: "unknown".} = label.getTextLineWidth(label.text) + 10
-# Override parent method, to make it big enough for the text to fit in.
+  label.fFontSize = app.defaultFontSize * 0.95
 
 
 # ----------------------------------------------------------------------------------------

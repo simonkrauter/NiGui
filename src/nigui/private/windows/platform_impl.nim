@@ -1472,12 +1472,8 @@ method `checked=`(checkbox: NativeCheckbox, checked: bool) =
 # ----------------------------------------------------------------------------------------
 
 proc init(label: NativeLabel) =
-  label.fHandle = pCreateWindowExWithUserdata("STATIC", WS_CHILD or SS_CENTERIMAGE, 0, pDefaultParentWindow, cast[pointer](label))
   label.Label.init()
-
-method `text=`(label: NativeLabel, text: string) =
-  procCall label.Label.`text=`(text)
-  pSetWindowText(label.fHandle, text)
+  label.fFontSize = app.defaultFontSize * 0.8
 
 
 # ----------------------------------------------------------------------------------------
