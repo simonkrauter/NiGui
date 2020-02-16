@@ -2603,17 +2603,17 @@ method handleDrawEvent(label: Label, event: DrawEvent) =
     of XTextAlign_Left:
       0
     of XTextAlign_Center:
-      (label.width - label.naturalWidth) div 2
+      (label.width - label.canvas.getTextLineWidth(label.text)) div 2
     of XTextAlign_Right:
-      label.width - label.naturalWidth
+      label.width - label.canvas.getTextLineWidth(label.text)
   let y =
     case label.yTextAlign
     of YTextAlign_Top:
       0
     of YTextAlign_Center:
-      (label.height - label.naturalHeight) div 2
+      (label.height - label.canvas.getTextLineHeight() * label.text.countLines) div 2
     of YTextAlign_Bottom:
-      label.height - label.naturalHeight
+      label.height - label.canvas.getTextLineHeight() * label.text.countLines
   label.canvas.drawText(label.text, x, y)
 
 
