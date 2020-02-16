@@ -742,7 +742,7 @@ proc pGetTextSize(canvas: Canvas, text: string): Size =
   var rect: RectF
   var boundingBox: RectF
   pCheckGdiplusStatus(GdipMeasureString(canvasImpl.fGraphics, text.pUtf8ToUtf16(), -1, canvasImpl.fFont, rect, nil, boundingBox, nil, nil))
-  result.cx = boundingBox.width.int32
+  result.cx = boundingBox.width.int32 - 4
   result.cy = boundingBox.height.int32
 
 method getTextLineWidth(canvas: CanvasImpl, text: string): int = canvas.pGetTextSize(text).cx
