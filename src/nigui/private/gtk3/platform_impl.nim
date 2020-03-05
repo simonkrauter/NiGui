@@ -1130,7 +1130,7 @@ method setTextColor(control: ControlImpl, color: Color) =
   color.pColorToGdkRGBA(rgba)
   gtk_widget_override_color(control.fHandle, GTK_STATE_FLAG_NORMAL, rgba)
 
-method `setBackgroundColor`(control: ControlImpl, color: Color) =
+method setBackgroundColor(control: ControlImpl, color: Color) =
   procCall control.Control.setBackgroundColor(color)
   var rgba: GdkRGBA
   color.pColorToGdkRGBA(rgba)
