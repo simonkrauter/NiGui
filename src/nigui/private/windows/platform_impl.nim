@@ -171,10 +171,12 @@ proc pCommonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
       evt.control = control
       control.handleTextChangeEvent(evt)
   of WM_CTLCOLORSTATIC, WM_CTLCOLOREDIT:
-    let control = cast[Control](pGetWindowLongPtr(lParam, GWLP_USERDATA))
+    let control = cast[ControlImpl](pGetWindowLongPtr(lParam, GWLP_USERDATA))
     discard SetTextColor(wParam, control.textColor.pColorToRGB32())
     discard SetBkColor(wParam, control.backgroundColor.pColorToRGB32())
-    return CreateSolidBrush(control.backgroundColor.pColorToRGB32)
+    if control.fBackgroundBrush == nil:
+      control.fBackgroundBrush = CreateSolidBrush(control.backgroundColor.pColorToRGB32)
+    return control.fBackgroundBrush
   else:
     discard
   result = DefWindowProcW(hWnd, uMsg, wParam, lParam)
@@ -1089,6 +1091,12 @@ proc pGetTextSize(control: ControlImpl, text: string): Size =
   result = pGetTextSize(hdc, control.fFont, text)
   discard DeleteDC(hdc)
 
+method setBackgroundColor(control: ControlImpl, color: Color) =
+  procCall control.Control.setBackgroundColor(color)
+  if control.fBackgroundBrush != nil:
+    discard DeleteObject(control.fBackgroundBrush)
+    control.fBackgroundBrush = nil
+
 method focus(control: ControlImpl) =
   discard SetFocus(control.fHandle)
 
@@ -1298,9 +1306,10 @@ proc pContainerWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): poi
   of WM_ERASEBKGND:
     let control = cast[ControlImpl](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
     if control != nil:
-      var brush = CreateSolidBrush(control.backgroundColor.pColorToRGB32)
+      if control.fBackgroundBrush == nil:
+        control.fBackgroundBrush = CreateSolidBrush(control.backgroundColor.pColorToRGB32)
       var rect = pGetClientRect(control.fHandle)
-      discard FillRect(wParam, rect, brush)
+      discard FillRect(wParam, rect, control.fBackgroundBrush)
       return
   else:
     discard

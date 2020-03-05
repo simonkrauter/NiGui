@@ -13,6 +13,7 @@ type
   ControlImpl* = ref object of Control
     fHandle: pointer
     fFont: pointer
+    fBackgroundBrush: pointer
 
   CanvasImpl* = ref object of Canvas
     fDC: pointer
