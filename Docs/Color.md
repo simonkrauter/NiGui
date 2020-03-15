@@ -1,7 +1,3 @@
-Search:
-
-Group by: Section Type
-
 -   [Types](#7)
     -   [Color](#Color "Color = object
           red*: byte

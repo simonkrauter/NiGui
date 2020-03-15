@@ -1,12 +1,5 @@
 Image
 =====
-
-Search: 
-
-Group by: Section Type
-
-*   [Imports](#6)
-    
 *   [Types](#7)
     *   [Image](#Image "Image = ref object of RootObj
           fCanvas: Canvas")
@@ -16,11 +9,6 @@ Group by: Section Type
     *   [widthImage](#width.e%2CImage "width(image: Image): int")
     *   [heightImage](#height.e%2CImage "height(image: Image): int")
     *   [canvasImage](#canvas.e%2CImage "canvas(image: Image): Canvas")
-
-[Imports](#6)
-=============
-
-[nigui](nigui.html)
 
 [Types](#7)
 ===========

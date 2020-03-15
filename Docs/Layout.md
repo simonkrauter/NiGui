@@ -1,10 +1,5 @@
 Layout
 ======
-
-Search: 
-
-Group by: Section Type
-
 *   [Types](#7)
     *   [Layout](#Layout "Layout = enum
           Layout_Horizontal, Layout_Vertical")

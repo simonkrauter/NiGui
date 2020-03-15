@@ -1,10 +1,5 @@
 Key
 ===
-
-Search: 
-
-Group by: Section Type
-
 *   [Types](#7)
     *   [Key](#Key "Key = enum
           Key_None = 0, Key_Backspace = 8, Key_Tab = 9, Key_Return = 13, Key_Pause = 19,

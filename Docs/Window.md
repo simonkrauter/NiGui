@@ -1,7 +1,3 @@
-Search:
-
-Group by: Section Type
-
 -   [Types](#7)
     -   [Window](#Window "Window = ref object of RootObj
           fDisposed: bool

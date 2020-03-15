@@ -1,10 +1,5 @@
 Frame
 =====
-
-Search: 
-
-Group by: Section Type
-
 *   [Types](#7)
     *   [Frame](#Frame "Frame = ref object of ControlImpl
           fText: string")

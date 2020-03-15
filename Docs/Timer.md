@@ -1,7 +1,3 @@
-Search:
-
-Group by: Section Type
-
 -   [Types](#7)
     -   [Timer](#Timer "Timer = distinct int")
     -   [TimerEvent](#TimerEvent "TimerEvent = ref object

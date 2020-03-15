@@ -1,7 +1,3 @@
-Search:
-
-Group by: Section Type
-
 -   [Types](#7)
     -   [Checkbox](#Checkbox "Checkbox = ref object of ControlImpl
           fText: string

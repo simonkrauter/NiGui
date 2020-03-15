@@ -1,7 +1,3 @@
-Search:
-
-Group by: Section Type
-
 -   [Types](#7)
     -   [TextArea](#TextArea "TextArea = ref object of NativeTextBox
           fWrap: bool")

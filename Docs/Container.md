@@ -1,7 +1,3 @@
-Search:
-
-Group by: Section Type
-
 -   [Types](#7)
     -   [Container](#Container "Container = ref object of ControlImpl
           fFrame: Frame

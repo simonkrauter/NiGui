@@ -1,7 +1,3 @@
-Search:
-
-Group by: Section Type
-
 -   [Types](#7)
     -   [MouseButton](#MouseButton "MouseButton = enum
           MouseButton_Left, MouseButton_Middle, MouseButton_Right")

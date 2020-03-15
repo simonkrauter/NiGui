@@ -1,7 +1,3 @@
-Search:
-
-Group by: Section Type
-
 -   [Types](#7)
     -   [ProgressBar](#ProgressBar "ProgressBar = ref object of ControlImpl")
 -   [Procs](#12)

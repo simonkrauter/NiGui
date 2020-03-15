@@ -1,7 +1,3 @@
-Search:
-
-Group by: Section Type
-
 -   [Procs](#12)
     -   [newCanvas](#newCanvas%2CControl "newCanvas(control: Control = nil): CanvasImpl")
 -   [Methods](#14)

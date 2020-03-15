@@ -1,7 +1,3 @@
-Search:
-
-Group by: Section Type
-
 -   [Types](#7)
     -   [TextBox](#TextBox "TextBox = ref object of ControlImpl
           fEditable: bool

@@ -1,7 +1,3 @@
-Search:
-
-Group by: Section Type
-
 -   [Types](#7)
     -   [Control](#Control "Control = ref object of RootObj
           fDisposed: bool

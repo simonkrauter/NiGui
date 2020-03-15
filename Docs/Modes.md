@@ -1,7 +1,3 @@
-Search:
-
-Group by: Section Type
-
 -   [Types](#7)
     -   [WidthMode](#WidthMode "WidthMode = enum
           WidthMode_Static, WidthMode_Auto, WidthMode_Fill, WidthMode_Expand")

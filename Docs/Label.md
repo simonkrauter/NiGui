@@ -1,10 +1,5 @@
 Label
 =====
-
-Search: 
-
-Group by: Section Type
-
 *   [Procs](#12)
     *   [newLabel](#newLabel%2Cstring "newLabel(text = ""): Label")
     *   [init](#init%2CLabel "init(label: Label)")
