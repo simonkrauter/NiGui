@@ -108,6 +108,8 @@ proc pSetWindowText(hWnd: pointer, s: string) =
 
 proc pGetWindowText(hWnd: pointer): string =
   let characters = GetWindowTextLengthW(hWnd)
+  if characters == 0:
+    return
   result = newString(characters * 2)
   var res = GetWindowTextW(hWnd, result, characters * 2 + 1)
   if res != characters: pRaiseLastOSError()
