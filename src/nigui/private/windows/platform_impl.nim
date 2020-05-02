@@ -947,6 +947,20 @@ method `control=`(window: WindowImpl, control: Control) =
   procCall window.Window.`control=`(control)
   pSetParent(cast[ControlImpl](control).fHandle, window.fHandle)
 
+method mousePosition(window: Window): tuple[x, y: int] =
+  var p: Point
+  if not GetCursorPos(p):
+    result.x = -1
+    result.y = -1
+    return
+  if not ScreenToClient(cast[WindowImpl](window).fHandle, p):
+    result.x = -1
+    result.y = -1
+    return
+  result.x = p.x
+  result.y = p.y
+
+
 method `iconPath=`(window: WindowImpl, iconPath: string) =
   procCall window.Window.`iconPath=`(iconPath)
   var bitmap: pointer
@@ -1297,6 +1311,19 @@ proc pCustomControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
   if comProcRes == PWndProcResult_True:
     return cast[pointer](true)
   result = CallWindowProcW(pCommonWndProc, hWnd, uMsg, wParam, lParam)
+
+method mousePosition(control: Control): tuple[x, y: int] =
+  var p: Point
+  if not GetCursorPos(p):
+    result.x = -1
+    result.y = -1
+    return
+  if not ScreenToClient(cast[ControlImpl](control).fHandle, p):
+    result.x = -1
+    result.y = -1
+    return
+  result.x = p.x
+  result.y = p.y
 
 
 # ----------------------------------------------------------------------------------------

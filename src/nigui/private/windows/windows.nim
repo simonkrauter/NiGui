@@ -467,6 +467,7 @@ proc SetClipboardData*(uFormat: int32, hMem: pointer): pointer {.importc, libUse
 proc EmptyClipboard*(): bool {.importc, libUser32.}
 proc MapVirtualKeyW*(uCode, uMapType: int32): int32 {.importc, libUser32.}
 proc GetCursorPos*(lpPoint: var Point): bool {.importc, libUser32.}
+proc ScreenToClient*(hWnd: pointer, lpPoint: var Point): bool {.importc, libUser32.}
 proc MonitorFromPoint*(pt: Point, dwFlags: int32): pointer {.importc, libUser32.}
 
 type GetDpiForWindowType* = proc(hWnd: pointer): int32 {.gcsafe, stdcall.} # not available on Windows 7

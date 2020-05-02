@@ -294,6 +294,7 @@ proc gtk_widget_is_focus*(widget: pointer): bool {.importc, libgtk3.}
 proc gtk_widget_realize*(widget: pointer) {.importc, libgtk3.}
 proc gtk_widget_draw*(widget, cr: pointer) {.importc, libgtk3.}
 proc gtk_widget_set_sensitive*(widget: pointer, sensitive: bool) {.importc, libgtk3.}
+proc gtk_widget_get_pointer*(widget: pointer, x, y: var cint) {.importc, libgtk3.}
 
 proc gtk_container_add*(container, widget: pointer) {.importc, libgtk3.}
 proc gtk_container_remove*(container, widget: pointer) {.importc, libgtk3.}

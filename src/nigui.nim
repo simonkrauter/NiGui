@@ -689,6 +689,9 @@ method clientHeight*(window: Window): int {.base.}
 method iconPath*(window: Window): string {.base.}
 method `iconPath=`*(window: Window, iconPath: string) {.base, locks: "unknown".}
 
+method mousePosition*(window: Window): tuple[x, y: int]
+## Returns the mouse pointer position relative to the given window
+
 method closeClick*(window: Window) {.base.}
 
 method handleResizeEvent*(window: Window, event: ResizeEvent) {.base.}
@@ -777,6 +780,9 @@ method naturalHeight*(control: Control): int {.base, locks: "unknown".}
 method wantedWidth*(control: Control): int {.base.}
 
 method wantedHeight*(control: Control): int {.base.}
+
+method mousePosition*(control: Control): tuple[x, y: int]
+## Returns the mouse pointer position relative to the given control
 
 method focus*(control: Control) {.base.}
 

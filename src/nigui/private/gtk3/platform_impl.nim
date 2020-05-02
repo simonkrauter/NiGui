@@ -889,6 +889,12 @@ method `control=`(window: WindowImpl, control: Control) =
   procCall window.Window.`control=`(control)
   gtk_container_add(window.fInnerHandle, cast[ControlImpl](control).fHandle)
 
+method mousePosition(window: Window): tuple[x, y: int] =
+  var x, y: cint
+  gtk_widget_get_pointer(cast[WindowImpl](window).fHandle, x, y)
+  result.x = x
+  result.y = y
+
 method `iconPath=`(window: WindowImpl, iconPath: string) =
   procCall window.Window.`iconPath=`(iconPath)
   if not gtk_window_set_icon_from_file(window.fHandle, iconPath, nil):
@@ -1257,6 +1263,12 @@ method pUpdateScrollBar(container: ContainerImpl) =
   if container.fYScrollEnabled:
     yPolicy = GTK_POLICY_AUTOMATIC
   gtk_scrolled_window_set_policy(container.fScrollWndHandle, xPolicy, yPolicy)
+
+method mousePosition(control: Control): tuple[x, y: int] =
+  var x, y: cint
+  gtk_widget_get_pointer(cast[ControlImpl](control).fHandle, x, y)
+  result.x = x
+  result.y = y
 
 
 # ----------------------------------------------------------------------------------------
