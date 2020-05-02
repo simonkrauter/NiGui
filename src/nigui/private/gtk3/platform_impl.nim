@@ -1198,6 +1198,10 @@ proc init(container: ContainerImpl) =
   gtk_container_add(container.fScrollWndHandle, container.fInnerHandle)
   container.Container.init()
 
+method pAddButtonPressEvent(container: ContainerImpl) =
+  gtk_widget_add_events(container.fInnerHandle, GDK_BUTTON_PRESS_MASK)
+  discard g_signal_connect_data(container.fInnerHandle, "button-press-event", pCustomControlButtonPressSignal, cast[pointer](container))
+
 method pUpdateScrollWnd(container: ContainerImpl) {.base.} =
   let padding = container.getPadding()
   let width = container.width - padding.left - padding.right
