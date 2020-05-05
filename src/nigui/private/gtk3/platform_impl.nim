@@ -1477,6 +1477,17 @@ method `selectionEnd=`(textBox: NativeTextBox, selectionEnd: int) =
 #                                      TextArea
 # ----------------------------------------------------------------------------------------
 
+proc pTextAreaKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointer): Gboolean {.cdecl.} =
+  result = pControlKeyPressSignal(widget, event, data)
+
+  # Implement own "copy to clipboard", because by default the clipboard is non-persistent
+  if not result:
+    let modifiers = gtk_accelerator_get_default_mod_mask()
+    if event.keyval == 'c'.ord and (event.state and modifiers) == GDK_CONTROL_MASK:
+      let textArea = cast[NativeTextBox](data)
+      app.clipboardText = textArea.selectedText
+      return true # prevent default "copy to clipboard"
+
 proc init(textArea: NativeTextArea) =
   textArea.fHandle = gtk_scrolled_window_new(nil, nil)
   # gtk_scrolled_window_set_policy(textArea.fHandle, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC)
@@ -1525,6 +1536,9 @@ method `wrap=`(textArea: NativeTextArea, wrap: bool) =
     gtk_text_view_set_wrap_mode(textArea.fTextViewHandle, GTK_WRAP_WORD_CHAR)
   else:
     gtk_text_view_set_wrap_mode(textArea.fTextViewHandle, GTK_WRAP_NONE)
+
+method pAddKeyPressEvent(textArea: NativeTextArea) =
+  discard g_signal_connect_data(textArea.fTextViewHandle, "key-press-event", pTextAreaKeyPressSignal, cast[pointer](textArea))
 
 method `editable=`(textArea: NativeTextArea, editable: bool) =
   textArea.fEditable = editable
