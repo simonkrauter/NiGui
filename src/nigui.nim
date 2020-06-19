@@ -2116,8 +2116,6 @@ method triggerRelayoutDownwards(container: Container) =
   for control in container.childControls:
     control.triggerRelayoutDownwards()
 
-method `onDraw=`(container: ContainerImpl, callback: DrawProc) = raiseError("ContainerImpl does not allow onDraw.")
-
 
 # ----------------------------------------------------------------------------------------
 #                                   LayoutContainer

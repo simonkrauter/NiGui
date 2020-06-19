@@ -308,7 +308,7 @@ proc gtk_fixed_move*(fixed, widget: pointer, x, y: cint) {.importc, libgtk3.}
 proc gtk_layout_new*(hadjustment, vadjustment: pointer): pointer {.importc, libgtk3.}
 # proc gtk_layout_put*(layout, child_widget: pointer, x, y: cint) {.importc, libgtk3.}
 proc gtk_layout_move*(layout, child_widget: pointer, x, y: cint) {.importc, libgtk3.}
-# proc gtk_layout_set_size*(layout: pointer, width, height: cint) {.importc, libgtk3.}
+proc gtk_layout_set_size*(layout: pointer, width, height: cint) {.importc, libgtk3.}
 # proc gtk_layout_get_hadjustment*(layout: pointer): pointer {.importc, libgtk3.}
 # proc gtk_layout_get_vadjustment*(layout: pointer): pointer {.importc, libgtk3.}
 

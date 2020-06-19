@@ -1111,8 +1111,7 @@ method setSize(control: ControlImpl, width, height: int) =
 method setPosition(control: ControlImpl, x, y: int) =
   procCall control.Control.setPosition(x, y)
   if control.fParentControl != nil:
-    gtk_fixed_move(cast[ContainerImpl](control.fParentControl).fInnerHandle, control.fHandle, x.cint, y.cint)
-    # gtk_layout_move(cast[ContainerImpl](control.fParentControl).fHandle, control.fHandle, x.cint, y.cint)
+    gtk_layout_move(cast[ContainerImpl](control.fParentControl).fInnerHandle, control.fHandle, x.cint, y.cint)
 
 method forceRedraw(control: ControlImpl) = gtk_widget_queue_draw(control.fHandle)
 
@@ -1193,12 +1192,15 @@ proc init(container: ContainerImpl) =
   gtk_widget_show(container.fScrollWndHandle)
   gtk_container_add(container.fHandle, container.fScrollWndHandle)
   # Inner:
-  container.fInnerHandle = gtk_fixed_new()
+  container.fInnerHandle = gtk_layout_new(nil, nil)
   gtk_widget_show(container.fInnerHandle)
   gtk_container_add(container.fScrollWndHandle, container.fInnerHandle)
   container.Container.init()
 
+  discard g_signal_connect_data(container.fInnerHandle, "draw", pControlDrawSignal, cast[pointer](container))
+
 method pAddButtonPressEvent(container: ContainerImpl) =
+  # Overwrite base method
   gtk_widget_add_events(container.fInnerHandle, GDK_BUTTON_PRESS_MASK)
   discard g_signal_connect_data(container.fInnerHandle, "button-press-event", pCustomControlButtonPressSignal, cast[pointer](container))
 
@@ -1245,6 +1247,8 @@ method pUpdateScrollBar(container: ContainerImpl) =
   if fScrollbarSize == -1:
     return
 
+  gtk_layout_set_size(container.fInnerHandle, container.scrollableWidth.cint, container.scrollableHeight.cint)
+
   container.fXScrollEnabled = false
   container.fYScrollEnabled = false
 
@@ -1258,21 +1262,21 @@ method pUpdateScrollBar(container: ContainerImpl) =
   if container.fYScrollEnabled and not container.fXScrollEnabled and container.scrollableWidth > container.width - fScrollbarSize:
     container.fXScrollEnabled = true
 
-  # TODO: move to common part
-
-  var xPolicy: cint = GTK_POLICY_NEVER
-  var yPolicy: cint = GTK_POLICY_NEVER
-  if container.fXScrollEnabled:
-    xPolicy = GTK_POLICY_AUTOMATIC
-  if container.fYScrollEnabled:
-    yPolicy = GTK_POLICY_AUTOMATIC
-  gtk_scrolled_window_set_policy(container.fScrollWndHandle, xPolicy, yPolicy)
-
 method mousePosition(control: Control): tuple[x, y: int] =
   var x, y: cint
   gtk_widget_get_pointer(cast[ControlImpl](control).fHandle, x, y)
   result.x = x
   result.y = y
+
+method handleDrawEvent(container: ContainerImpl, event: DrawEvent) =
+  # Overwrites base method
+  let callback = container.onDraw
+  if callback != nil:
+    callback(event)
+  else:
+    # Draw regular window background
+    container.canvas.areaColor = app.defaultBackgroundColor
+    container.canvas.fill()
 
 
 # ----------------------------------------------------------------------------------------
