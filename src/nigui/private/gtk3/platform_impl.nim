@@ -1180,6 +1180,12 @@ method `scrollableHeight=`(control: ControlImpl, scrollableHeight: int) =
   procCall control.Control.`scrollableHeight=`(scrollableHeight)
   control.pUpdateScrollBar()
 
+method mousePosition(control: Control): tuple[x, y: int] =
+  var x, y: cint
+  gtk_widget_get_pointer(cast[ControlImpl](control).fHandle, x, y)
+  result.x = x
+  result.y = y
+
 
 # ----------------------------------------------------------------------------------------
 #                                      Container
@@ -1261,12 +1267,6 @@ method pUpdateScrollBar(container: ContainerImpl) =
     container.fYScrollEnabled = true
   if container.fYScrollEnabled and not container.fXScrollEnabled and container.scrollableWidth > container.width - fScrollbarSize:
     container.fXScrollEnabled = true
-
-method mousePosition(control: Control): tuple[x, y: int] =
-  var x, y: cint
-  gtk_widget_get_pointer(cast[ControlImpl](control).fHandle, x, y)
-  result.x = x
-  result.y = y
 
 method handleDrawEvent(container: ContainerImpl, event: DrawEvent) =
   # Overwrites base method
