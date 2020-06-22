@@ -1026,6 +1026,10 @@ method `selectionEnd=`*(textBox: TextBox, selectionEnd: int) {.base.}
 method selectedText*(textBox: TextBox): string {.base.}
 method `selectedText=`*(textBox: TextBox, text: string) {.base.}
 
+method getTextLength*(textBox: TextBox): int {.base.}
+
+method replaceSelection*(textBox: TextBox, text: string) {.base.}
+
 method handleTextChangeEvent*(textBox: TextBox, event: TextChangeEvent) {.base.}
 
 method onTextChange*(textBox: TextBox): TextChangeProc {.base.}
@@ -2692,6 +2696,12 @@ method selectionEnd(textBox: TextBox): int = discard
 method `selectionEnd=`(textBox: TextBox, selectionEnd: int) = discard
   # has to be implemented by NativeTextBox
 
+method replaceSelection(textBox: TextBox, text: string) = discard
+  # has to be implemented by NativeTextBox
+
+method getTextLength(textBox: TextBox): int = discard
+  # has to be implemented by NativeTextBox
+
 method selectedText(textBox: TextBox): string =
   result = textBox.text.runeSubStr(textBox.selectionStart, textBox.selectionEnd - textBox.selectionStart)
 
@@ -2730,7 +2740,12 @@ proc init(textArea: TextArea) =
   textArea.wrap = true
   textArea.editable = true
 
-method addText(textArea: TextArea, text: string) = textArea.text = textArea.text & text
+method addText(textArea: TextArea, text: string) =
+  when useGtk(): textArea.text = textArea.text & text
+  when useWindows():
+    let len = textArea.getTextLength
+    textArea.cursorPos = len
+    textArea.replaceSelection(text)
 
 method addLine(textArea: TextArea, text = "") = textArea.addtext(text & "\p")
 

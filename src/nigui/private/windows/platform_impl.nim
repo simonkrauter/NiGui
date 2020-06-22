@@ -1582,6 +1582,11 @@ method `cursorPos=`(textBox: NativeTextBox, cursorPos: int) =
   discard SendMessageA(textBox.fHandle, EM_SETSEL, cast[pointer](cursorPos), cast[pointer](cursorPos))
   # Side effect: clears selection
 
+method getTextLength(textBox: NativeTextBox): int = GetWindowTextLengthW(textBox.fHandle)
+
+method replaceSelection(textBox: NativeTextBox, text: string) =
+  discard SendMessageA(textBox.fHandle, EM_REPLACESEL, nil, cast[pointer](text.cstring))
+
 method selectionStart(textBox: NativeTextBox): int =
   var startPos: int32
   discard SendMessageA(textBox.fHandle, EM_GETSEL, startPos.addr, nil)
