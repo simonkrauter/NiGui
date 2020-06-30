@@ -1636,3 +1636,34 @@ method `wrap=`(textArea: NativeTextArea, wrap: bool) =
   # It seems that this is not possible.
   # Word wrap depends on whether dwStyle contains WS_HSCROLL at window creation.
   # Changing the style later has not the wanted effect.
+
+method addText(textArea: NativeTextArea, text: string) =
+  # Overwrites base method
+
+  # Disable redrawing
+  discard LockWindowUpdate(textArea.fHandle)
+
+  # Save selection position
+  var startPos, endPos: int32
+  discard SendMessageW(textArea.fHandle, EM_GETSEL, startPos.addr, endPos.addr)
+
+  # Save scroll position
+  let scrollPos = GetScrollPos(textArea.fHandle, SB_VERT)
+
+  # Set cursor to end of text
+  discard SendMessageA(textArea.fHandle, EM_SETSEL, nil, cast[pointer](-1))
+  discard SendMessageA(textArea.fHandle, EM_SETSEL, cast[pointer](-1), cast[pointer](-1))
+
+  # Insert text
+  discard SendMessageW(textArea.fHandle, EM_REPLACESEL, nil, cast[pointer](text.pUtf8ToUtf16.cstring))
+
+  # Restore selection position
+  discard SendMessageW(textArea.fHandle, EM_SETSEL, cast[pointer](startPos), cast[pointer](endPos))
+
+  # Restore scroll position
+  var wParam = SB_THUMBPOSITION
+  wParam.inc(scrollPos shl 16)
+  discard SendMessageA(textArea.fHandle, WM_VSCROLL, cast[pointer](wParam), nil)
+
+  # Enable redrawing
+  discard LockWindowUpdate(nil)

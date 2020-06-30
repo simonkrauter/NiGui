@@ -58,6 +58,7 @@ const
   EM_SCROLLCARET* = 183
   EM_GETSEL* = 176
   EM_SETSEL* = 177
+  EM_REPLACESEL* = 194
   EM_SETREADONLY* = 207
   EN_CHANGE* = 768
   ES_MULTILINE* = 4
@@ -432,6 +433,7 @@ proc GetClientRect*(wnd: pointer, lpRect: var Rect): bool {.importc, libUser32.}
 proc BeginPaint*(hWnd: pointer, lpPaint: var PaintStruct): pointer {.importc, libUser32.}
 proc EndPaint*(hWnd: pointer, lpPaint: var PaintStruct): bool {.importc, libUser32.}
 proc SendMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc, libUser32.}
+proc SendMessageW*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc, libUser32.}
 proc PostMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc, libUser32.}
 proc GetSysColor*(nIndex: int32): RGB32 {.importc, libUser32.}
 proc InvalidateRect*(hWnd: pointer, lpRect: ref Rect, bErase: bool): bool {.importc, libUser32.}
@@ -469,6 +471,8 @@ proc MapVirtualKeyW*(uCode, uMapType: int32): int32 {.importc, libUser32.}
 proc GetCursorPos*(lpPoint: var Point): bool {.importc, libUser32.}
 proc ScreenToClient*(hWnd: pointer, lpPoint: var Point): bool {.importc, libUser32.}
 proc MonitorFromPoint*(pt: Point, dwFlags: int32): pointer {.importc, libUser32.}
+proc GetScrollPos*(hWnd: pointer, nBar: int32): int32 {.importc, libUser32.}
+proc LockWindowUpdate*(hWndLock: pointer): bool {.importc, libUser32.}
 
 type GetDpiForWindowType* = proc(hWnd: pointer): int32 {.gcsafe, stdcall.} # not available on Windows 7
 
