@@ -2112,6 +2112,11 @@ method realignChildControls(container: Container) =
     innerHeight = container.height
   container.updateInnerSize(innerWidth - padding.left - padding.right - container.xScrollbarSpace, innerHeight - padding.top - padding.bottom - container.yScrollbarSpace)
 
+  for control in container.fChildControls:
+    if not control.visible:
+      continue
+    control.relayout(container.width, container.height)
+
 method triggerRelayoutDownwards(container: Container) =
   for control in container.childControls:
     control.triggerRelayoutDownwards()
