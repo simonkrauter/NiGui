@@ -50,12 +50,14 @@ jobs:
         with:
           path: ~/.choosenim
           key: ${{ runner.os }}-choosenim-${{ steps.vars.outputs.cache-key }}
+        if: runner.os != 'Windows'
       - name: Cache nimble
         id: cache-nimble
         uses: actions/cache@v1
         with:
           path: ~/.nimble
           key: ${{ runner.os }}-nimble-${{ hashFiles('*.nimble') }}
+        if: runner.os != 'Windows'
       - uses: jiro4989/setup-nim-action@v1
         with:
           nim-version: ${{ matrix.nim_version }}
