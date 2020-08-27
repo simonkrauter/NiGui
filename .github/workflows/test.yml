@@ -71,3 +71,10 @@ jobs:
             echo ""
           done
         shell: bash
+
+  mingw:
+    runs-on: ubuntu-latest
+    needs: before
+    steps:
+      - name: Install MinGW
+        run:  sudo apt install mingw-w64
