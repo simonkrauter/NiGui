@@ -116,7 +116,7 @@ jobs:
             for cpu in amd64 i386
             do
               echo "=== test: $file @$cpu ==="
-              nim c "$file"
+              nim c -d:mingw -d:release --cpu:$cpu "$file"
               echo ""
             done
           done
