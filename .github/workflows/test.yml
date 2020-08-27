@@ -63,8 +63,8 @@ jobs:
           nim-version: ${{ matrix.nim_version }}
 
       - name: Test examples
+        working-directory: examples
         run: |
-          cd examples
           for file in $(ls -v example_*nim); do
             echo "=== test: $file ==="
             nim c "$file"
@@ -109,11 +109,11 @@ jobs:
           nim -v
           nimble -v
       - name: Test examples
+        working-directory: examples
         run: |
-          cd examples
-          for file in $(ls -v example_*nim)
+          for cpu in amd64 i386
           do
-            for cpu in amd64 i386
+            for file in $(ls -v example_*nim)
             do
               echo "=== test: $file @$cpu ==="
               nim c -d:mingw -d:release --cpu:$cpu "$file"
