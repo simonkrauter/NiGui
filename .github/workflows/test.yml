@@ -29,7 +29,7 @@ jobs:
           - 'stable'
     needs: before
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Set cache-key
         id: vars
@@ -63,11 +63,60 @@ jobs:
           nim-version: ${{ matrix.nim_version }}
 
       - name: Test examples
+        working-directory: examples
         run: |
-          cd examples
           for file in $(ls -v example_*nim); do
             echo "=== test: $file ==="
             nim c "$file"
             echo ""
           done
         shell: bash
+
+  mingw:
+    runs-on: ubuntu-latest
+    needs: before
+    steps:
+      - name: Install MinGW
+        run:  sudo apt install mingw-w64
+
+      - uses: actions/checkout@v2
+
+      - name: Set cache-key
+        id: vars
+        run: echo ::set-output name=cache-key::$(date +%Y-%m-%d)
+
+      - name: Print cache-key
+        run: echo cache-key = ${{ steps.vars.outputs.cache-key }}
+
+      - name: Cache choosenim
+        id: cache-choosenim
+        uses: actions/cache@v1
+        with:
+          path: ~/.choosenim
+          key: ${{ runner.os }}-choosenim-${{ steps.vars.outputs.cache-key }}
+
+      - name: Cache nimble
+        id: cache-nimble
+        uses: actions/cache@v1
+        with:
+          path: ~/.nimble
+          key: ${{ runner.os }}-nimble-${{ hashFiles('*.nimble') }}
+
+      - uses: jiro4989/setup-nim-action@v1
+
+      - name: Dump versions
+        run: |
+          nim -v
+          nimble -v
+      - name: Test examples
+        working-directory: examples
+        run: |
+          for cpu in amd64 i386
+          do
+            for file in $(ls -v example_*nim)
+            do
+              echo "=== test: $file @$cpu ==="
+              nim c -d:mingw -d:release --cpu:$cpu "$file"
+              echo ""
+            done
+          done
