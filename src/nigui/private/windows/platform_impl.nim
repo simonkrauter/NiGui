@@ -11,7 +11,7 @@ import tables
 import dynlib
 import strformat
 
-# Link resource file to enable visual styles 
+# Link resource file to enable visual styles
 # (without this, controls have Windows 95 look):
 const
   bitness = if defined(cpu64): 64 else: 86
@@ -387,11 +387,15 @@ proc pEnableHighDpiSupport() =
   if shcoreLib == nil:
     return
   let SetProcessDpiAwareness = cast[SetProcessDpiAwarenessType](shcoreLib.symAddr("SetProcessDpiAwareness"))
+  if SetProcessDpiAwareness == nil:
+    return
   discard SetProcessDpiAwareness(PROCESS_SYSTEM_DPI_AWARE)
   let user32Lib = loadLib("User32.dll")
   if user32Lib == nil:
     return
   let GetDpiForWindow = cast[GetDpiForWindowType](user32Lib.symAddr("GetDpiForWindow"))
+  if GetDpiForWindow == nil:
+    return
   fSystemDpi = GetDpiForWindow(pDefaultParentWindow)
   fDefaultFontSize = defaultFontSizeForDefaultDpi.scaleToDpi
 
