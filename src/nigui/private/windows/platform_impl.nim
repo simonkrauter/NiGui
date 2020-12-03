@@ -36,6 +36,8 @@ var pLastMouseButtonDownControl: Control
 var pLastMouseButtonDownControlX: int
 var pLastMouseButtonDownControlY: int
 
+var appRunning: bool
+
 proc pRaiseLastOSError() =
   let e = osLastError()
   raiseError(strutils.strip(osErrorMsg(e)) & " (OS Error Code: " & $e & ")")
@@ -412,12 +414,16 @@ proc init(app: App) =
   app.defaultFontFamily = "Arial"
   fScrollbarSize = GetSystemMetrics(SM_CXVSCROLL)
   pEnableHighDpiSupport()
+  appRunning = true
 
 proc runMainLoop() =
   var msg: Msg
-  while GetMessageW(msg.addr, nil, 0, 0):
+  while GetMessageW(msg.addr, nil, 0, 0) and appRunning:
     discard TranslateMessage(msg.addr)
     discard DispatchMessageW(msg.addr)
+
+proc platformQuit() =
+  appRunning = false
 
 proc processEvents(app: App) =
   var msg: Msg
