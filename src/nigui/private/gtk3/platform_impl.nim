@@ -355,6 +355,9 @@ proc init(app: App) =
 
 proc runMainLoop() = gtk_main()
 
+proc platformQuit() =
+  gtk_main_quit()
+
 proc processEvents(app: App) =
   while gtk_events_pending() == 1:
     discard gtk_main_iteration()

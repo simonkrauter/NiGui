@@ -439,6 +439,7 @@ var
 
 # dummy type and object, needed to use get/set properties
 type App = object
+  running*: bool
 var app*: App
 
 
@@ -448,9 +449,9 @@ var app*: App
 
 proc init*(app: App)
 
-proc run*(app: App)
+proc run*(app: var App)
 
-proc quit*(app: App)
+proc quit*(app: var App, quitApp: bool = false)
 
 proc processEvents*(app: App)
 
@@ -1060,6 +1061,8 @@ proc handleException()
 
 proc runMainLoop()
 
+proc platformQuit()
+
 proc init(window: Window)
 
 method destroy(window: Window) {.base.}
@@ -1149,15 +1152,20 @@ proc sleep(app: App, milliSeconds: float) =
     app.processEvents()
     os.sleep(20)
 
-proc run(app: App) =
-  while true:
+proc run(app: var App) =
+  app.running = true
+  while app.running:
     try:
       runMainLoop()
       break
     except:
       handleException()
 
-proc quit(app: App) = quit()
+proc quit(app: var App, quitApp: bool = false) =
+  platformQuit()
+  app.running = false
+  if quitApp:
+    quit()
 
 proc errorHandler(app: App): ErrorHandlerProc = fErrorHandler
 
@@ -1416,7 +1424,7 @@ method dispose(window: Window) =
   let i = windowList.find(window)
   windowList.delete(i)
   if quitOnLastWindowClose and windowList.len == 0:
-    quit()
+    app.quit()
   window.fDisposed = true
 
 proc disposed(window: Window): bool = window == nil or window.fDisposed
