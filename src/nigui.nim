@@ -636,12 +636,12 @@ method endPixelDataAccess*(image: Image) {.base.}
 #                                        Window
 # ----------------------------------------------------------------------------------------
 
-proc newWindow*(title: string = ""): Window
+proc newWindow*(title: string = ""): Window ## \
 ## Constructor for a Window object.
 ## If the title is empty, it will be set to the application filename.
 
-proc init*(window: WindowImpl)
-## Initialize a WindowImpl object
+proc init*(window: WindowImpl) ## \
+## Initialize a WindowImpl object.
 ## Only needed for own constructors.
 
 proc dispose*(window: var Window)
@@ -695,7 +695,7 @@ method clientHeight*(window: Window): int {.base.}
 method iconPath*(window: Window): string {.base.}
 method `iconPath=`*(window: Window, iconPath: string) {.base, locks: "unknown".}
 
-method mousePosition*(window: Window): tuple[x, y: int]
+method mousePosition*(window: Window): tuple[x, y: int] ## \
 ## Returns the mouse pointer position relative to the given window
 
 method closeClick*(window: Window) {.base.}
@@ -787,7 +787,7 @@ method wantedWidth*(control: Control): int {.base.}
 
 method wantedHeight*(control: Control): int {.base.}
 
-method mousePosition*(control: Control): tuple[x, y: int]
+method mousePosition*(control: Control): tuple[x, y: int] ## \
 ## Returns the mouse pointer position relative to the given control
 
 method focus*(control: Control) {.base.}
@@ -1001,7 +1001,7 @@ proc init*(progressBar: ProgressBar)
 proc init*(progressBar: NativeProgressBar)
 
 method value*(progressBar: ProgressBar): float {.base.}
-method `value=`*(progressBar: ProgressBar, value: float) {.base.}
+method `value=`*(progressBar: ProgressBar, value: float) {.base.} ## \
 ## value should be between 0.0 and 1.0
 
 
@@ -1260,7 +1260,7 @@ proc scaleToDpi(val: int): int = (val * fSystemDpi) div defaultDpi
 proc scaleToDpi(val: float): float = val * fSystemDpi.float / defaultDpi.float
 
 proc convertLineBreaks(str: string): string =
-  ## Converts \n line breaks (LF) to \p line breaks (CRLF on Windows)
+  ## Converts \\n line breaks (LF) to \\p line breaks (CRLF on Windows)
   when useWindows():
     for i in 0..str.high:
       let curr = str[i]
