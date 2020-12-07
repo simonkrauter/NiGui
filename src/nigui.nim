@@ -457,6 +457,8 @@ proc processEvents*(app: App)
 
 proc sleep*(app: App, milliSeconds: float)
 
+proc queueMain*(app: App, fn: proc())
+
 proc errorHandler*(app: App): ErrorHandlerProc
 proc `errorHandler=`*(app: App, errorHandler: ErrorHandlerProc)
 
