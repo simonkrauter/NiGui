@@ -460,7 +460,7 @@ proc sleep*(app: App, milliSeconds: float)
 proc queueMain*(app: App, fn: proc()) ## \
 ## Queues `fn` to be executed on the GUI thread and returns immediately.
 ##
-## This is the only function that can be safely called from other threads.
+## This is the only function that can be safely called from other threads, and it must be called from a `{.gcsafe.}:` block.
 
 proc errorHandler*(app: App): ErrorHandlerProc
 proc `errorHandler=`*(app: App, errorHandler: ErrorHandlerProc)
