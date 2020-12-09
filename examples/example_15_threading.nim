@@ -1,21 +1,24 @@
+# This example shows how to change a control from another thread
+
 import nigui
 
 var
-  win: Window
-  box: LayoutContainer
+  window: Window
+  container: LayoutContainer
   button: Button
   pbar: ProgressBar
+  thread: Thread[void]
 
 app.init()
 
-win = newWindow("Test")
+window = newWindow("NiGui Example")
 
-box = newLayoutContainer(Layout_Vertical)
-box.padding = 10
-win.add(box)
+container = newLayoutContainer(Layout_Vertical)
+container.padding = 10
+window.add(container)
 
 button = newButton("Start thread")
-box.add(button)
+container.add(button)
 
 proc update() =
   {.gcsafe.}:
@@ -27,15 +30,13 @@ proc start() =
   {.gcsafe.}:
     app.queueMain(update)
 
-var t: Thread[void]
-
 button.onClick = proc(event: ClickEvent) =
-  box.remove(button)
+  container.remove(button)
 
   pbar = newProgressBar()
-  box.add(pbar)
+  container.add(pbar)
 
-  createThread(t, start)
+  createThread(thread, start)
 
-win.show()
+window.show()
 app.run()
