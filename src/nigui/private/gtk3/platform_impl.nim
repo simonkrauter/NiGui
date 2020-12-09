@@ -362,6 +362,17 @@ proc processEvents(app: App) =
   while gtk_events_pending() == 1:
     discard gtk_main_iteration()
 
+proc runQueuedFn(data: pointer): cint {.exportc.} =
+  var fn = cast[ptr proc()](data)
+  fn[]()
+  deallocShared(fn)
+  return 0
+
+proc queueMain(app: App, fn: proc()) =
+  var p = cast[ptr proc()](allocShared0(sizeof(proc())))
+  p[] = fn
+  discard gdk_threads_add_idle(runQueuedFn, p)
+
 proc pClipboardTextReceivedFunc(clipboard: pointer, text: cstring, data: pointer): Gboolean {.cdecl.} =
   pClipboardText = $text # string needs to be copied
   pClipboardTextIsSet = true

@@ -435,8 +435,7 @@ proc gtk_style_context_get_color*(context: pointer, state: cint, color: var GdkR
 
 proc gtk_border_new*(): pointer {.importc, libgtk3.}
 
-# proc gdk_threads_init*() {.importc, libgtk3.}
-# proc gdk_threads_add_idle*(function, data: pointer): cint {.importc, libgtk3.}
+proc gdk_threads_add_idle*(function, data: pointer): cint {.importc, libgtk3.}
 
 proc gtk_scrollbar_new*(orientation: cint, adjustment: pointer): pointer {.importc, libgtk3.}
 

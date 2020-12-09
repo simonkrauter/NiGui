@@ -137,6 +137,8 @@ const
   VK_OEM_4* = 219
   VK_OEM_5* = 220
   VK_OEM_102* = 226
+  WM_USER* = 0x0400
+  WM_APP* = 0x8000
   WM_ACTIVATE* = 0x0006
   WM_CHANGEUISTATE* = 0x0127
   WM_CHAR* = 258
@@ -434,7 +436,7 @@ proc BeginPaint*(hWnd: pointer, lpPaint: var PaintStruct): pointer {.importc, li
 proc EndPaint*(hWnd: pointer, lpPaint: var PaintStruct): bool {.importc, libUser32.}
 proc SendMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc, libUser32.}
 proc SendMessageW*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc, libUser32.}
-proc PostMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): pointer {.importc, libUser32.}
+proc PostMessageA*(hWnd: pointer, msg: int32, wParam, lParam: pointer): bool {.importc, libUser32.}
 proc GetSysColor*(nIndex: int32): RGB32 {.importc, libUser32.}
 proc InvalidateRect*(hWnd: pointer, lpRect: ref Rect, bErase: bool): bool {.importc, libUser32.}
 proc PostQuitMessage*(nExitCode: int32) {.importc, libUser32.}

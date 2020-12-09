@@ -27,6 +27,7 @@ const
 const pTopLevelWindowClass = "1"
 const pContainerWindowClass = "2"
 const pCustomControlWindowClass = "3"
+const pWM_QUEUED = WM_USER+0
 var pDefaultParentWindow: pointer
 var pKeyState: KeyState
 var pKeyDownKey: Key
@@ -343,6 +344,10 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
         window.fMinimized = true
       elif cast[int](wParam) == SC_RESTORE:
         window.fMinimized = false
+  of pWM_QUEUED:
+    let fn = cast[ptr proc()](wParam)
+    fn[]()
+    deallocShared(fn)
   else:
     discard
   result = pCommonWndProc(hWnd, uMsg, wParam, lParam)
@@ -430,6 +435,12 @@ proc processEvents(app: App) =
   while PeekMessageW(msg.addr, nil, 0, 0, PM_REMOVE):
     discard TranslateMessage(msg.addr)
     discard DispatchMessageW(msg.addr)
+
+proc queueMain(app: App, fn: proc()) =
+  var p = cast[ptr proc()](allocShared0(sizeof(proc())))
+  p[] = fn
+  if (not PostMessageA(pDefaultParentWindow, pWM_QUEUED, p, nil)):
+    pRaiseLastOSError()
 
 proc clipboardText(app: App): string =
   if not OpenClipboard(nil):
