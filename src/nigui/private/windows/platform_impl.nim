@@ -15,9 +15,9 @@ import strformat
 # (without this, controls have Windows 95 look):
 when not defined(noManifest):
   when defined(i386):
-    {.link: "manifest_x86.res".}
+    {.link: "res/i386.o".}
   elif defined(amd64):
-    {.link: "manifest_x64.res".}
+    {.link: "res/amd64.o".}
   else:
     {.fatal: "Unknown CPU architecture"}
 
