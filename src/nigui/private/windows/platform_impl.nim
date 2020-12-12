@@ -9,16 +9,16 @@
 import windows
 import tables
 import dynlib
-import strformat
 
 # Link resource file to enable visual styles
 # (without this, controls have Windows 95 look):
-const
-  bitness = if defined(cpu64): 64 else: 86
-  resFile = (currentSourcePath() /../
-    &"manifest_x{bitness}.res").
-    replace('\\', '/')
-{.link: resFile.}
+when not defined(noManifest):
+  when defined(i386):
+    {.link: "res/i386.o".}
+  elif defined(amd64):
+    {.link: "res/amd64.o".}
+  else:
+    {.fatal: "Unknown CPU architecture"}
 
 # ----------------------------------------------------------------------------------------
 #                                    Internal Things
