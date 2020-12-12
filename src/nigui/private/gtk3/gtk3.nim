@@ -468,6 +468,7 @@ proc gdk_cairo_surface_create_from_pixbuf*(pixbuf: pointer, scale: cint, for_win
 proc gdk_pixbuf_new_from_file*(filename: cstring, error: pointer): pointer {.importc, libgtk3.}
 proc gdk_pixbuf_save*(pixbuf: pointer, filename, `type`: cstring, error: pointer, param5, param6, param7: cstring): bool {.importc, libgtk3.}
 proc gdk_pixbuf_get_from_surface*(surface: pointer, src_x, src_y, width, height: cint): pointer {.importc, libgtk3.}
+proc gdk_pixbuf_apply_embedded_orientation*(src: pointer): pointer {.importc, libgtk3.}
 # proc gdk_pixmap_create_from_data*(drawable, data: pointer, width, height, depth: cint, fg, bg: var GdkRGBA): pointer {.importc, libgtk3.}
 
 proc cairo_image_surface_create*(format: cint, width, height: cint): pointer {.importc, libgtk3.}
@@ -515,5 +516,3 @@ proc pango_font_description_set_weight*(desc: pointer, weight: cint) {.importc, 
 # proc pango_font_description_get_size*(desc: pointer): cint {.importc, libgtk3.}
 # proc pango_layout_set_markup*(layout: pointer, markup: cstring, length: cint) {.importc, libgtk3.}
 # proc pango_layout_new*(context: pointer): pointer {.importc, libgtk3.}
-
-

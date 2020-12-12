@@ -731,7 +731,9 @@ method loadFromFile(image: Image, filePath: string) =
   if pixbuf == nil:
     pRaiseGError(error)
   defer: g_object_unref(pixbuf)
-  canvas.fSurface = gdk_cairo_surface_create_from_pixbuf(pixbuf, 1, nil)
+  var pixbufRotated = gdk_pixbuf_apply_embedded_orientation(pixbuf)
+  defer: g_object_unref(pixbufRotated)
+  canvas.fSurface = gdk_cairo_surface_create_from_pixbuf(pixbufRotated, 1, nil)
   canvas.fCairoContext = cairo_create(canvas.fSurface)
   canvas.fData = cairo_image_surface_get_data(canvas.fSurface)
   canvas.fStride = cairo_image_surface_get_stride(canvas.fSurface)
