@@ -9,7 +9,6 @@
 import windows
 import tables
 import dynlib
-import strformat
 
 # Link resource file to enable visual styles
 # (without this, controls have Windows 95 look):
