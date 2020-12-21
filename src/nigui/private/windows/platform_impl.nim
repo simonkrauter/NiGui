@@ -348,7 +348,7 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
   of pWM_QUEUED:
     let fn = cast[ptr proc()](wParam)
     fn[]()
-    deallocShared(fn)
+    freeShared(fn)
     dec pQueue
   else:
     discard
@@ -440,7 +440,7 @@ proc processEvents(app: App) =
 
 proc queueMain(app: App, fn: proc()) =
   inc pQueue
-  var p = cast[ptr proc()](allocShared0(sizeof(proc())))
+  var p = createShared(proc())
   p[] = fn
   if (not PostMessageA(pDefaultParentWindow, pWM_QUEUED, p, nil)):
     pRaiseLastOSError()

@@ -367,13 +367,13 @@ proc processEvents(app: App) =
 proc runQueuedFn(data: pointer): cint {.exportc.} =
   var fn = cast[ptr proc()](data)
   fn[]()
-  deallocShared(fn)
+  freeShared(fn)
   dec pQueue
   return 0
 
 proc queueMain(app: App, fn: proc()) =
   inc pQueue
-  var p = cast[ptr proc()](allocShared0(sizeof(proc())))
+  var p = createShared(proc())
   p[] = fn
   discard gdk_threads_add_idle(runQueuedFn, p)
 
