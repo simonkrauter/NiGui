@@ -31,6 +31,7 @@ const pWM_QUEUED = WM_USER+0
 var pDefaultParentWindow: pointer
 var pKeyState: KeyState
 var pKeyDownKey: Key
+var pQueue: int
 
 # needed to calculate clicks:
 var pLastMouseButtonDownControl: Control
@@ -347,7 +348,8 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
   of pWM_QUEUED:
     let fn = cast[ptr proc()](wParam)
     fn[]()
-    deallocShared(fn)
+    freeShared(fn)
+    dec pQueue
   else:
     discard
   result = pCommonWndProc(hWnd, uMsg, wParam, lParam)
@@ -437,10 +439,14 @@ proc processEvents(app: App) =
     discard DispatchMessageW(msg.addr)
 
 proc queueMain(app: App, fn: proc()) =
-  var p = cast[ptr proc()](allocShared0(sizeof(proc())))
+  inc pQueue
+  var p = createShared(proc())
   p[] = fn
   if (not PostMessageA(pDefaultParentWindow, pWM_QUEUED, p, nil)):
     pRaiseLastOSError()
+
+proc queued(app: App): int =
+  return pQueue
 
 proc clipboardText(app: App): string =
   if not OpenClipboard(nil):

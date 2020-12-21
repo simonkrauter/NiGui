@@ -461,6 +461,14 @@ proc queueMain*(app: App, fn: proc()) ## \
 ## Queues `fn` to be executed on the GUI thread and returns immediately.
 ##
 ## This is the only function that can be safely called from other threads, and it must be called from a `{.gcsafe.}:` block.
+## Before a thread that has called this function returns, it should wait for all queued funcitons to be executed:
+##
+## .. code-block:: nim
+##    while app.queued() > 0:
+##      discard
+
+proc queued*(app: App): int ## \
+## Returns the number of functions queued to be executed on the GUI thread.
 
 proc errorHandler*(app: App): ErrorHandlerProc
 proc `errorHandler=`*(app: App, errorHandler: ErrorHandlerProc)

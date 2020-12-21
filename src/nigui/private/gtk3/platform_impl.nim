@@ -338,6 +338,8 @@ proc pCreateFont(fontFamily: string, fontSize: float, fontBold: bool): pointer =
 #                                    App Procedures
 # ----------------------------------------------------------------------------------------
 
+var pQueue: int
+
 proc init(app: App) =
   gtk_init(nil, nil)
 
@@ -365,13 +367,18 @@ proc processEvents(app: App) =
 proc runQueuedFn(data: pointer): cint {.exportc.} =
   var fn = cast[ptr proc()](data)
   fn[]()
-  deallocShared(fn)
+  freeShared(fn)
+  dec pQueue
   return 0
 
 proc queueMain(app: App, fn: proc()) =
-  var p = cast[ptr proc()](allocShared0(sizeof(proc())))
+  inc pQueue
+  var p = createShared(proc())
   p[] = fn
   discard gdk_threads_add_idle(runQueuedFn, p)
+
+proc queued(app: App): int =
+  return pQueue
 
 proc pClipboardTextReceivedFunc(clipboard: pointer, text: cstring, data: pointer): Gboolean {.cdecl.} =
   pClipboardText = $text # string needs to be copied
