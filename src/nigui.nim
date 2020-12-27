@@ -391,6 +391,10 @@ type
     fEnabled: bool
     fOnToggle: ToggleProc
 
+  ComboBox* = ref object of ControlImpl
+    fEnabled: bool
+    fOptions: seq[string]
+
   Label* = ref object of ControlImpl
     fText: string
     fXTextAlign: XTextAlign
@@ -978,6 +982,26 @@ method onToggle*(checkbox: Checkbox): ToggleProc {.base.}
 method `onToggle=`*(checkbox: Checkbox, callback: ToggleProc) {.base.}
 
 method handleToggleEvent*(checkbox: Checkbox, event: ToggleEvent) {.base.}
+
+# ----------------------------------------------------------------------------------------
+#                                        Checkbox
+# ----------------------------------------------------------------------------------------
+
+proc newComboBox*(options = @[""]): ComboBox
+
+proc init*(comboBox: ComboBox)
+proc init*(comboBox: NativeComboBox)
+
+method enabled*(comboBox: ComboBox): bool {.base.}
+method `enabled=`*(comboBox: ComboBox, enabled: bool) {.base.}
+
+method options*(comboBox: ComboBox): seq[string] {.base.}
+method `options=`*(comboBox: ComboBox, options: seq[string]) {.base.}
+
+method value*(comboBox: ComboBox): string {.base.}
+
+method index*(comboBox: ComboBox): int {.base.}
+method `index=`*(comboBox: ComboBox, index: int) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -2573,6 +2597,44 @@ method handleToggleEvent(checkbox: Checkbox, event: ToggleEvent) =
   let callback = checkbox.onToggle
   if callback != nil:
     callback(event)
+
+
+# ----------------------------------------------------------------------------------------
+#                                        ComboBox
+# ----------------------------------------------------------------------------------------
+
+proc newComboBox(options = @[""]): ComboBox =
+  result = new NativeComboBox
+  result.NativeComboBox.init()
+  result.options = options
+  result.index = 0
+
+proc init(comboBox: ComboBox) =
+  comboBox.ControlImpl.init()
+  comboBox.fWidthMode = WidthMode_Auto
+  comboBox.fHeightMode = HeightMode_Auto
+  comboBox.enabled = true
+
+method options(comboBox: ComboBox): seq[string] = comboBox.fOptions
+
+method `options=`(comboBox: ComboBox, options: seq[string]) =
+  comboBox.fOptions = options
+  comboBox.triggerRelayoutIfModeIsAuto()
+  comboBox.forceRedraw()
+
+method enabled(comboBox: ComboBox): bool = comboBox.fEnabled
+
+method `enabled=`(comboBox: ComboBox, enabled: bool) = discard
+  # has to be implemented by NativeComboBox
+
+method value(comboBox: ComboBox): string = discard
+  # has to be implemented by NativeComboBox
+
+method index(comboBox: ComboBox): int = discard
+  # has to be implemented by NativeComboBox
+
+method `index=`(comboBox: ComboBox, index: int) = discard
+  # has to be implemented by NativeComboBox
 
 
 # ----------------------------------------------------------------------------------------

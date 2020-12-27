@@ -17,6 +17,10 @@ container.add(button)
 var checkbox = newCheckbox("Checkbox")
 container.add(checkbox)
 
+# Add a ComboBox control:
+var comboBox = newComboBox(@["Option 1", "Option 2"])
+container.add(comboBox)
+
 # Add a Label control:
 var label = newLabel("Label")
 container.add(label)
