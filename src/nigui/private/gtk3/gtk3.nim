@@ -354,6 +354,13 @@ proc gtk_check_button_new*(): pointer {.importc, libgtk3.}
 proc gtk_toggle_button_set_active*(toggle_button: pointer, is_active: bool) {.importc, libgtk3.}
 proc gtk_toggle_button_get_active*(toggle_button: pointer): bool {.importc, libgtk3.}
 
+proc gtk_combo_box_text_new*(): pointer {.importc, libgtk3.}
+proc gtk_combo_box_get_active*(combo_box: pointer): cint {.importc, libgtk3.}
+proc gtk_combo_box_set_active*(combo_box: pointer, index: cint) {.importc, libgtk3.}
+proc gtk_combo_box_text_get_active_text*(combo_box: pointer): cstring {.importc, libgtk3.}
+proc gtk_combo_box_text_append_text*(combo_box: pointer, text: cstring) {.importc, libgtk3.}
+proc gtk_combo_box_text_remove_all*(combo_box: pointer) {.importc, libgtk3.}
+
 proc gtk_entry_new*(): pointer {.importc, libgtk3.}
 proc gtk_entry_set_text*(entry: pointer, text: cstring) {.importc, libgtk3.}
 proc gtk_entry_get_text*(entry: pointer): cstring {.importc, libgtk3.}
