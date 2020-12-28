@@ -707,7 +707,7 @@ method clientHeight*(window: Window): int {.base.}
 method iconPath*(window: Window): string {.base.}
 method `iconPath=`*(window: Window, iconPath: string) {.base, locks: "unknown".}
 
-method mousePosition*(window: Window): tuple[x, y: int] ## \
+method mousePosition*(window: Window): tuple[x, y: int] {.base.} ## \
 ## Returns the mouse pointer position relative to the given window
 
 method closeClick*(window: Window) {.base.}
@@ -799,7 +799,7 @@ method wantedWidth*(control: Control): int {.base.}
 
 method wantedHeight*(control: Control): int {.base.}
 
-method mousePosition*(control: Control): tuple[x, y: int] ## \
+method mousePosition*(control: Control): tuple[x, y: int] {.base.} ## \
 ## Returns the mouse pointer position relative to the given control
 
 method focus*(control: Control) {.base.}
@@ -1016,11 +1016,11 @@ proc init*(label: NativeLabel)
 method text*(label: Label): string {.base.}
 method `text=`*(label: Label, text: string) {.base.}
 
-method xTextAlign*(label: Label): XTextAlign
-method `xTextAlign=`*(label: Label, xTextAlign: XTextAlign)
+method xTextAlign*(label: Label): XTextAlign {.base.}
+method `xTextAlign=`*(label: Label, xTextAlign: XTextAlign) {.base.}
 
-method yTextAlign*(label: Label): YTextAlign
-method `yTextAlign=`*(label: Label, yTextAlign: YTextAlign)
+method yTextAlign*(label: Label): YTextAlign {.base.}
+method `yTextAlign=`*(label: Label, yTextAlign: YTextAlign) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -1108,9 +1108,9 @@ proc triggerRelayout(window: Window)
 
 method destroy(control: Control) {.base, locks: "unknown".}
 
-method triggerRelayout(control: Control)
+method triggerRelayout(control: Control) {.base.}
 
-method triggerRelayoutDownwards(control: Control)
+method triggerRelayoutDownwards(control: Control) {.base.}
 
 proc triggerRelayoutIfModeIsAuto(control: Control)
 
