@@ -1435,6 +1435,11 @@ method `enabled=`(comboBox: NativeComboBox, enabled: bool) =
 method value(comboBox: NativeComboBox): string =
   result = $gtk_combo_box_text_get_active_text(comboBox.fHandle)
 
+method `value=`(comboBox: NativeComboBox, value: string) =
+  let idx = comboBox.fOptions.find(value)
+  if idx != -1:
+    comboBox.index = idx
+
 method index(comboBox: NativeComboBox): int =
   result = gtk_combo_box_get_active(comboBox.fHandle)
 
