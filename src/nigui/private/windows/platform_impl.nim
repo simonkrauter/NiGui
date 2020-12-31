@@ -1546,7 +1546,7 @@ proc init(comboBox: NativeComboBox) =
 method naturalWidth(comboBox: NativeComboBox): int =
   result = scaleToDpi(comboBox.fMaxTextWidth + 25)
 
-method naturalHeight(comboBox: NativeComboBox): int = 
+method naturalHeight(comboBox: NativeComboBox): int =
   result = scaleToDpi(comboBox.getTextLineHeight() + 8)
 
 method `options=`(comboBox: NativeComboBox, options: seq[string]) =
@@ -1580,6 +1580,9 @@ method `enabled=`(comboBox: NativeComboBox, enabled: bool) =
 
 method value(comboBox: NativeComboBox): string =
   result = pGetWindowText(comboBox.fHandle)
+
+method `value=`(comboBox: NativeComboBox, value: string) =
+  discard SendMessageA(comboBox.fHandle, CB_SELECTSTRING, cast[pointer](0), cast[pointer](newWideCString(value)))
 
 method index(comboBox: NativeComboBox): int =
   result = cast[int](SendMessageA(comboBox.fHandle, CB_GETCURSEL, nil, nil))
