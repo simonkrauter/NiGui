@@ -999,6 +999,7 @@ method options*(comboBox: ComboBox): seq[string] {.base.}
 method `options=`*(comboBox: ComboBox, options: seq[string]) {.base.}
 
 method value*(comboBox: ComboBox): string {.base.}
+method `value=`*(comboBox: ComboBox, value: string) {.base.}
 
 method index*(comboBox: ComboBox): int {.base.}
 method `index=`*(comboBox: ComboBox, index: int) {.base.}
@@ -2628,6 +2629,9 @@ method `enabled=`(comboBox: ComboBox, enabled: bool) = discard
   # has to be implemented by NativeComboBox
 
 method value(comboBox: ComboBox): string = discard
+  # has to be implemented by NativeComboBox
+
+method `value=`*(comboBox: ComboBox, value: string) = discard
   # has to be implemented by NativeComboBox
 
 method index(comboBox: ComboBox): int = discard
