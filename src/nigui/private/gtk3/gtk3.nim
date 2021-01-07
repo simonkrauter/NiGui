@@ -373,8 +373,8 @@ proc gtk_text_view_set_left_margin*(text_view: pointer, margin: cint) {.importc,
 proc gtk_text_view_set_right_margin*(text_view: pointer, margin: cint) {.importc, libgtk3.}
 proc gtk_text_view_set_top_margin*(text_view: pointer, margin: cint) {.importc, libgtk3.}
 proc gtk_text_view_set_bottom_margin*(text_view: pointer, margin: cint) {.importc, libgtk3.}
-proc gtk_text_view_scroll_to_iter*(text_view: pointer, iter: var GtkTextIter, within_margin: cfloat, use_align: bool, xalign, yalign: cfloat) {.importc, libgtk3.}
-# proc gtk_text_view_scroll_to_mark*(text_view, mark: pointer, within_margin: cfloat, use_align: bool, xalign, yalign: cfloat) {.importc, libgtk3.}
+proc gtk_text_view_scroll_to_iter*(text_view: pointer, iter: var GtkTextIter, within_margin: cdouble, use_align: bool, xalign, yalign: cdouble) {.importc, libgtk3.}
+# proc gtk_text_view_scroll_to_mark*(text_view, mark: pointer, within_margin: cdouble, use_align: bool, xalign, yalign: cdouble) {.importc, libgtk3.}
 # proc gtk_text_view_place_cursor_onscreen*(text_view: pointer): bool {.importc, libgtk3.}
 proc gtk_text_view_set_editable*(text_view: pointer, setting: bool) {.importc, libgtk3.}
 
