@@ -391,6 +391,10 @@ type
     fEnabled: bool
     fOnToggle: ToggleProc
 
+  ComboBox* = ref object of ControlImpl
+    fEnabled: bool
+    fOptions: seq[string]
+
   Label* = ref object of ControlImpl
     fText: string
     fXTextAlign: XTextAlign
@@ -703,7 +707,7 @@ method clientHeight*(window: Window): int {.base.}
 method iconPath*(window: Window): string {.base.}
 method `iconPath=`*(window: Window, iconPath: string) {.base, locks: "unknown".}
 
-method mousePosition*(window: Window): tuple[x, y: int] ## \
+method mousePosition*(window: Window): tuple[x, y: int] {.base.} ## \
 ## Returns the mouse pointer position relative to the given window
 
 method closeClick*(window: Window) {.base.}
@@ -795,7 +799,7 @@ method wantedWidth*(control: Control): int {.base.}
 
 method wantedHeight*(control: Control): int {.base.}
 
-method mousePosition*(control: Control): tuple[x, y: int] ## \
+method mousePosition*(control: Control): tuple[x, y: int] {.base.} ## \
 ## Returns the mouse pointer position relative to the given control
 
 method focus*(control: Control) {.base.}
@@ -979,6 +983,27 @@ method `onToggle=`*(checkbox: Checkbox, callback: ToggleProc) {.base.}
 
 method handleToggleEvent*(checkbox: Checkbox, event: ToggleEvent) {.base.}
 
+# ----------------------------------------------------------------------------------------
+#                                        Checkbox
+# ----------------------------------------------------------------------------------------
+
+proc newComboBox*(options = @[""]): ComboBox
+
+proc init*(comboBox: ComboBox)
+proc init*(comboBox: NativeComboBox)
+
+method enabled*(comboBox: ComboBox): bool {.base.}
+method `enabled=`*(comboBox: ComboBox, enabled: bool) {.base.}
+
+method options*(comboBox: ComboBox): seq[string] {.base.}
+method `options=`*(comboBox: ComboBox, options: seq[string]) {.base.}
+
+method value*(comboBox: ComboBox): string {.base.}
+method `value=`*(comboBox: ComboBox, value: string) {.base.}
+
+method index*(comboBox: ComboBox): int {.base.}
+method `index=`*(comboBox: ComboBox, index: int) {.base.}
+
 
 # ----------------------------------------------------------------------------------------
 #                                        Label
@@ -992,11 +1017,11 @@ proc init*(label: NativeLabel)
 method text*(label: Label): string {.base.}
 method `text=`*(label: Label, text: string) {.base.}
 
-method xTextAlign*(label: Label): XTextAlign
-method `xTextAlign=`*(label: Label, xTextAlign: XTextAlign)
+method xTextAlign*(label: Label): XTextAlign {.base.}
+method `xTextAlign=`*(label: Label, xTextAlign: XTextAlign) {.base.}
 
-method yTextAlign*(label: Label): YTextAlign
-method `yTextAlign=`*(label: Label, yTextAlign: YTextAlign)
+method yTextAlign*(label: Label): YTextAlign {.base.}
+method `yTextAlign=`*(label: Label, yTextAlign: YTextAlign) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -1084,9 +1109,9 @@ proc triggerRelayout(window: Window)
 
 method destroy(control: Control) {.base, locks: "unknown".}
 
-method triggerRelayout(control: Control)
+method triggerRelayout(control: Control) {.base.}
 
-method triggerRelayoutDownwards(control: Control)
+method triggerRelayoutDownwards(control: Control) {.base.}
 
 proc triggerRelayoutIfModeIsAuto(control: Control)
 
@@ -2573,6 +2598,47 @@ method handleToggleEvent(checkbox: Checkbox, event: ToggleEvent) =
   let callback = checkbox.onToggle
   if callback != nil:
     callback(event)
+
+
+# ----------------------------------------------------------------------------------------
+#                                        ComboBox
+# ----------------------------------------------------------------------------------------
+
+proc newComboBox(options = @[""]): ComboBox =
+  result = new NativeComboBox
+  result.NativeComboBox.init()
+  result.options = options
+  result.index = 0
+
+proc init(comboBox: ComboBox) =
+  comboBox.ControlImpl.init()
+  comboBox.fWidthMode = WidthMode_Auto
+  comboBox.fHeightMode = HeightMode_Auto
+  comboBox.enabled = true
+
+method options(comboBox: ComboBox): seq[string] = comboBox.fOptions
+
+method `options=`(comboBox: ComboBox, options: seq[string]) =
+  comboBox.fOptions = options
+  comboBox.triggerRelayoutIfModeIsAuto()
+  comboBox.forceRedraw()
+
+method enabled(comboBox: ComboBox): bool = comboBox.fEnabled
+
+method `enabled=`(comboBox: ComboBox, enabled: bool) = discard
+  # has to be implemented by NativeComboBox
+
+method value(comboBox: ComboBox): string = discard
+  # has to be implemented by NativeComboBox
+
+method `value=`*(comboBox: ComboBox, value: string) = discard
+  # has to be implemented by NativeComboBox
+
+method index(comboBox: ComboBox): int = discard
+  # has to be implemented by NativeComboBox
+
+method `index=`(comboBox: ComboBox, index: int) = discard
+  # has to be implemented by NativeComboBox
 
 
 # ----------------------------------------------------------------------------------------

@@ -1395,6 +1395,59 @@ method pAddButtonPressEvent(checkbox: NativeCheckbox) = discard # don't override
 
 
 # ----------------------------------------------------------------------------------------
+#                                        ComboBox
+# ----------------------------------------------------------------------------------------
+
+proc init(comboBox: NativeComboBox) =
+  comboBox.fHandle = gtk_combo_box_text_new()
+  comboBox.ComboBox.init()
+  gtk_widget_show(comboBox.fHandle)
+
+method naturalWidth(comboBox: NativeComboBox): int =
+  result = comboBox.fMaxTextWidth.scaleToDpi
+
+method naturalHeight(comboBox: NativeComboBox): int =
+  result = scaleToDpi(comboBox.getTextLineHeight() + 12)
+
+method `options=`(comboBox: NativeComboBox, options: seq[string]) =
+  let oldIndex = comboBox.index
+  comboBox.fOptions = options
+
+  gtk_combo_box_text_remove_all(comboBox.fHandle)
+
+  var maxWidth = 0
+  for option in options:
+    gtk_combo_box_text_append_text(comboBox.fHandle, option)
+    maxWidth = max(maxWidth, comboBox.getTextWidth(option))
+
+  comboBox.fMaxTextWidth = maxWidth
+  comboBox.triggerRelayout()
+
+  if oldIndex < len(options):
+    comboBox.index = oldIndex
+  else:
+    comboBox.index = len(options) - 1
+
+method `enabled=`(comboBox: NativeComboBox, enabled: bool) =
+  comboBox.fEnabled = enabled
+  gtk_widget_set_sensitive(comboBox.fHandle, enabled)
+
+method value(comboBox: NativeComboBox): string =
+  result = $gtk_combo_box_text_get_active_text(comboBox.fHandle)
+
+method `value=`(comboBox: NativeComboBox, value: string) =
+  let idx = comboBox.fOptions.find(value)
+  if idx != -1:
+    comboBox.index = idx
+
+method index(comboBox: NativeComboBox): int =
+  result = gtk_combo_box_get_active(comboBox.fHandle)
+
+method `index=`(comboBox: NativeComboBox, index: int) =
+  gtk_combo_box_set_active(comboBox.fHandle, index.cint)
+
+
+# ----------------------------------------------------------------------------------------
 #                                        Label
 # ----------------------------------------------------------------------------------------
 

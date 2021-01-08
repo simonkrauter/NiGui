@@ -1536,6 +1536,62 @@ method `checked=`(checkbox: NativeCheckbox, checked: bool) =
 
 
 # ----------------------------------------------------------------------------------------
+#                                        ComboBox
+# ----------------------------------------------------------------------------------------
+
+proc init(comboBox: NativeComboBox) =
+  comboBox.fHandle = pCreateWindowExWithUserdata("COMBOBOX", WS_CHILD or CBS_DROPDOWNLIST or WS_VSCROLL, 0, pDefaultParentWindow, cast[pointer](comboBox))
+  comboBox.ComboBox.init()
+
+method naturalWidth(comboBox: NativeComboBox): int =
+  result = scaleToDpi(comboBox.fMaxTextWidth + 25)
+
+method naturalHeight(comboBox: NativeComboBox): int =
+  result = scaleToDpi(comboBox.getTextLineHeight() + 8)
+
+method `options=`(comboBox: NativeComboBox, options: seq[string]) =
+  let oldIndex = comboBox.index
+  comboBox.fOptions = options
+
+  # Remove old options
+  for _ in countup(0, cast[int](SendMessageW(comboBox.fHandle, CB_GETCOUNT, nil, nil))):
+    discard SendMessageA(comboBox.fHandle, CB_DELETESTRING, cast[pointer](0), nil)
+
+  # Add new options and calculate maximum width
+  var maxWidth = 0
+  for option in options:
+    maxWidth = max(maxWidth, comboBox.getTextWidth(option))
+    if cast[int](SendMessageW(comboBox.fHandle, CB_ADDSTRING, nil, cast[pointer](newWideCString(option)))) == CB_ERR:
+      pRaiseLastOSError()
+
+  # Resize box
+  comboBox.fMaxTextWidth = maxWidth
+  comboBox.triggerRelayout()
+
+  # Restore previous index (removing old options sets comboBox.index to -1)
+  if oldIndex < len(options):
+    comboBox.index = oldIndex
+  else:
+    comboBox.index = len(options) - 1
+
+method `enabled=`(comboBox: NativeComboBox, enabled: bool) =
+  comboBox.fEnabled = enabled
+  discard EnableWindow(comboBox.fHandle, enabled)
+
+method value(comboBox: NativeComboBox): string =
+  result = pGetWindowText(comboBox.fHandle)
+
+method `value=`(comboBox: NativeComboBox, value: string) =
+  discard SendMessageA(comboBox.fHandle, CB_SELECTSTRING, cast[pointer](0), cast[pointer](newWideCString(value)))
+
+method index(comboBox: NativeComboBox): int =
+  result = cast[int](SendMessageA(comboBox.fHandle, CB_GETCURSEL, nil, nil))
+
+method `index=`(comboBox: NativeComboBox, index: int) =
+  discard SendMessageA(comboBox.fHandle, CB_SETCURSEL, cast[pointer](index), nil)
+
+
+# ----------------------------------------------------------------------------------------
 #                                        Label
 # ----------------------------------------------------------------------------------------
 

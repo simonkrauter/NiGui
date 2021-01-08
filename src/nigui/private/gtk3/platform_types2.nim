@@ -13,6 +13,9 @@ type
 
   NativeCheckbox* = ref object of Checkbox
 
+  NativeComboBox* = ref object of ComboBox
+    fMaxTextWidth: int
+
   NativeLabel* = ref object of Label
 
   NativeProgressBar* = ref object of ProgressBar
