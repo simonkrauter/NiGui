@@ -4,21 +4,20 @@ import nigui
 
 
 # Definition of a custom button
-type CustomButton = ref object of Button
+type CustomButton* = ref object of Button
 
 # Custom widgets need to draw themselves
-method handleDrawEvent*(control: CustomButton, event: DrawEvent) =
-  var button = cast[Button](event.control)
+method handleDrawEvent(control: CustomButton, event: DrawEvent) =
   let canvas = event.control.canvas
   canvas.areaColor = rgb(55, 55, 55)
   canvas.textColor = rgb(255, 255, 255)
   canvas.lineColor = rgb(255, 255, 255)
-  canvas.drawRectArea(0, 0, button.width, button.height)
-  canvas.drawTextCentered(button.text)
-  canvas.drawRectOutline(0, 0, button.width, button.height)
+  canvas.drawRectArea(0, 0, control.width, control.height)
+  canvas.drawTextCentered(control.text)
+  canvas.drawRectOutline(0, 0, control.width, control.height)
 
 # Override nigui.newButton (optional)
-proc newButton(text = ""): Button =
+proc newButton*(text = ""): Button =
   result = new CustomButton
   result.init()
   result.text = text
