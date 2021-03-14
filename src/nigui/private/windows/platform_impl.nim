@@ -40,6 +40,9 @@ var pLastMouseButtonDownControlY: int
 
 var appRunning: bool
 
+when not defined(nimv2):
+  template toWideCString(ws): untyped = ws
+
 proc pRaiseLastOSError() =
   let e = osLastError()
   raiseError(strutils.strip(osErrorMsg(e)) & " (OS Error Code: " & $e & ")")
@@ -1561,7 +1564,7 @@ method `options=`(comboBox: NativeComboBox, options: seq[string]) =
   var maxWidth = 0
   for option in options:
     maxWidth = max(maxWidth, comboBox.getTextWidth(option))
-    if cast[int](SendMessageW(comboBox.fHandle, CB_ADDSTRING, nil, cast[pointer](newWideCString(option)))) == CB_ERR:
+    if cast[int](SendMessageW(comboBox.fHandle, CB_ADDSTRING, nil, cast[pointer](newWideCString(option).toWideCString))) == CB_ERR:
       pRaiseLastOSError()
 
   # Resize box
@@ -1582,7 +1585,7 @@ method value(comboBox: NativeComboBox): string =
   result = pGetWindowText(comboBox.fHandle)
 
 method `value=`(comboBox: NativeComboBox, value: string) =
-  discard SendMessageA(comboBox.fHandle, CB_SELECTSTRING, cast[pointer](0), cast[pointer](newWideCString(value)))
+  discard SendMessageA(comboBox.fHandle, CB_SELECTSTRING, cast[pointer](0), cast[pointer](newWideCString(value).toWideCString))
 
 method index(comboBox: NativeComboBox): int =
   result = cast[int](SendMessageA(comboBox.fHandle, CB_GETCURSEL, nil, nil))
