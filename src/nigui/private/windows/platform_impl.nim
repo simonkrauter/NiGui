@@ -1542,8 +1542,21 @@ method `checked=`(checkbox: NativeCheckbox, checked: bool) =
 #                                        ComboBox
 # ----------------------------------------------------------------------------------------
 
+var pComboBoxOrigWndProc: pointer
+
+proc pComboBoxWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointer {.cdecl.} =
+  let comboBox = cast[ComboBox](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+
+  if uMsg == WM_COMMAND and wParam.hiWord == CBN_SELCHANGE:
+    var evt = new ComboBoxChangeEvent
+    evt.control = comboBox
+    comboBox.handleChangeEvent(evt)
+
+  result = CallWindowProcW(pComboBoxOrigWndProc, hWnd, uMsg, wParam, lParam)
+
 proc init(comboBox: NativeComboBox) =
   comboBox.fHandle = pCreateWindowExWithUserdata("COMBOBOX", WS_CHILD or CBS_DROPDOWNLIST or WS_VSCROLL, 0, pDefaultParentWindow, cast[pointer](comboBox))
+  pComboBoxOrigWndProc = pSetWindowLongPtr(comboBox.fHandle, GWLP_WNDPROC, pComboBoxWndProc)
   comboBox.ComboBox.init()
 
 method naturalWidth(comboBox: NativeComboBox): int =

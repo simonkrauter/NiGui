@@ -1398,8 +1398,18 @@ method pAddButtonPressEvent(checkbox: NativeCheckbox) = discard # don't override
 #                                        ComboBox
 # ----------------------------------------------------------------------------------------
 
+proc pComboBoxChangedSignal(widget: pointer, data: pointer): Gboolean {.cdecl.} =
+  let control = cast[ComboBox](data)
+  var evt = new ComboBoxChangeEvent
+  evt.control = control
+  try:
+    control.handleChangeEvent(evt)
+  except:
+    handleException()
+
 proc init(comboBox: NativeComboBox) =
   comboBox.fHandle = gtk_combo_box_text_new()
+  discard g_signal_connect_data(comboBox.fHandle, "changed", pComboBoxChangedSignal, cast[pointer](comboBox))
   comboBox.ComboBox.init()
   gtk_widget_show(comboBox.fHandle)
 

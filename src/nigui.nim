@@ -354,6 +354,10 @@ type
     control*: Control
   ToggleProc* = proc(event: ToggleEvent)
 
+  ComboBoxChangeEvent* = ref object
+    control*: Control
+  ComboBoxChangeProc* = proc(event: ComboBoxChangeEvent)
+
   # Other events:
 
   ErrorHandlerProc* = proc()
@@ -394,6 +398,7 @@ type
   ComboBox* = ref object of ControlImpl
     fEnabled: bool
     fOptions: seq[string]
+    fOnChange: ComboBoxChangeProc
 
   Label* = ref object of ControlImpl
     fText: string
@@ -984,7 +989,7 @@ method `onToggle=`*(checkbox: Checkbox, callback: ToggleProc) {.base.}
 method handleToggleEvent*(checkbox: Checkbox, event: ToggleEvent) {.base.}
 
 # ----------------------------------------------------------------------------------------
-#                                        Checkbox
+#                                        ComboBox
 # ----------------------------------------------------------------------------------------
 
 proc newComboBox*(options = @[""]): ComboBox
@@ -1003,6 +1008,9 @@ method `value=`*(comboBox: ComboBox, value: string) {.base.}
 
 method index*(comboBox: ComboBox): int {.base.}
 method `index=`*(comboBox: ComboBox, index: int) {.base.}
+
+method onChange*(comboBox: ComboBox): ComboBoxChangeProc {.base.}
+method `onChange=`*(comboBox: ComboBox, callback: ComboBoxChangeProc) {.base.}
 
 
 # ----------------------------------------------------------------------------------------
@@ -2639,6 +2647,15 @@ method index(comboBox: ComboBox): int = discard
 
 method `index=`(comboBox: ComboBox, index: int) = discard
   # has to be implemented by NativeComboBox
+
+method onChange(comboBox: ComboBox): ComboBoxChangeProc = comboBox.fOnChange
+method `onChange=`(comboBox: ComboBox, callback: ComboBoxChangeProc) = comboBox.fOnChange = callback
+
+method handleChangeEvent(comboBox: ComboBox, event: ComboBoxChangeEvent) =
+  # can be overridden by custom control
+  let callback = comboBox.onChange
+  if callback != nil:
+    callback(event)
 
 
 # ----------------------------------------------------------------------------------------
