@@ -227,6 +227,22 @@ const
   G_SIGNAL_MATCH_DATA*      = 16
   G_SIGNAL_MATCH_UNBLOCKED* = 16
 
+  # GdkWindowTypeHint
+  GDK_WINDOW_TYPE_HINT_NORMAL* = 0
+  GDK_WINDOW_TYPE_HINT_DIALOG* = 1
+  GDK_WINDOW_TYPE_HINT_MENU* = 2
+  GDK_WINDOW_TYPE_HINT_TOOLBAR* = 3
+  GDK_WINDOW_TYPE_HINT_SPLASHSCREEN* = 4
+  GDK_WINDOW_TYPE_HINT_UTILITY* = 5
+  GDK_WINDOW_TYPE_HINT_DOCK* = 6
+  GDK_WINDOW_TYPE_HINT_DESKTOP* = 7
+  GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU* = 8
+  GDK_WINDOW_TYPE_HINT_POPUP_MENU* = 9
+  GDK_WINDOW_TYPE_HINT_TOOLTIP* = 10
+  GDK_WINDOW_TYPE_HINT_NOTIFICATION* = 11
+  GDK_WINDOW_TYPE_HINT_COMBO* = 12
+  GDK_WINDOW_TYPE_HINT_DND* = 13
+
 
 # ----------------------------------------------------------------------------------------
 #                                   General Gtk Procs
@@ -253,6 +269,7 @@ proc gtk_window_set_title*(window: pointer, title: cstring) {.importc, libgtk3.}
 # proc gtk_window_get_title*(window: pointer): cstring {.importc, libgtk3.}
 proc gtk_window_set_transient_for*(window, parent: pointer) {.importc, libgtk3.}
 proc gtk_window_set_modal*(window: pointer, modal: cint) {.importc, libgtk3.}
+proc gtk_window_set_type_hint*(window: pointer, hint: cint) {.importc, libgtk3.}
 # proc gtk_window_set_default_size*(window: pointer, width, height: cint) {.importc, libgtk3.}
 proc gtk_window_resize*(window: pointer, width, height: cint) {.importc, libgtk3.}
 proc gtk_window_resize_to_geometry*(window: pointer, width, height: cint) {.importc, libgtk3.}
