@@ -864,6 +864,7 @@ method showModal(window: WindowImpl, parent: Window) =
   # Overwrite base method
   gtk_window_set_modal(window.fHandle, 1)
   gtk_window_set_transient_for(window.fHandle, cast[WindowImpl](parent).fHandle)
+  gtk_window_set_type_hint(window.fHandle, GDK_WINDOW_TYPE_HINT_DIALOG)
   window.visible = true
 
 method minimize(window: WindowImpl) =
