@@ -720,6 +720,8 @@ method resize(image: Image, width, height: int) =
   let canvas = cast[CanvasImpl](image.fCanvas)
   if canvas.fSurface != nil:
     cairo_surface_destroy(canvas.fSurface)
+  if canvas.fCairoContext != nil:
+    cairo_destroy(canvas.fCairoContext)
   canvas.fSurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width.cint, height.cint)
   canvas.fCairoContext = cairo_create(canvas.fSurface)
   canvas.fData = cairo_image_surface_get_data(canvas.fSurface)
@@ -731,6 +733,8 @@ method loadFromFile(image: Image, filePath: string) =
   let canvas = cast[CanvasImpl](image.fCanvas)
   if canvas.fSurface != nil:
     cairo_surface_destroy(canvas.fSurface)
+  if canvas.fCairoContext != nil:
+    cairo_destroy(canvas.fCairoContext)
   image.canvas.fWidth = 0
   image.canvas.fHeight = 0
   var error: ptr GError

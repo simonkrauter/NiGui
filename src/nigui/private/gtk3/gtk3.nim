@@ -508,6 +508,7 @@ proc cairo_surface_destroy*(surface: pointer) {.importc, libgtk3.}
 # proc cairo_format_stride_for_width*(format: cairo_format_t, width: cint): cint {.importc, libgtk3.}
 
 proc cairo_create*(target: pointer): pointer {.importc, libgtk3.}
+proc cairo_destroy*(cr: pointer) {.importc, libgtk3.}
 proc cairo_get_target*(cr: pointer): pointer {.importc, libgtk3.}
 proc cairo_set_source_rgb*(cr: pointer, red, green, blue: cdouble) {.importc, libgtk3.}
 proc cairo_set_source_surface*(cr, surface: pointer, x, y: cdouble) {.importc, libgtk3.}
