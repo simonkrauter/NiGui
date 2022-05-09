@@ -1,6 +1,6 @@
 # Package
 
-version = "0.2.5"
+version = "0.2.6"
 author = "Simon Krauter"
 description = "Cross-platform, desktop GUI toolkit using native widgets."
 license = "MIT"
