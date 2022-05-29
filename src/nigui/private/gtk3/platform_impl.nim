@@ -26,7 +26,7 @@ var pClipboardTextIsSet: bool
 
 proc pRaiseGError(error: ptr GError) =
   if error == nil:
-    raiseError("Unkown error")
+    raiseError("Unknown error")
   raiseError($error.message)
 
 proc pColorToGdkRGBA(color: Color, rgba: var GdkRGBA) =
@@ -186,7 +186,7 @@ proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointe
   evt.window = window
   evt.key = window.fKeyPressed
   if evt.key == Key_None:
-    echo "Unkown key value: ", event.keyval
+    echo "Unknown key value: ", event.keyval
     return
   evt.character = $event.`string`
   evt.unicode = gdk_keyval_to_unicode(event.keyval)
@@ -209,7 +209,7 @@ proc pControlKeyPressSignal(widget: pointer, event: var GdkEventKey, data: point
   evt.control = control
   evt.key = key
   if evt.key == Key_None:
-    echo "Unkown key value: ", event.keyval
+    echo "Unknown key value: ", event.keyval
     return
   evt.character = $event.`string`
   evt.unicode = gdk_keyval_to_unicode(event.keyval)

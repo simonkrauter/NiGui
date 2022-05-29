@@ -241,7 +241,7 @@ proc pHandleWMKEYDOWNOrWMCHAR(window: Window, control: Control, unicode: int): b
   windowEvent.window = window
   windowEvent.key = pKeyDownKey
   if windowEvent.key == Key_None:
-    echo "WM_CHAR: Unkown key value: ", unicode
+    echo "WM_CHAR: Unknown key value: ", unicode
     return
 
   windowEvent.unicode = unicode
