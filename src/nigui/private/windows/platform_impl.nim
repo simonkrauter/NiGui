@@ -1668,6 +1668,9 @@ method text(textBox: NativeTextBox): string = pGetWindowText(textBox.fHandle)
 
 method `text=`(textBox: NativeTextBox, text: string) = pSetWindowText(textBox.fHandle, text)
 
+method `placeholder=`(textBox: NativeTextBox, text: string) = 
+  discard SendMessageW(textBox.fHandle, EM_SETCUEBANNER, nil, cast[pointer](newWideCString(text)))
+
 method naturalHeight(textBox: NativeTextBox): int = textBox.getTextLineHeight() + 9 # add padding
 
 method `editable=`(textBox: NativeTextBox, editable: bool) =
