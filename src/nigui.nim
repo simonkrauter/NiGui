@@ -1058,6 +1058,8 @@ proc init*(textBox: NativeTextBox)
 method text*(textBox: TextBox): string {.base, locks: "unknown".}
 method `text=`*(textBox: TextBox, text: string) {.base, locks: "unknown".}
 
+method `placeholder=`*(textBox: TextBox, text: string) {.base.}
+
 method editable*(textBox: TextBox): bool {.base.}
 method `editable=`*(textBox: TextBox, editable: bool) {.base.}
 
@@ -2775,6 +2777,8 @@ method text(textBox: TextBox): string = discard
 
 method `text=`(textBox: TextBox, text: string) = discard
   # has to be implemented by NativeTextBox
+  
+method `placeholder=`(textBox: TextBox, text: string) = discard
 
 method `onDraw=`(container: NativeTextBox, callback: DrawProc) = raiseError("NativeTextBox does not allow onDraw.")
 
