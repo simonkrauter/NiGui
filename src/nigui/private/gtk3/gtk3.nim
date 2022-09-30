@@ -382,6 +382,7 @@ proc gtk_entry_new*(): pointer {.importc, libgtk3.}
 proc gtk_entry_set_text*(entry: pointer, text: cstring) {.importc, libgtk3.}
 proc gtk_entry_get_text*(entry: pointer): cstring {.importc, libgtk3.}
 proc gtk_entry_set_width_chars*(entry: pointer, n_chars: cint) {.importc, libgtk3.}
+proc gtk_entry_set_placeholder_text*(entry: pointer, text: cstring) {.importc, libgtk3.}
 proc gtk_editable_get_selection_bounds*(editable: pointer, start_pos, end_pos: var cint): bool {.importc, libgtk3.}
 proc gtk_editable_get_chars*(editable: pointer, start_pos, end_pos: cint): cstring {.importc, libgtk3.}
 proc gtk_editable_select_region*(editable: pointer, start_pos, end_pos: cint) {.importc, libgtk3.}

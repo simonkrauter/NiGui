@@ -1523,6 +1523,9 @@ method `text=`(textBox: NativeTextBox, text: string) {.locks: "unknown".} =
   gtk_entry_set_text(textBox.fHandle, text)
   app.processEvents()
 
+method `placeholder=`(textBox: NativeTextBox, text: string) =
+  gtk_entry_set_placeholder_text(textBox.fHandle, text)
+
 method naturalHeight(textBox: NativeTextBox): int {.locks: "unknown".} = textBox.getTextLineHeight() + 12 # add padding
 
 method setSize(textBox: NativeTextBox, width, height: int) =
