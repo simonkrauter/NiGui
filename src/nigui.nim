@@ -2807,7 +2807,7 @@ method text(textBox: TextBox): string = discard
 
 method `text=`(textBox: TextBox, text: string) = discard
   # has to be implemented by NativeTextBox
-  
+
 method `placeholder=`(textBox: TextBox, text: string) = discard
 
 method `onDraw=`(container: NativeTextBox, callback: DrawProc) = raiseError("NativeTextBox does not allow onDraw.")
