@@ -187,6 +187,7 @@ const
   WM_CUT* = 0x0300
   WM_COPY* = 0x0301
   WM_PASTE* = 0x0302
+  WM_GETMINMAXINFO* = 0x0024
   WS_CLIPCHILDREN* = 0x02000000
   WS_CAPTION* = 0x00C00000
   WS_CHILD* = 0x40000000
@@ -195,6 +196,8 @@ const
   WS_HSCROLL* = 0x00100000
   WS_OVERLAPPEDWINDOW* = 0x00CF0000
   WS_SYSMENU* = 0x00080000
+  WS_MINIMIZEBOX* = 0x00020000
+  WS_MAXIMIZEBOX* = 0x00010000
   WS_TABSTOP* = 0x00010000
   WS_THICKFRAME* = 0x00040000
   WS_VSCROLL* = 0x00200000
@@ -384,6 +387,13 @@ type
     lpfn*: pointer
     lParam*: pointer
     iImage*: int32
+
+  MinMaxInfo* = object
+    ptReserved*: Point
+    ptMaxSize*: Point
+    ptMaxPosition*: Point
+    ptMinTrackSize*: Point
+    ptMaxTrackSize*: Point
 
 
 

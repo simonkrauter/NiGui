@@ -881,13 +881,31 @@ method `alwaysOnTop=`(window: WindowImpl, alwaysOnTop: bool) =
 
 method `width=`*(window: WindowImpl, width: int) =
   procCall window.Window.`width=`(width)
-  gtk_window_resize(window.fHandle, window.width.cint, window.height.cint)
+  gtk_window_set_default_size(window.fHandle, window.width.cint, window.height.cint)
   window.fClientWidth = window.width
 
 method `height=`*(window: WindowImpl, height: int) =
   procCall window.Window.`height=`(height)
-  gtk_window_resize(window.fHandle, window.width.cint, window.height.cint)
+  gtk_window_set_default_size(window.fHandle, window.width.cint, window.height.cint)
   window.fClientHeight = window.height
+
+proc pUpdateMinSize(window: WindowImpl) =
+  var geometry: GdkGeometry
+  geometry.min_width = window.minWidth.cint
+  geometry.min_height = window.minHeight.cint
+  gtk_window_set_geometry_hints(window.fHandle, nil, geometry, GDK_HINT_MIN_SIZE)
+
+method `minWidth=`(window: WindowImpl, minWidth: int) =
+  procCall window.Window.`minWidth=`(minWidth)
+  pUpdateMinSize(window)
+
+method `minHeight=`(window: WindowImpl, minHeight: int) =
+  procCall window.Window.`minHeight=`(minHeight)
+  pUpdateMinSize(window)
+
+method `resizable=`(window: WindowImpl, resizable: bool) =
+  procCall window.Window.`resizable=`(resizable)
+  gtk_window_set_resizable(window.fHandle, resizable)
 
 proc pUpdatePosition(window: WindowImpl) = gtk_window_move(window.fHandle, window.x.cint, window.y.cint)
 

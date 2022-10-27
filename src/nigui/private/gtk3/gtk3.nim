@@ -103,6 +103,20 @@ type
     dummy13: cint
     dummy14: pointer
 
+  GdkGeometry* {.byCopy.} = object
+    min_width*: cint
+    min_height*: cint
+    max_width*: cint
+    max_height*: cint
+    base_width*: cint
+    base_height*: cint
+    width_inc*: cint
+    height_inc*: cint
+    min_aspect*: cdouble
+    max_aspect*: cdouble
+    win_gravity*: cint
+
+
 converter gbool*(val: bool): Gboolean = ord(val).Gboolean
 
 converter toBool*(val: Gboolean): bool = int(val) != 0
@@ -243,6 +257,9 @@ const
   GDK_WINDOW_TYPE_HINT_COMBO* = 12
   GDK_WINDOW_TYPE_HINT_DND* = 13
 
+  # GdkWindowHints
+  GDK_HINT_MIN_SIZE* = 2
+
 
 # ----------------------------------------------------------------------------------------
 #                                   General Gtk Procs
@@ -270,9 +287,11 @@ proc gtk_window_set_title*(window: pointer, title: cstring) {.importc, libgtk3.}
 proc gtk_window_set_transient_for*(window, parent: pointer) {.importc, libgtk3.}
 proc gtk_window_set_modal*(window: pointer, modal: cint) {.importc, libgtk3.}
 proc gtk_window_set_type_hint*(window: pointer, hint: cint) {.importc, libgtk3.}
-# proc gtk_window_set_default_size*(window: pointer, width, height: cint) {.importc, libgtk3.}
+proc gtk_window_set_default_size*(window: pointer, width, height: cint) {.importc, libgtk3.}
 proc gtk_window_resize*(window: pointer, width, height: cint) {.importc, libgtk3.}
 proc gtk_window_resize_to_geometry*(window: pointer, width, height: cint) {.importc, libgtk3.}
+proc gtk_window_set_resizable*(window: pointer, resizable: bool) {.importc, libgtk3.}
+proc gtk_window_set_geometry_hints*(window: pointer, geometry_widget: pointer, geometry: var GdkGeometry, geom_mask: cint) {.importc, libgtk3.}
 proc gtk_window_get_size*(window: pointer, width, height: var cint) {.importc, libgtk3.}
 proc gtk_window_get_position*(window: pointer, x, y: var cint) {.importc, libgtk3.}
 proc gtk_window_move*(window: pointer, x, y: cint) {.importc, libgtk3.}

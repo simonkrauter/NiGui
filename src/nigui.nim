@@ -234,6 +234,8 @@ type
     fMinimized: bool
     fAlwaysOnTop: bool
     fWidth, fHeight: int
+    fMinWidth, fMinHeight: int
+    fResizable: bool
     fClientWidth, fClientHeight: int
     fX, fY: int
     fControl: Control
@@ -704,6 +706,15 @@ method `width=`*(window: Window, width: int) {.base, locks: "unknown".}
 
 method height*(window: Window): int {.base.}
 method `height=`*(window: Window, height: int) {.base, locks: "unknown".}
+
+method minWidth*(window: Window): int {.base.}
+method `minWidth=`*(window: Window, minWidth: int) {.base, locks: "unknown".}
+
+method minHeight*(window: Window): int {.base.}
+method `minHeight=`*(window: Window, minHeight: int) {.base, locks: "unknown".}
+
+method resizable*(window: Window): bool {.base.}
+method `resizable=`*(window: Window, resizable: bool) {.base, locks: "unknown".}
 
 method clientWidth*(window: Window): int {.base.}
 
@@ -1443,6 +1454,7 @@ proc init(window: Window) =
   window.fVisible = false
   window.fWidth = 640 # do not trigger resize
   window.height = 480 # trigger resize
+  window.resizable = true
   window.fX = -1 # window will be centered on screen
   window.fY = -1
   window.title = getAppFilename().extractFilename().changeFileExt("")
@@ -1554,6 +1566,24 @@ method `width=`(window: Window, width: int) =
 
 method `height=`(window: Window, height: int) =
   window.fHeight = height
+  # has to be extended by WindowImpl
+
+method minWidth(window: Window): int = window.fMinWidth
+
+method `minWidth=`(window: Window, minWidth: int) =
+  window.fMinWidth = minWidth
+  # has to be extended by WindowImpl
+
+method minHeight(window: Window): int = window.fMinHeight
+
+method `minHeight=`(window: Window, minHeight: int) =
+  window.fMinHeight = minHeight
+  # has to be extended by WindowImpl
+
+method resizable(window: Window): bool = window.fResizable
+
+method `resizable=`(window: Window, resizable: bool) =
+  window.fResizable = resizable
   # has to be extended by WindowImpl
 
 method clientWidth(window: Window): int = window.fClientWidth

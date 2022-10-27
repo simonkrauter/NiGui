@@ -353,6 +353,12 @@ proc pWindowWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
     fn[]()
     freeShared(fn)
     dec pQueue
+  of WM_GETMINMAXINFO:
+    let window = cast[Window](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+    if window != nil:
+      let minMaxInfo = cast[ptr MinMaxInfo](lParam)
+      minMaxInfo.ptMinTrackSize.x = window.minWidth.int32
+      minMaxInfo.ptMinTrackSize.y = window.minHeight.int32
   else:
     discard
   result = pCommonWndProc(hWnd, uMsg, wParam, lParam)
@@ -888,7 +894,7 @@ method endPixelDataAccess(image: Image) =
 proc init(window: WindowImpl) =
   if pDefaultParentWindow == nil:
     raiseError("'app.init()' needs to be called before creating a Window.")
-  var dwStyle: int32 = WS_OVERLAPPEDWINDOW
+  var dwStyle: int32 = WS_CAPTION or WS_SYSMENU or WS_THICKFRAME or WS_MINIMIZEBOX or WS_MAXIMIZEBOX
   window.fHandle = pCreateWindowExWithUserdata(pTopLevelWindowClass, dwStyle, 0, nil, cast[pointer](window))
   DragAcceptFiles(window.fHandle, true)
   window.Window.init()
@@ -967,6 +973,22 @@ method `width=`*(window: WindowImpl, width: int) =
 method `height=`*(window: WindowImpl, height: int) =
   procCall window.Window.`height=`(height)
   window.pUpdateSize()
+
+method `minWidth=`(window: WindowImpl, minWidth: int) =
+  procCall window.Window.`minWidth=`(minWidth)
+  #pUpdateMinSize(window)
+
+method `minHeight=`(window: WindowImpl, minHeight: int) =
+  procCall window.Window.`minHeight=`(minHeight)
+  #pUpdateMinSize(window)
+
+method `resizable=`(window: WindowImpl, resizable: bool) =
+  procCall window.Window.`resizable=`(resizable)
+  if resizable:
+    pSetWindowLong(window.fHandle, GWL_STYLE, WS_CAPTION or WS_SYSMENU or WS_THICKFRAME)
+  else:
+    pSetWindowLong(window.fHandle, GWL_STYLE, WS_CAPTION or WS_SYSMENU)
+  window.pUpdatePosition()
 
 method `title=`(window: WindowImpl, title: string) =
   procCall window.Window.`title=`(title)
