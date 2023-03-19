@@ -192,7 +192,7 @@ proc pWindowKeyPressSignal(widget: pointer, event: var GdkEventKey, data: pointe
   evt.unicode = gdk_keyval_to_unicode(event.keyval)
   try:
     window.handleKeyDownEvent(evt)
-  except:
+  except CatchableError:
     handleException()
   result = evt.handled
 
@@ -215,7 +215,7 @@ proc pControlKeyPressSignal(widget: pointer, event: var GdkEventKey, data: point
   evt.unicode = gdk_keyval_to_unicode(event.keyval)
   try:
     control.handleKeyDownEvent(evt)
-  except:
+  except CatchableError:
     handleException()
   result = evt.handled
 
@@ -229,7 +229,7 @@ proc pWindowIMContextCommitSignal(context: pointer, str: cstring, data: pointer)
   window.fKeyPressed = Key_None
   try:
     window.handleKeyDownEvent(evt)
-  except:
+  except CatchableError:
     handleException()
 
 proc pControlIMContextCommitSignal(context: pointer, str: cstring, data: pointer) {.cdecl.} =
@@ -243,7 +243,7 @@ proc pControlIMContextCommitSignal(context: pointer, str: cstring, data: pointer
     control.handleKeyDownEvent(evt)
     if evt.handled:
       control.fKeyPressed = Key_None
-  except:
+  except CatchableError:
     handleException()
 
 method focus(control: ControlImpl) =
@@ -268,7 +268,7 @@ proc pDefaultControlButtonPressSignal(widget: pointer, event: var GdkEventButton
 
   try:
     control.handleMouseButtonDownEvent(evt)
-  except:
+  except CatchableError:
     handleException()
 
   pLastMouseButtonDownControl = control
@@ -302,7 +302,7 @@ proc pControlButtonReleaseSignal(widget: pointer, event: var GdkEventButton, dat
     clickEvent.control = control
     try:
       control.handleClickEvent(clickEvent)
-    except:
+    except CatchableError:
       handleException()
   # result = true # stop propagation
 
@@ -312,7 +312,7 @@ proc pControlChangedSignal(widget: pointer, data: pointer): Gboolean {.cdecl.} =
   evt.control = control
   try:
     control.handleTextChangeEvent(evt)
-  except:
+  except CatchableError:
     handleException()
 
 # proc pTextAreaEndUserActionSignal(widget: pointer, data: pointer): Gboolean {.cdecl.} =
@@ -983,7 +983,7 @@ proc pControlDrawSignal(widget: pointer, cr: pointer, data: pointer): Gboolean {
     control.handleDrawEvent(event)
 
     # gdk_window_end_paint(control.fHandle)
-  except:
+  except CatchableError:
     handleException()
 
   canvas.fCairoContext = nil
@@ -1381,7 +1381,7 @@ proc pControlToggledSignal(widget: pointer, data: pointer): Gboolean {.cdecl.} =
   evt.control = control
   try:
     control.handleToggleEvent(evt)
-  except:
+  except CatchableError:
     handleException()
 
 proc init(checkbox: NativeCheckbox) =
@@ -1427,7 +1427,7 @@ proc pComboBoxChangedSignal(widget: pointer, data: pointer): Gboolean {.cdecl.} 
   evt.control = control
   try:
     control.handleChangeEvent(evt)
-  except:
+  except CatchableError:
     handleException()
 
 proc init(comboBox: NativeComboBox) =
