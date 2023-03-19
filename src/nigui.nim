@@ -1661,7 +1661,7 @@ proc init(control: Control) =
   control.fWidthMode = WidthMode_Static
   control.fHeightMode = HeightMode_Static
   control.fWidth = 50.scaleToDpi
-  control.fheight = 50.scaleToDpi
+  control.fHeight = 50.scaleToDpi
   control.fScrollableWidth = -1
   control.fScrollableHeight = -1
   control.initStyle()
@@ -2875,7 +2875,7 @@ proc init(textArea: TextArea) =
 
 method addText(textArea: TextArea, text: string) = textArea.text = textArea.text & text
 
-method addLine(textArea: TextArea, text = "") = textArea.addtext(text & "\p")
+method addLine(textArea: TextArea, text = "") = textArea.addText(text & "\p")
 
 method scrollToBottom(textArea: TextArea) = discard
   # has to be implemented by NativeTextBox
