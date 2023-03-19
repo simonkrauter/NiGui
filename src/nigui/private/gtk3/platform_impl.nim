@@ -420,8 +420,8 @@ proc alert(window: Window, message: string, title = "Message") =
 
 method run*(dialog: OpenFileDialog) =
   dialog.files = @[]
-  var chooser = gtk_file_chooser_dialog_new(dialog.title, nil, GTK_FILE_CHOOSER_ACTION_OPEN, "Cancel", GTK_RESPONSE_CANCEL, "Open", GTK_RESPONSE_ACCEPT, nil)
-  discard gtk_file_chooser_set_current_folder(chooser, dialog.directory)
+  var chooser = gtk_file_chooser_dialog_new(dialog.title.cstring, nil, GTK_FILE_CHOOSER_ACTION_OPEN, "Cancel", GTK_RESPONSE_CANCEL, "Open", GTK_RESPONSE_ACCEPT, nil)
+  discard gtk_file_chooser_set_current_folder(chooser, dialog.directory.cstring)
   gtk_file_chooser_set_select_multiple(chooser, dialog.multiple)
   let res = gtk_dialog_run(chooser)
   if res == GTK_RESPONSE_ACCEPT:
@@ -432,11 +432,11 @@ method run*(dialog: OpenFileDialog) =
   gtk_widget_destroy(chooser)
 
 method run(dialog: SaveFileDialog) =
-  var chooser = gtk_file_chooser_dialog_new(dialog.title, nil, GTK_FILE_CHOOSER_ACTION_SAVE, "Cancel", GTK_RESPONSE_CANCEL, "Save", GTK_RESPONSE_ACCEPT, nil)
+  var chooser = gtk_file_chooser_dialog_new(dialog.title.cstring, nil, GTK_FILE_CHOOSER_ACTION_SAVE, "Cancel", GTK_RESPONSE_CANCEL, "Save", GTK_RESPONSE_ACCEPT, nil)
   let res = gtk_dialog_run(chooser)
-  discard gtk_file_chooser_set_current_folder(chooser, dialog.directory)
+  discard gtk_file_chooser_set_current_folder(chooser, dialog.directory.cstring)
   if dialog.defaultName.len > 0:
-    discard gtk_file_chooser_set_current_name(chooser, dialog.defaultName) # Issue: does not work
+    discard gtk_file_chooser_set_current_name(chooser, dialog.defaultName.cstring) # Issue: does not work
   if res == GTK_RESPONSE_ACCEPT:
     dialog.file = $gtk_file_chooser_get_filename(chooser)
   else:
@@ -445,8 +445,8 @@ method run(dialog: SaveFileDialog) =
 
 method run*(dialog: SelectDirectoryDialog) =
   dialog.selectedDirectory = ""
-  var chooser = gtk_file_chooser_dialog_new(dialog.title, nil, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, "Cancel", GTK_RESPONSE_CANCEL, "Select", GTK_RESPONSE_ACCEPT, nil)
-  discard gtk_file_chooser_set_current_folder(chooser, dialog.startDirectory)
+  var chooser = gtk_file_chooser_dialog_new(dialog.title.cstring, nil, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, "Cancel", GTK_RESPONSE_CANCEL, "Select", GTK_RESPONSE_ACCEPT, nil)
+  discard gtk_file_chooser_set_current_folder(chooser, dialog.startDirectory.cstring)
   let res = gtk_dialog_run(chooser)
   if res == GTK_RESPONSE_ACCEPT:
     dialog.selectedDirectory = $gtk_file_chooser_get_filename(chooser)
@@ -772,7 +772,7 @@ method saveToJpegFile(image: Image, filePath: string, quality = 80) =
   var pixbuf = gdk_pixbuf_get_from_surface(canvas.fSurface, 0, 0, image.width.cint, image.height.cint)
   defer: g_object_unref(pixbuf)
   var error: ptr GError
-  if not gdk_pixbuf_save(pixbuf, filePath, "jpeg", error.addr, "quality", $quality, nil):
+  if not gdk_pixbuf_save(pixbuf, filePath, "jpeg", error.addr, "quality", ($quality).cstring, nil):
     pRaiseGError(error)
 
 method beginPixelDataAccess(image: Image): ptr UncheckedArray[byte] =
@@ -1450,7 +1450,7 @@ method `options=`(comboBox: NativeComboBox, options: seq[string]) =
 
   var maxWidth = 0
   for option in options:
-    gtk_combo_box_text_append_text(comboBox.fHandle, option)
+    gtk_combo_box_text_append_text(comboBox.fHandle, option.cstring)
     maxWidth = max(maxWidth, comboBox.getTextWidth(option))
 
   comboBox.fMaxTextWidth = maxWidth
