@@ -2683,7 +2683,7 @@ method `index=`(comboBox: ComboBox, index: int) = discard
 method onChange(comboBox: ComboBox): ComboBoxChangeProc = comboBox.fOnChange
 method `onChange=`(comboBox: ComboBox, callback: ComboBoxChangeProc) = comboBox.fOnChange = callback
 
-method handleChangeEvent(comboBox: ComboBox, event: ComboBoxChangeEvent) =
+method handleChangeEvent(comboBox: ComboBox, event: ComboBoxChangeEvent) {.base.} =
   # can be overridden by custom control
   let callback = comboBox.onChange
   if callback != nil:
