@@ -18,22 +18,22 @@ else:
 type
   Gboolean* = distinct cint
 
-  GError* {.byCopy.} = object
+  GError* {.bycopy.} = object
     domain*: int32
     code*: cint
     message*: cstring
 
-  GdkRectangle* {.byCopy.} = object
+  GdkRectangle* {.bycopy.} = object
     x*, y*: cint
     width*, height*: cint
 
-  GtkBorder* {.byCopy.} = object
+  GtkBorder* {.bycopy.} = object
     left*: int16
     right*: int16
     top*: int16
     bottom*: int16
 
-  GdkRGBA* {.byCopy.} = object
+  GdkRGBA* {.bycopy.} = object
     red*: cdouble
     green*: cdouble
     blue*: cdouble
@@ -44,12 +44,12 @@ type
     next*: GList
     prev*: GList
 
-  GtkTargetEntry* {.byCopy.} = object
+  GtkTargetEntry* {.bycopy.} = object
     target*: cstring
     flags*: cint
     info*: cint
 
-  GdkEventButton* {.byCopy.} = object
+  GdkEventButton* {.bycopy.} = object
     event_type*: cint
     window*: pointer
     send_event*: int8
@@ -61,7 +61,7 @@ type
     device*: pointer
     x_root*, y_root*: cdouble
 
-  GdkEventKey* {.byCopy.} = object
+  GdkEventKey* {.bycopy.} = object
     event_type*: cint
     window*: pointer
     send_event*: int8
@@ -74,20 +74,20 @@ type
     group*: int8
     is_modifier*: int8
 
-  GdkEventWindowState* {.byCopy.} = object
+  GdkEventWindowState* {.bycopy.} = object
     event_type*: cint
     window*: pointer
     send_event*: int8
     changed_mask*: cint
     new_window_state*: cint
 
-  GdkEventFocus* {.byCopy.} = object
+  GdkEventFocus* {.bycopy.} = object
     event_type*: cint
     window*: pointer
     send_event*: int8
     `in`*: int16
 
-  GtkTextIter* {.byCopy.} = object
+  GtkTextIter* {.bycopy.} = object
     dummy1: pointer
     dummy2: pointer
     dummy3: cint
@@ -103,7 +103,7 @@ type
     dummy13: cint
     dummy14: pointer
 
-  GdkGeometry* {.byCopy.} = object
+  GdkGeometry* {.bycopy.} = object
     min_width*: cint
     min_height*: cint
     max_width*: cint
