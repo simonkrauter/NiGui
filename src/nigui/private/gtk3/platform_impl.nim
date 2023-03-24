@@ -1275,6 +1275,7 @@ method add(container: ContainerImpl, control: Control) =
   procCall container.Container.add(control)
 
 method remove(container: ContainerImpl, control: Control) =
+  discard g_object_ref(cast[ControlImpl](control).fHandle) # avoid that the widget is destroyed
   gtk_container_remove(container.fInnerHandle, cast[ControlImpl](control).fHandle)
   procCall container.Container.remove(control)
 
