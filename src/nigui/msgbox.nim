@@ -21,11 +21,12 @@ proc buttonClick(event: ClickEvent) =
   cast[MessageBoxWindow](event.control.parentWindow).clickedButton = cast[Button](event.control)
   event.control.parentWindow.dispose()
 
-proc msgBox*(parent: Window, message: string, title = "Message", button1 = "OK", button2, button3: string = ""): int {.discardable.}  =
+proc msgBox*(parent: Window, message: string, title = "Message", iconPath="", button1 = "OK", button2, button3: string = ""): int {.discardable.}  =
   let buttonMinWidth = 100.scaleToDpi
   var window = new MessageBoxWindow
   window.init()
   window.title = title
+  window.iconPath = iconPath
 
   window.onKeyDown = proc(event: KeyboardEvent) =
     if event.key == Key_Escape:
