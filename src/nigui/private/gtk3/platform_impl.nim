@@ -519,6 +519,8 @@ proc stop(timer: var Timer) =
 
 proc pUpdateFont(canvas: Canvas) =
   let canvasImpl = cast[CanvasImpl](canvas)
+  if canvasImpl.fFont != nil:
+    pango_font_description_free(canvasImpl.fFont)
   canvasImpl.fFont = pCreateFont(canvas.fontFamily, canvas.fontSize, canvas.fontBold)
 
 method drawText(canvas: Canvas, text: string, x, y = 0) =
@@ -1001,8 +1003,7 @@ proc pControlScollYSignal(adjustment: pointer, data: pointer) {.cdecl.} =
 proc pUpdateFont(control: ControlImpl) =
   var font = pCreateFont(control.fontFamily, control.fontSize, control.fontBold)
   gtk_widget_modify_font(control.fHandle, font)
-  var rgba: GdkRGBA
-  control.textColor.pColorToGdkRGBA(rgba)
+  pango_font_description_free(font)
 
 method pAddButtonPressEvent(control: ControlImpl) {.base.} =
   gtk_widget_add_events(control.fHandle, GDK_BUTTON_PRESS_MASK)
@@ -1193,6 +1194,7 @@ method getTextLineWidth(control: ControlImpl, text: string): int {.locks: "unkno
   var height: cint
   pango_layout_get_pixel_size(layout, width, height)
   result = width + 2
+  g_object_unref(layout)
 
 method getTextLineHeight(control: ControlImpl): int {.locks: "unknown".} =
   var layout = gtk_widget_create_pango_layout(control.fHandle, "a")
@@ -1205,6 +1207,9 @@ method getTextLineHeight(control: ControlImpl): int {.locks: "unknown".} =
   var height: cint
   pango_layout_get_pixel_size(layout, width, height)
   result = height
+
+  g_object_unref(layout)
+  pango_font_description_free(font)
 
 discard """ method `xScrollPos=`(control: ControlImpl, xScrollPos: int) =
   procCall control.Control.`xScrollPos=`(xScrollPos)

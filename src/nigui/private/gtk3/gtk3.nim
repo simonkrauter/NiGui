@@ -556,6 +556,7 @@ proc pango_layout_set_text*(layout: pointer, text: cstring, length: cint) {.impo
 proc pango_layout_get_pixel_size*(layout: pointer, width, height: var cint) {.importc, libgtk3.}
 proc pango_layout_set_font_description*(layout, desc: pointer) {.importc, libgtk3.}
 proc pango_font_description_new*(): pointer {.importc, libgtk3.}
+proc pango_font_description_free*(desc: pointer) {.importc, libgtk3.}
 proc pango_font_description_set_family*(desc: pointer, family: cstring) {.importc, libgtk3.}
 proc pango_font_description_set_size*(desc: pointer, size: cint) {.importc, libgtk3.}
 proc pango_font_description_set_weight*(desc: pointer, weight: cint) {.importc, libgtk3.}
