@@ -2076,6 +2076,8 @@ method add(container: Container, control: Control) =
   container.fChildControls.add(control)
   control.fParentControl = container
   control.fIndex = container.fChildControls.high
+  control.fX = -1 # force update of position
+  control.fY = -1
   container.triggerRelayout()
 
 method remove(container: Container, control: Control) =
