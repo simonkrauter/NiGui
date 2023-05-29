@@ -375,7 +375,7 @@ proc queueMain(app: App, fn: proc()) =
   inc pQueue
   var p = createShared(proc())
   p[] = fn
-  discard gdk_threads_add_idle(runQueuedFn, p)
+  discard gdk_threads_add_idle(cast[pointer](runQueuedFn), p)
 
 proc queued(app: App): int =
   return pQueue
@@ -386,7 +386,7 @@ proc pClipboardTextReceivedFunc(clipboard: pointer, text: cstring, data: pointer
 
 proc clipboardText(app: App): string =
   pClipboardTextIsSet = false
-  gtk_clipboard_request_text(pClipboardPtr, pClipboardTextReceivedFunc, nil)
+  gtk_clipboard_request_text(pClipboardPtr, cast[pointer](pClipboardTextReceivedFunc), nil)
   while not pClipboardTextIsSet:
     discard gtk_main_iteration()
   result = pClipboardText
@@ -485,7 +485,7 @@ proc pRepeatingTimerFunction(timer: Timer): Gboolean {.cdecl.} =
 
 proc startTimer(milliSeconds: int, timerProc: TimerProc, data: pointer = nil): Timer =
   var timerEntry: TimerEntry
-  timerEntry.timerInternalId = g_timeout_add(milliSeconds.cint, pTimerFunction, cast[pointer](pNextTimerId))
+  timerEntry.timerInternalId = g_timeout_add(milliSeconds.cint, cast[pointer](pTimerFunction), cast[pointer](pNextTimerId))
   timerEntry.timerProc = timerProc
   timerEntry.data = data
   pTimers[pNextTimerId] = timerEntry
@@ -496,7 +496,7 @@ proc startTimer(milliSeconds: int, timerProc: TimerProc, data: pointer = nil): T
 
 proc startRepeatingTimer(milliSeconds: int, timerProc: TimerProc, data: pointer = nil): Timer =
   var timerEntry: TimerEntry
-  timerEntry.timerInternalId = g_timeout_add(milliSeconds.cint, pRepeatingTimerFunction, cast[pointer](pNextTimerId))
+  timerEntry.timerInternalId = g_timeout_add(milliSeconds.cint, cast[pointer](pRepeatingTimerFunction), cast[pointer](pNextTimerId))
   timerEntry.timerProc = timerProc
   timerEntry.data = data
   pTimers[pNextTimerId] = timerEntry
@@ -830,23 +830,23 @@ proc init(window: WindowImpl) =
   gtk_widget_show(window.fInnerHandle)
   gtk_container_add(window.fHandle, window.fInnerHandle)
   window.Window.init()
-  discard g_signal_connect_data(window.fHandle, "delete-event", pWindowDeleteSignal, cast[pointer](window))
-  discard g_signal_connect_data(window.fHandle, "configure-event", pWindowConfigureSignal, cast[pointer](window))
-  discard g_signal_connect_data(window.fHandle, "key-press-event", pWindowKeyPressSignal, cast[pointer](window))
-  discard g_signal_connect_data(window.fHandle, "key-release-event", pWindowKeyReleaseSignal, cast[pointer](window))
-  discard g_signal_connect_data(window.fHandle, "window-state-event", pWindowStateEventSignal, cast[pointer](window))
-  discard g_signal_connect_data(window.fHandle, "focus-out-event", pWindowFocusOutEventSignal, cast[pointer](window))
+  discard g_signal_connect_data(window.fHandle, "delete-event", cast[pointer](pWindowDeleteSignal), cast[pointer](window))
+  discard g_signal_connect_data(window.fHandle, "configure-event", cast[pointer](pWindowConfigureSignal), cast[pointer](window))
+  discard g_signal_connect_data(window.fHandle, "key-press-event", cast[pointer](pWindowKeyPressSignal), cast[pointer](window))
+  discard g_signal_connect_data(window.fHandle, "key-release-event", cast[pointer](pWindowKeyReleaseSignal), cast[pointer](window))
+  discard g_signal_connect_data(window.fHandle, "window-state-event", cast[pointer](pWindowStateEventSignal), cast[pointer](window))
+  discard g_signal_connect_data(window.fHandle, "focus-out-event", cast[pointer](pWindowFocusOutEventSignal), cast[pointer](window))
 
   # Enable drag and drop of files:
   pSetDragDest(window.fHandle)
-  discard g_signal_connect_data(window.fHandle, "drag-data-received", pWindowDragDataReceivedSignal, cast[pointer](window))
+  discard g_signal_connect_data(window.fHandle, "drag-data-received", cast[pointer](pWindowDragDataReceivedSignal), cast[pointer](window))
 
   if fScrollbarSize == -1:
     gtk_scrolled_window_set_policy(window.fInnerHandle, GTK_POLICY_ALWAYS, GTK_POLICY_ALWAYS)
-    discard g_signal_connect_data(window.fInnerHandle, "draw", pMainScrollbarDraw, nil)
+    discard g_signal_connect_data(window.fInnerHandle, "draw", cast[pointer](pMainScrollbarDraw), nil)
 
   window.fIMContext = gtk_im_multicontext_new()
-  discard g_signal_connect_data(window.fIMContext, "commit", pWindowIMContextCommitSignal, cast[pointer](window))
+  discard g_signal_connect_data(window.fIMContext, "commit", cast[pointer](pWindowIMContextCommitSignal), cast[pointer](window))
 
 method destroy(window: WindowImpl) =
   procCall window.Window.destroy()
@@ -1007,27 +1007,27 @@ proc pUpdateFont(control: ControlImpl) =
 
 method pAddButtonPressEvent(control: ControlImpl) {.base.} =
   gtk_widget_add_events(control.fHandle, GDK_BUTTON_PRESS_MASK)
-  discard g_signal_connect_data(control.fHandle, "button-press-event", pCustomControlButtonPressSignal, cast[pointer](control))
+  discard g_signal_connect_data(control.fHandle, "button-press-event", cast[pointer](pCustomControlButtonPressSignal), cast[pointer](control))
 
 method pAddKeyPressEvent(control: ControlImpl) {.base.} =
-  discard g_signal_connect_data(control.fHandle, "key-press-event", pControlKeyPressSignal, cast[pointer](control))
+  discard g_signal_connect_data(control.fHandle, "key-press-event", cast[pointer](pControlKeyPressSignal), cast[pointer](control))
 
 proc init(control: ControlImpl) =
 
   if control.fHandle == nil:
     # Direct instance of ControlImpl:
     control.fHandle = gtk_layout_new(nil, nil)
-    discard g_signal_connect_data(control.fHandle, "draw", pControlDrawSignal, cast[pointer](control))
+    discard g_signal_connect_data(control.fHandle, "draw", cast[pointer](pControlDrawSignal), cast[pointer](control))
     gtk_widget_add_events(control.fHandle, GDK_KEY_PRESS_MASK)
 
   control.pAddButtonPressEvent()
   control.pAddKeyPressEvent()
 
   gtk_widget_add_events(control.fHandle, GDK_BUTTON_RELEASE_MASK)
-  discard g_signal_connect_data(control.fHandle, "button-release-event", pControlButtonReleaseSignal, cast[pointer](control))
+  discard g_signal_connect_data(control.fHandle, "button-release-event", cast[pointer](pControlButtonReleaseSignal), cast[pointer](control))
 
   control.fIMContext = gtk_im_multicontext_new()
-  discard g_signal_connect_data(control.fIMContext, "commit", pControlIMContextCommitSignal, cast[pointer](control))
+  discard g_signal_connect_data(control.fIMContext, "commit", cast[pointer](pControlIMContextCommitSignal), cast[pointer](control))
 
   procCall control.Control.init()
 
@@ -1062,8 +1062,8 @@ method pUpdateScrollBar(control: ControlImpl) =
     control.fVScrollbar = gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL, control.fVAdjust)
     gtk_container_add(control.fHandle, control.fHScrollbar)
     gtk_container_add(control.fHandle, control.fVScrollbar)
-    discard g_signal_connect_data(control.fHAdjust, "value-changed", pControlScollXSignal, cast[pointer](control))
-    discard g_signal_connect_data(control.fVAdjust, "value-changed", pControlScollYSignal, cast[pointer](control))
+    discard g_signal_connect_data(control.fHAdjust, "value-changed", cast[pointer](pControlScollXSignal), cast[pointer](control))
+    discard g_signal_connect_data(control.fVAdjust, "value-changed", cast[pointer](pControlScollYSignal), cast[pointer](control))
 
     # The dead corner is an area which just needs to be covered with a control without function and the default background color
     control.fDeadCornerHandle = gtk_label_new("")
@@ -1254,12 +1254,12 @@ proc init(container: ContainerImpl) =
   gtk_container_add(container.fScrollWndHandle, container.fInnerHandle)
   container.Container.init()
 
-  discard g_signal_connect_data(container.fInnerHandle, "draw", pControlDrawSignal, cast[pointer](container))
+  discard g_signal_connect_data(container.fInnerHandle, "draw", cast[pointer](pControlDrawSignal), cast[pointer](container))
 
 method pAddButtonPressEvent(container: ContainerImpl) =
   # Overwrite base method
   gtk_widget_add_events(container.fInnerHandle, GDK_BUTTON_PRESS_MASK)
-  discard g_signal_connect_data(container.fInnerHandle, "button-press-event", pCustomControlButtonPressSignal, cast[pointer](container))
+  discard g_signal_connect_data(container.fInnerHandle, "button-press-event", cast[pointer](pCustomControlButtonPressSignal), cast[pointer](container))
 
 method pUpdateScrollWnd(container: ContainerImpl) {.base.} =
   let padding = container.getPadding()
@@ -1392,7 +1392,7 @@ proc pControlToggledSignal(widget: pointer, data: pointer): Gboolean {.cdecl.} =
 
 proc init(checkbox: NativeCheckbox) =
   checkbox.fHandle = gtk_check_button_new()
-  discard g_signal_connect_data(checkbox.fHandle, "toggled", pControlToggledSignal, cast[pointer](checkbox))
+  discard g_signal_connect_data(checkbox.fHandle, "toggled", cast[pointer](pControlToggledSignal), cast[pointer](checkbox))
   checkbox.Checkbox.init()
   gtk_widget_show(checkbox.fHandle)
 
@@ -1416,9 +1416,9 @@ method checked(checkbox: NativeCheckbox): bool =
   result = gtk_toggle_button_get_active(checkbox.fHandle)
 
 method `checked=`(checkbox: NativeCheckbox, checked: bool) =
-  g_signal_handlers_block_matched(checkbox.fHandle, G_SIGNAL_MATCH_FUNC, 0, nil, nil, pControlToggledSignal)
+  g_signal_handlers_block_matched(checkbox.fHandle, G_SIGNAL_MATCH_FUNC, 0, nil, nil, cast[pointer](pControlToggledSignal))
   gtk_toggle_button_set_active(checkbox.fHandle, checked)
-  g_signal_handlers_unblock_matched(checkbox.fHandle, G_SIGNAL_MATCH_FUNC, 0, nil, nil, pControlToggledSignal)
+  g_signal_handlers_unblock_matched(checkbox.fHandle, G_SIGNAL_MATCH_FUNC, 0, nil, nil, cast[pointer](pControlToggledSignal))
 
 method pAddButtonPressEvent(checkbox: NativeCheckbox) = discard # don't override default handler
 
@@ -1438,7 +1438,7 @@ proc pComboBoxChangedSignal(widget: pointer, data: pointer): Gboolean {.cdecl.} 
 
 proc init(comboBox: NativeComboBox) =
   comboBox.fHandle = gtk_combo_box_text_new()
-  discard g_signal_connect_data(comboBox.fHandle, "changed", pComboBoxChangedSignal, cast[pointer](comboBox))
+  discard g_signal_connect_data(comboBox.fHandle, "changed", cast[pointer](pComboBoxChangedSignal), cast[pointer](comboBox))
   comboBox.ComboBox.init()
   gtk_widget_show(comboBox.fHandle)
 
@@ -1527,7 +1527,7 @@ proc pTextBoxKeyPressSignal(widget: pointer, event: var GdkEventKey, data: point
 
 proc init(textBox: NativeTextBox) =
   textBox.fHandle = gtk_entry_new()
-  discard g_signal_connect_data(textBox.fHandle, "changed", pControlChangedSignal, cast[pointer](textBox))
+  discard g_signal_connect_data(textBox.fHandle, "changed", cast[pointer](pControlChangedSignal), cast[pointer](textBox))
   textBox.TextBox.init()
 
 method initStyle(textBox: NativeTextBox) =
@@ -1558,10 +1558,10 @@ method setSize(textBox: NativeTextBox, width, height: int) =
 
 method pAddButtonPressEvent(textBox: NativeTextBox) =
   gtk_widget_add_events(textBox.fHandle, GDK_BUTTON_PRESS_MASK)
-  discard g_signal_connect_data(textBox.fHandle, "button-press-event", pDefaultControlButtonPressSignal, cast[pointer](textBox))
+  discard g_signal_connect_data(textBox.fHandle, "button-press-event", cast[pointer](pDefaultControlButtonPressSignal), cast[pointer](textBox))
 
 method pAddKeyPressEvent(textBox: NativeTextBox) =
-  discard g_signal_connect_data(textBox.fHandle, "key-press-event", pTextBoxKeyPressSignal, cast[pointer](textBox))
+  discard g_signal_connect_data(textBox.fHandle, "key-press-event", cast[pointer](pTextBoxKeyPressSignal), cast[pointer](textBox))
 
 method `editable=`(textBox: NativeTextBox, editable: bool) =
   textBox.fEditable = editable
@@ -1622,7 +1622,7 @@ proc init(textArea: NativeTextArea) =
   gtk_container_add(textArea.fHandle, textArea.fTextViewHandle)
   gtk_widget_show(textArea.fTextViewHandle)
   textArea.fBufferHandle = gtk_text_view_get_buffer(textArea.fTextViewHandle)
-  discard g_signal_connect_data(textArea.fBufferHandle, "changed", pControlChangedSignal, cast[pointer](textArea))
+  discard g_signal_connect_data(textArea.fBufferHandle, "changed", cast[pointer](pControlChangedSignal), cast[pointer](textArea))
   textArea.TextArea.init()
 
 method setSize(textBox: NativeTextArea, width, height: int) =
@@ -1660,7 +1660,7 @@ method `wrap=`(textArea: NativeTextArea, wrap: bool) =
     gtk_text_view_set_wrap_mode(textArea.fTextViewHandle, GTK_WRAP_NONE)
 
 method pAddKeyPressEvent(textArea: NativeTextArea) =
-  discard g_signal_connect_data(textArea.fTextViewHandle, "key-press-event", pTextAreaKeyPressSignal, cast[pointer](textArea))
+  discard g_signal_connect_data(textArea.fTextViewHandle, "key-press-event", cast[pointer](pTextAreaKeyPressSignal), cast[pointer](textArea))
 
 method `editable=`(textArea: NativeTextArea, editable: bool) =
   textArea.fEditable = editable
