@@ -421,9 +421,9 @@ proc init(app: App) =
   if pDefaultParentWindow != nil:
     raiseError("'app.init()' must not be called a second time.")
   pInitGdiplus()
-  pRegisterWindowClass(pTopLevelWindowClass, pWindowWndProc)
-  pRegisterWindowClass(pCustomControlWindowClass, pCustomControlWndProc, CS_HREDRAW or CS_VREDRAW)
-  pRegisterWindowClass(pContainerWindowClass, pContainerWndProc)
+  pRegisterWindowClass(pTopLevelWindowClass, cast[pointer](pWindowWndProc))
+  pRegisterWindowClass(pCustomControlWindowClass, cast[pointer](pCustomControlWndProc), CS_HREDRAW or CS_VREDRAW)
+  pRegisterWindowClass(pContainerWindowClass, cast[pointer](pContainerWndProc))
   pDefaultParentWindow = pCreateWindowEx(0, pTopLevelWindowClass, 0, 0, 0, 0, 0, nil, nil, nil, nil)
   app.defaultTextColor = GetSysColor(COLOR_WINDOWTEXT).pRgb32ToColor()
   app.defaultBackgroundColor = GetSysColor(COLOR_BTNFACE).pRgb32ToColor()
@@ -597,14 +597,14 @@ proc pRepeatingTimerFunction(hwnd: pointer, uMsg: int32, idEvent: pointer, dwTim
   timerEntry.timerProc(event)
 
 proc startTimer(milliSeconds: int, timerProc: TimerProc, data: pointer = nil): Timer =
-  result = cast[Timer](SetTimer(nil, nil, milliSeconds.int32, pTimerFunction))
+  result = cast[Timer](SetTimer(nil, nil, milliSeconds.int32, cast[pointer](pTimerFunction)))
   var timerEntry: TimerEntry
   timerEntry.timerProc = timerProc
   timerEntry.data = data
   pTimers[cast[int](result)] = timerEntry
 
 proc startRepeatingTimer(milliSeconds: int, timerProc: TimerProc, data: pointer = nil): Timer =
-  result = cast[Timer](SetTimer(nil, nil, milliSeconds.int32, pRepeatingTimerFunction))
+  result = cast[Timer](SetTimer(nil, nil, milliSeconds.int32, cast[pointer](pRepeatingTimerFunction)))
   var timerEntry: TimerEntry
   timerEntry.timerProc = timerProc
   timerEntry.data = data
@@ -1365,7 +1365,7 @@ proc pCustomControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
     return cast[pointer](false)
   if comProcRes == PWndProcResult_True:
     return cast[pointer](true)
-  result = CallWindowProcW(pCommonWndProc, hWnd, uMsg, wParam, lParam)
+  result = CallWindowProcW(cast[pointer](pCommonWndProc), hWnd, uMsg, wParam, lParam)
 
 method mousePosition(control: Control): tuple[x, y: int] =
   var p: Point
@@ -1498,7 +1498,7 @@ proc pButtonWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): pointe
 proc init(button: NativeButton) =
   button.fHandle = pCreateWindowExWithUserdata("BUTTON", WS_CHILD or WS_TABSTOP, 0, pDefaultParentWindow, cast[pointer](button))
   # WS_TABSTOP does not work, why?
-  pButtonOrigWndProc = pSetWindowLongPtr(button.fHandle, GWLP_WNDPROC, pButtonWndProc)
+  pButtonOrigWndProc = pSetWindowLongPtr(button.fHandle, GWLP_WNDPROC, cast[pointer](pButtonWndProc))
   button.Button.init()
 
 method `text=`(button: NativeButton, text: string) =
@@ -1539,7 +1539,7 @@ proc pCheckboxWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): poin
 
 proc init(checkbox: NativeCheckbox) =
   checkbox.fHandle = pCreateWindowExWithUserdata("BUTTON", WS_CHILD or BS_AUTOCHECKBOX, 0, pDefaultParentWindow, cast[pointer](checkbox))
-  pCheckboxOrigWndProc = pSetWindowLongPtr(checkbox.fHandle, GWLP_WNDPROC, pCheckboxWndProc)
+  pCheckboxOrigWndProc = pSetWindowLongPtr(checkbox.fHandle, GWLP_WNDPROC, cast[pointer](pCheckboxWndProc))
   checkbox.Checkbox.init()
 
 method `text=`(checkbox: NativeCheckbox, text: string) =
@@ -1578,7 +1578,7 @@ proc pComboBoxWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): poin
 
 proc init(comboBox: NativeComboBox) =
   comboBox.fHandle = pCreateWindowExWithUserdata("COMBOBOX", WS_CHILD or CBS_DROPDOWNLIST or WS_VSCROLL, 0, pDefaultParentWindow, cast[pointer](comboBox))
-  pComboBoxOrigWndProc = pSetWindowLongPtr(comboBox.fHandle, GWLP_WNDPROC, pComboBoxWndProc)
+  pComboBoxOrigWndProc = pSetWindowLongPtr(comboBox.fHandle, GWLP_WNDPROC, cast[pointer](pComboBoxWndProc))
   comboBox.ComboBox.init()
 
 method naturalWidth(comboBox: NativeComboBox): int =
@@ -1676,7 +1676,7 @@ proc pTextBoxWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer): point
 
 proc init(textBox: NativeTextBox) =
   textBox.fHandle = pCreateWindowExWithUserdata("EDIT", WS_CHILD or WS_TABSTOP or ES_AUTOHSCROLL, WS_EX_CLIENTEDGE, pDefaultParentWindow, cast[pointer](textBox))
-  pTextBoxOrigWndProc = pSetWindowLongPtr(textBox.fHandle, GWLP_WNDPROC, pTextBoxWndProc)
+  pTextBoxOrigWndProc = pSetWindowLongPtr(textBox.fHandle, GWLP_WNDPROC, cast[pointer](pTextBoxWndProc))
   textBox.TextBox.init()
 
 method initStyle(textBox: NativeTextBox) =
@@ -1746,7 +1746,7 @@ proc init(textArea: NativeTextArea) =
   # var dwStyle: int32 = WS_CHILD or ES_MULTILINE or WS_VSCROLL or WS_HSCROLL # no wrap
   var dwExStyle: int32 = WS_EX_CLIENTEDGE
   textArea.fHandle = pCreateWindowExWithUserdata("EDIT", dwStyle, dwExStyle, pDefaultParentWindow, cast[pointer](textArea))
-  pTextAreaOrigWndProc = pSetWindowLongPtr(textArea.fHandle, GWLP_WNDPROC, pTextAreaWndProc)
+  pTextAreaOrigWndProc = pSetWindowLongPtr(textArea.fHandle, GWLP_WNDPROC, cast[pointer](pTextAreaWndProc))
   textArea.TextArea.init()
 
 method scrollToBottom(textArea: NativeTextArea) =
