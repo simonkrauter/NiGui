@@ -543,7 +543,6 @@ method drawText(canvas: Canvas, text: string, x, y = 0) =
   cairo_translate(cr, x.float, y.float)
   pango_cairo_show_layout(cr, layout)
   cairo_restore(cr)
-  cairo_surface_destroy(layout)
 
 method drawLine(canvas: Canvas, x1, y1, x2, y2: int) =
   let cr = cast[CanvasImpl](canvas).fCairoContext
@@ -700,7 +699,6 @@ method getTextLineWidth(canvas: CanvasImpl, text: string): int {.locks: "unknown
   var height: cint
   pango_layout_get_pixel_size(layout, width, height)
   result = width + 2
-  cairo_surface_destroy(layout)
 
 method getTextLineHeight(canvas: CanvasImpl): int {.locks: "unknown".} =
   if canvas.fCairoContext == nil:
@@ -714,7 +712,6 @@ method getTextLineHeight(canvas: CanvasImpl): int {.locks: "unknown".} =
   var height: cint
   pango_layout_get_pixel_size(layout, width, height)
   result = height
-  cairo_surface_destroy(layout)
 
 
 # ----------------------------------------------------------------------------------------
