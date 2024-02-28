@@ -1217,7 +1217,7 @@ proc run(app: var App) =
     try:
       runMainLoop()
       break
-    except CatchableError:
+    except:
       handleException()
 
 proc quit(app: var App, quitApp: bool = false) =
