@@ -61,6 +61,18 @@ type
     device*: pointer
     x_root*, y_root*: cdouble
 
+  GdkEventMotion* {.bycopy.} = object
+    event_type*: cint
+    window*: pointer
+    send_event*: int8
+    time*: cint
+    x*, y*: cdouble
+    axes*: ptr cdouble
+    state*: cint
+    is_hint*: int16
+    device*: pointer
+    x_root*, y_root*: cdouble
+
   GdkEventKey* {.bycopy.} = object
     event_type*: cint
     window*: pointer
@@ -184,6 +196,7 @@ const
   # [..]
 
   # GdkEventMask:
+  GDK_POINTER_MOTION_MASK* = 4
   GDK_BUTTON_PRESS_MASK*   = 256
   GDK_BUTTON_RELEASE_MASK* = 512
   GDK_KEY_PRESS_MASK*      = 1024

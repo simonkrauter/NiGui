@@ -306,6 +306,14 @@ proc pControlButtonReleaseSignal(widget: pointer, event: var GdkEventButton, dat
       handleException()
   # result = true # stop propagation
 
+proc pControlMotionNotifySignal(widget: pointer, event: var GdkEventMotion, data: pointer): Gboolean {.cdecl.} =
+  let control = cast[ControlImpl](data)
+  var evt = new MouseEvent
+  evt.control = control
+  evt.x = event.x.int
+  evt.y = event.y.int
+  control.handleMouseMoveEvent(evt)
+
 proc pControlChangedSignal(widget: pointer, data: pointer): Gboolean {.cdecl.} =
   let control = cast[TextBox](data)
   var evt = new TextChangeEvent
@@ -1028,6 +1036,9 @@ proc init(control: ControlImpl) =
 
   gtk_widget_add_events(control.fHandle, GDK_BUTTON_RELEASE_MASK)
   discard g_signal_connect_data(control.fHandle, "button-release-event", cast[pointer](pControlButtonReleaseSignal), cast[pointer](control))
+
+  gtk_widget_add_events(control.fHandle, GDK_POINTER_MOTION_MASK)
+  discard g_signal_connect_data(control.fHandle, "motion-notify-event", cast[pointer](pControlMotionNotifySignal), cast[pointer](control))
 
   control.fIMContext = gtk_im_multicontext_new()
   discard g_signal_connect_data(control.fIMContext, "commit", cast[pointer](pControlIMContextCommitSignal), cast[pointer](control))

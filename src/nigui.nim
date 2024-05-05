@@ -278,7 +278,7 @@ type
     fOnMouseButtonDown: MouseButtonProc
     fOnMouseButtonUp: MouseButtonProc
     fOnClick: ClickProc
-    # fOnMouseMove: MouseMoveProc
+    fOnMouseMove: MouseMoveProc
     fOnKeyDown: KeyboardProc
     tag*: string
 
@@ -343,6 +343,7 @@ type
     x*: int
     y*: int
   MouseButtonProc* = proc(event: MouseEvent)
+  MouseMoveProc* = proc(event: MouseEvent)
 
   ClickEvent* = ref object
     control*: Control
@@ -894,6 +895,9 @@ method `onMouseButtonDown=`*(control: Control, callback: MouseButtonProc) {.base
 
 method onMouseButtonUp*(control: Control): MouseButtonProc {.base.}
 method `onMouseButtonUp=`*(control: Control, callback: MouseButtonProc) {.base.}
+
+method onMouseMove*(control: Control): MouseMoveProc {.base.}
+method `onMouseMove=`*(control: Control, callback: MouseMoveProc) {.base.}
 
 method onClick*(control: Control): ClickProc {.base.}
 method `onClick=`*(control: Control, callback: ClickProc) {.base.}
@@ -2004,6 +2008,12 @@ method handleMouseButtonUpEvent(control: Control, event: MouseEvent) =
   if callback != nil:
     callback(event)
 
+method handleMouseMoveEvent(control: Control, event: MouseEvent) =
+  # can be overridden by custom control
+  let callback = control.onMouseMove
+  if callback != nil:
+    callback(event)
+
 method handleClickEvent(control: Control, event: ClickEvent) =
   # can be overridden by custom button
   let callback = control.onClick
@@ -2027,6 +2037,9 @@ method `onMouseButtonDown=`(control: Control, callback: MouseButtonProc) = contr
 
 method onMouseButtonUp(control: Control): MouseButtonProc = control.fOnMouseButtonUp
 method `onMouseButtonUp=`(control: Control, callback: MouseButtonProc) = control.fOnMouseButtonUp = callback
+
+method onMouseMove(control: Control): MouseMoveProc = control.fOnMouseMove
+method `onMouseMove=`(control: Control, callback: MouseMoveProc) = control.fOnMouseMove = callback
 
 method onClick(control: Control): ClickProc = control.fOnClick
 method `onClick=`(control: Control, callback: ClickProc) = control.fOnClick = callback

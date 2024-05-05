@@ -37,6 +37,8 @@ var pQueue: int
 var pLastMouseButtonDownControl: Control
 var pLastMouseButtonDownControlX: int
 var pLastMouseButtonDownControlY: int
+var pLastMouseMoveX: int
+var pLastMouseMoveY: int
 
 var appRunning: bool
 
@@ -1283,6 +1285,19 @@ proc pCommonControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
           var clickEvent = new ClickEvent
           clickEvent.control = control
           control.handleClickEvent(clickEvent)
+  of WM_MOUSEMOVE:
+    var x = loWord(lParam)
+    var y = hiWord(lParam)
+    if x != pLastMouseMoveX or y != pLastMouseMoveY:
+      pLastMouseMoveX = x
+      pLastMouseMoveY = y
+      let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+      if control != nil:
+        var event = new MouseEvent
+        event.control = control
+        event.x = x
+        event.y = y
+        control.handleMouseMoveEvent(event)
   of WM_HSCROLL, WM_VSCROLL:
     pCommonControlWndProc_Scroll(hWnd, uMsg, wParam, lParam)
 
