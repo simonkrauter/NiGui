@@ -39,6 +39,7 @@ var pLastMouseButtonDownControlX: int
 var pLastMouseButtonDownControlY: int
 var pLastMouseMoveX: int
 var pLastMouseMoveY: int
+var pLastMouseEnterControl: Control
 
 var appRunning: bool
 
@@ -1293,11 +1294,28 @@ proc pCommonControlWndProc(hWnd: pointer, uMsg: int32, wParam, lParam: pointer):
       pLastMouseMoveY = y
       let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
       if control != nil:
+        if control != pLastMouseEnterControl:
+          pLastMouseEnterControl = control
+          var event = new MouseEvent
+          event.control = control
+          control.handleMouseEnterEvent(event)
+          var tme: TTrackMouseEvent
+          tme.cbSize = TTrackMouseEvent.sizeof.int32
+          tme.dwFlags = TME_LEAVE
+          tme.hwndTrack = hWnd
+          discard TrackMouseEvent(tme)
         var event = new MouseEvent
         event.control = control
         event.x = x
         event.y = y
         control.handleMouseMoveEvent(event)
+  of WM_MOUSELEAVE:
+    let control = cast[Control](pGetWindowLongPtr(hWnd, GWLP_USERDATA))
+    if control != nil:
+      pLastMouseEnterControl = nil
+      var event = new MouseEvent
+      event.control = control
+      control.handleMouseLeaveEvent(event)
   of WM_HSCROLL, WM_VSCROLL:
     pCommonControlWndProc_Scroll(hWnd, uMsg, wParam, lParam)
 

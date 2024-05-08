@@ -279,6 +279,8 @@ type
     fOnMouseButtonUp: MouseButtonProc
     fOnClick: ClickProc
     fOnMouseMove: MouseMoveProc
+    fOnMouseEnter: MouseMoveProc
+    fOnMouseLeave: MouseMoveProc
     fOnKeyDown: KeyboardProc
     tag*: string
 
@@ -344,6 +346,8 @@ type
     y*: int
   MouseButtonProc* = proc(event: MouseEvent)
   MouseMoveProc* = proc(event: MouseEvent)
+  MouseEnterProc* = proc(event: MouseEvent)
+  MouseLeaveProc* = proc(event: MouseEvent)
 
   ClickEvent* = ref object
     control*: Control
@@ -898,6 +902,12 @@ method `onMouseButtonUp=`*(control: Control, callback: MouseButtonProc) {.base.}
 
 method onMouseMove*(control: Control): MouseMoveProc {.base.}
 method `onMouseMove=`*(control: Control, callback: MouseMoveProc) {.base.}
+
+method onMouseEnter*(control: Control): MouseEnterProc {.base.}
+method `onMouseEnter=`*(control: Control, callback: MouseEnterProc) {.base.}
+
+method onMouseLeave*(control: Control): MouseLeaveProc {.base.}
+method `onMouseLeave=`*(control: Control, callback: MouseLeaveProc) {.base.}
 
 method onClick*(control: Control): ClickProc {.base.}
 method `onClick=`*(control: Control, callback: ClickProc) {.base.}
@@ -2014,6 +2024,18 @@ method handleMouseMoveEvent(control: Control, event: MouseEvent) =
   if callback != nil:
     callback(event)
 
+method handleMouseEnterEvent(control: Control, event: MouseEvent) =
+  # can be overridden by custom control
+  let callback = control.onMouseEnter
+  if callback != nil:
+    callback(event)
+
+method handleMouseLeaveEvent(control: Control, event: MouseEvent) =
+  # can be overridden by custom control
+  let callback = control.onMouseLeave
+  if callback != nil:
+    callback(event)
+
 method handleClickEvent(control: Control, event: ClickEvent) =
   # can be overridden by custom button
   let callback = control.onClick
@@ -2040,6 +2062,12 @@ method `onMouseButtonUp=`(control: Control, callback: MouseButtonProc) = control
 
 method onMouseMove(control: Control): MouseMoveProc = control.fOnMouseMove
 method `onMouseMove=`(control: Control, callback: MouseMoveProc) = control.fOnMouseMove = callback
+
+method onMouseEnter(control: Control): MouseEnterProc = control.fOnMouseEnter
+method `onMouseEnter=`(control: Control, callback: MouseEnterProc) = control.fOnMouseEnter = callback
+
+method onMouseLeave(control: Control): MouseLeaveProc = control.fOnMouseLeave
+method `onMouseLeave=`(control: Control, callback: MouseLeaveProc) = control.fOnMouseLeave = callback
 
 method onClick(control: Control): ClickProc = control.fOnClick
 method `onClick=`(control: Control, callback: ClickProc) = control.fOnClick = callback

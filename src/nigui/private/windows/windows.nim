@@ -169,6 +169,7 @@ const
   # WM_NCLBUTTONDOWN* = 161
   # WM_NCLBUTTONUP* = 162
   WM_MOUSEWHEEL* = 0x020A
+  WM_MOUSELEAVE* = 0x02A3
   WM_MOVE* = 3
   WM_NEXTDLGCTL* = 0x0028
   WM_PAINT* = 15
@@ -243,6 +244,7 @@ const
   FontStyleRegular* = 0
   FontStyleBold* = 1
   TextRenderingHint_AntiAlias* = 4
+  TME_LEAVE* = 0x00000002
 
 
 # ----------------------------------------------------------------------------------------
@@ -396,6 +398,11 @@ type
     ptMinTrackSize*: Point
     ptMaxTrackSize*: Point
 
+  TTrackMouseEvent* {.pure.} = object
+    cbSize*: int32
+    dwFlags*: int32
+    hwndTrack*: pointer
+    dwHoverTime*: int32
 
 
 # ----------------------------------------------------------------------------------------
@@ -498,6 +505,7 @@ proc ScreenToClient*(hWnd: pointer, lpPoint: var Point): bool {.importc, libUser
 proc MonitorFromPoint*(pt: Point, dwFlags: int32): pointer {.importc, libUser32.}
 proc GetScrollPos*(hWnd: pointer, nBar: int32): int32 {.importc, libUser32.}
 proc LockWindowUpdate*(hWndLock: pointer): bool {.importc, libUser32.}
+proc TrackMouseEvent*(lpEventTrack: var TTrackMouseEvent): bool {.importc, libUser32.}
 
 type GetDpiForWindowType* = proc(hWnd: pointer): int32 {.gcsafe, stdcall.} # not available on Windows 7
 

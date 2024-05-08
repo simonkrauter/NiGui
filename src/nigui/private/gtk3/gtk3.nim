@@ -73,6 +73,20 @@ type
     device*: pointer
     x_root*, y_root*: cdouble
 
+  GdkEventCrossing* {.bycopy.} = object
+    event_type*: cint
+    window*: pointer
+    send_event*: int8
+    subwindow*: pointer
+    time*: cint
+    x*, y*: cdouble
+    x_root*, y_root*: cdouble
+    mode*: cint
+    detail*: cint
+    focus*: bool
+    device*: pointer
+    state*: cint
+
   GdkEventKey* {.bycopy.} = object
     event_type*: cint
     window*: pointer
@@ -196,10 +210,12 @@ const
   # [..]
 
   # GdkEventMask:
-  GDK_POINTER_MOTION_MASK* = 4
-  GDK_BUTTON_PRESS_MASK*   = 256
-  GDK_BUTTON_RELEASE_MASK* = 512
-  GDK_KEY_PRESS_MASK*      = 1024
+  GDK_POINTER_MOTION_MASK* = 1 shl 4
+  GDK_BUTTON_PRESS_MASK*   = 1 shl 8
+  GDK_BUTTON_RELEASE_MASK* = 1 shl 9
+  GDK_KEY_PRESS_MASK*      = 1 shl 10
+  GDK_ENTER_NOTIFY_MASK*   = 1 shl 12
+  GDK_LEAVE_NOTIFY_MASK*   = 1 shl 13
   # [..]
 
   # cairo_format_t:
