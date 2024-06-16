@@ -210,7 +210,7 @@ const
   # [..]
 
   # GdkEventMask:
-  GDK_POINTER_MOTION_MASK* = 1 shl 4
+  GDK_POINTER_MOTION_MASK* = 1 shl 2
   GDK_BUTTON_PRESS_MASK*   = 1 shl 8
   GDK_BUTTON_RELEASE_MASK* = 1 shl 9
   GDK_KEY_PRESS_MASK*      = 1 shl 10
