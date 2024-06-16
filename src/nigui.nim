@@ -2349,7 +2349,7 @@ method minHeight(container: LayoutContainer): int =
   result.inc(container.yScrollbarSpace)
   result = max(result, container.fMinHeight)
 
-method setControlPosition(container: LayoutContainer, control: Control, x, y: int) {.locks: "unknown".} =
+method setControlPosition(container: LayoutContainer, control: Control, x, y: int) =
   raiseError("Controls inside a LayoutContainer cannot be moved manually.")
 
 method layout(container: LayoutContainer): Layout = container.fLayout
@@ -2605,9 +2605,9 @@ method `text=`(button: Button, text: string) =
   button.forceRedraw()
   # should be extended by NativeButton
 
-method naturalWidth(button: Button): int {.locks: "unknown".} = button.getTextWidth(button.text) + 20.scaleToDpi
+method naturalWidth(button: Button): int = button.getTextWidth(button.text) + 20.scaleToDpi
 
-method naturalHeight(button: Button): int {.locks: "unknown".} = button.getTextLineHeight() * button.text.countLines + 12.scaleToDpi
+method naturalHeight(button: Button): int = button.getTextLineHeight() * button.text.countLines + 12.scaleToDpi
 
 method enabled(button: Button): bool = button.fEnabled
 
@@ -2647,9 +2647,9 @@ method `text=`(checkbox: Checkbox, text: string) =
   checkbox.triggerRelayoutIfModeIsAuto()
   checkbox.forceRedraw()
 
-method naturalWidth(checkbox: Checkbox): int {.locks: "unknown".} = checkbox.getTextWidth(checkbox.text) + 20.scaleToDpi
+method naturalWidth(checkbox: Checkbox): int = checkbox.getTextWidth(checkbox.text) + 20.scaleToDpi
 
-method naturalHeight(checkbox: Checkbox): int {.locks: "unknown".} = checkbox.getTextLineHeight() * checkbox.text.countLines + 12.scaleToDpi
+method naturalHeight(checkbox: Checkbox): int = checkbox.getTextLineHeight() * checkbox.text.countLines + 12.scaleToDpi
 
 method enabled(checkbox: Checkbox): bool = checkbox.fEnabled
 
@@ -2759,9 +2759,9 @@ method `text=`(label: Label, text: string) =
   label.triggerRelayoutIfModeIsAuto()
   label.forceRedraw()
 
-method naturalWidth(label: Label): int {.locks: "unknown".} = label.getTextWidth(label.text)
+method naturalWidth(label: Label): int = label.getTextWidth(label.text)
 
-method naturalHeight(label: Label): int {.locks: "unknown".} = label.getTextLineHeight() * label.text.countLines
+method naturalHeight(label: Label): int = label.getTextLineHeight() * label.text.countLines
 
 method xTextAlign(label: Label): XTextAlign = label.fXTextAlign
 
@@ -2843,7 +2843,7 @@ proc init(textBox: TextBox) =
   textBox.minHeight = 20.scaleToDpi
   textBox.editable = true
 
-method naturalHeight(textBox: TextBox): int {.locks: "unknown".} = textBox.getTextLineHeight()
+method naturalHeight(textBox: TextBox): int = textBox.getTextLineHeight()
 
 method text(textBox: TextBox): string = discard
   # has to be implemented by NativeTextBox

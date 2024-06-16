@@ -1,7 +1,5 @@
 # NiGui - minimal GTK+ 3 binding
 
-{.deadCodeElim: on.}
-
 when defined(windows):
   const libgtk3Path* = "libgtk-3-0.dll"
 elif defined(macosx):
