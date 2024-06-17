@@ -970,9 +970,9 @@ method `iconPath=`(window: WindowImpl, iconPath: string) =
   procCall window.Window.`iconPath=`(iconPath)
   if not gtk_window_set_icon_from_file(window.fHandle, iconPath, nil):
     if not fileExists(iconPath):
-      raiseError("Faild to load image from file '" & iconPath & "': File does not exist")
+      raiseError("Failed to load image from file '" & iconPath & "': File does not exist")
     else:
-      raiseError("Faild to load image from file '" & iconPath & "'")
+      raiseError("Failed to load image from file '" & iconPath & "'")
 
 
 # ----------------------------------------------------------------------------------------
