@@ -987,30 +987,16 @@ method triggerRelayout(control: ControlImpl) =
 
 proc pControlDrawSignal(widget: pointer, cr: pointer, data: pointer): Gboolean {.cdecl.} =
   let control = cast[ControlImpl](data)
-
-  # Trigger pUpdateScrollBar() in case it's not initialized, which could be because of missing fScrollbarSize
-  if control.fHScrollbar == nil:
-    control.pUpdateScrollBar()
-
   var event = new DrawEvent
   event.control = control
   var canvas = cast[CanvasImpl](control.canvas)
   if canvas == nil:
     canvas = newCanvas(control)
   canvas.fCairoContext = cr
-  # canvas.fSurface = cairo_get_target(cr) # no need to set this
-  # canvas.fData = cairo_image_surface_get_data(canvas.fSurface) # does not work
   try:
-    # var region = gdk_window_get_clip_region(control.fHandle)
-    # gdk_window_begin_paint_region(control.fHandle, region)
-    # no effect
-
     control.handleDrawEvent(event)
-
-    # gdk_window_end_paint(control.fHandle)
   except:
     handleException()
-
   canvas.fCairoContext = nil
 
 proc pControlScollXSignal(adjustment: pointer, data: pointer) {.cdecl.} =
