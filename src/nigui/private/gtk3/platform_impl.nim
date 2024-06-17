@@ -1331,7 +1331,7 @@ method setSize(container: ContainerImpl, width, height: int) =
 
 method pUpdateScrollBar(container: ContainerImpl) =
   # Overwrite base method
-  if container.fScrollableWidth == -1 and container.fScrollableHeight == -1:
+  if container.fScrollableWidth == -1 or container.fScrollableHeight == -1:
     return
 
   if fScrollbarSize == -1:
