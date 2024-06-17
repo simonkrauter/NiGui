@@ -1678,6 +1678,18 @@ method addText(textArea: NativeTextArea, text: string) =
   gtk_text_buffer_insert(textArea.fBufferHandle, iter, text, text.len.cint)
   app.processEvents()
 
+method addColoredText(textArea: NativeTextArea, text, color: string) =
+  if color == "":
+    textArea.addText(text)
+  else:
+    if not textArea.fColorTags.contains(color):
+      discard gtk_text_buffer_create_tag(textArea.fBufferHandle, color, "foreground", color, nil)
+      textArea.fColorTags.add(color)
+    var iter: GtkTextIter
+    gtk_text_buffer_get_end_iter(textArea.fBufferHandle, iter)
+    gtk_text_buffer_insert_with_tags_by_name(textArea.fBufferHandle, iter, text, text.len.cint, color, nil)
+    app.processEvents()
+
 method scrollToBottom(textArea: NativeTextArea) =
   var iter: GtkTextIter
   gtk_text_buffer_get_end_iter(textArea.fBufferHandle, iter)

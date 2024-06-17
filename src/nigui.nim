@@ -1116,6 +1116,10 @@ proc init*(textArea: TextArea)
 proc init*(textArea: NativeTextArea)
 
 method addText*(textArea: TextArea, text: string) {.base.}
+
+method addColoredText*(textArea: TextArea, text, color: string) {.base.}
+# Note: Colored text is only supported by the Gtk backend.
+
 method addLine*(textArea: TextArea, text = "") {.base.}
 
 method scrollToBottom*(textArea: TextArea) {.base.}
@@ -2917,6 +2921,10 @@ proc init(textArea: TextArea) =
   textArea.editable = true
 
 method addText(textArea: TextArea, text: string) = textArea.text = textArea.text & text
+
+method addColoredText(textArea: TextArea, text, color: string) =
+  # placeholder implementation without color support
+  textArea.addText(text)
 
 method addLine(textArea: TextArea, text = "") = textArea.addText(text & "\p")
 

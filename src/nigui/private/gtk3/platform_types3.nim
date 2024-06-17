@@ -6,3 +6,4 @@ type
   NativeTextArea* = ref object of TextArea
     fTextViewHandle: pointer
     fBufferHandle: pointer
+    fColorTags: seq[string]

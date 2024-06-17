@@ -463,6 +463,8 @@ proc gtk_text_buffer_get_selection_bounds*(buffer: pointer, start, `end`: var Gt
 proc gtk_text_buffer_select_range*(buffer: pointer, ins, bound: var GtkTextIter) {.importc, libgtk3.}
 proc gtk_text_buffer_get_iter_at_offset*(buffer: pointer, iter: var GtkTextIter, char_offset: cint) {.importc, libgtk3.}
 proc gtk_text_buffer_get_iter_at_mark*(buffer: pointer, iter: var GtkTextIter, mark: pointer) {.importc, libgtk3.}
+proc gtk_text_buffer_create_tag*(buffer: pointer, tag_name, property_name, value: cstring, terminator: pointer): pointer {.importc, libgtk3.}
+proc gtk_text_buffer_insert_with_tags_by_name*(buffer: pointer, iter: var GtkTextIter, text: cstring, len: cint, first_tag_name: cstring, terminator: pointer) {.importc, libgtk3.}
 
 proc gtk_text_iter_get_offset*(iter: var GtkTextIter): cint {.importc, libgtk3.}
 # proc gtk_text_mark_new*(name: cstring, left_gravity: bool): pointer {.importc, libgtk3.}
