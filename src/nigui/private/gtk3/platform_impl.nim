@@ -1208,24 +1208,23 @@ method setBackgroundColor(control: ControlImpl, color: Color) =
 
 method getTextLineWidth(control: ControlImpl, text: string): int =
   var layout = gtk_widget_create_pango_layout(control.fHandle, text)
+  var font = pCreateFont(control.fontFamily, control.fontSize, control.fontBold)
+  pango_layout_set_font_description(layout, font)
   var width: cint
   var height: cint
   pango_layout_get_pixel_size(layout, width, height)
   result = width + 2
   g_object_unref(layout)
+  pango_font_description_free(font)
 
 method getTextLineHeight(control: ControlImpl): int =
   var layout = gtk_widget_create_pango_layout(control.fHandle, "a")
-
-  # Because the widget's font size is not always regarded, we have to set the font here again:
   var font = pCreateFont(control.fontFamily, control.fontSize, control.fontBold)
   pango_layout_set_font_description(layout, font)
-
   var width: cint
   var height: cint
   pango_layout_get_pixel_size(layout, width, height)
   result = height
-
   g_object_unref(layout)
   pango_font_description_free(font)
 
