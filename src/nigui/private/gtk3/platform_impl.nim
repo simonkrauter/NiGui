@@ -1515,13 +1515,13 @@ proc init(label: NativeLabel) =
 # ----------------------------------------------------------------------------------------
 
 proc init(progressBar: NativeProgressBar) =
-  progressBar.fHandle = gtk_progress_bar_new()
+  progressBar.fHandle = gtk_level_bar_new()
   progressBar.ProgressBar.init()
   progressBar.height = 8.scaleToDpi # adjust control height to bar height
 
 method `value=`(progressBar: NativeProgressBar, value: float) =
   procCall progressBar.ProgressBar.`value=`(value)
-  gtk_progress_bar_set_fraction(progressBar.fHandle, value)
+  gtk_level_bar_set_value(progressBar.fHandle, value)
   app.processEvents()
 
 

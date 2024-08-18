@@ -406,6 +406,9 @@ proc gtk_label_set_ellipsize*(label: pointer, mode: cint) {.importc, libgtk3.}
 proc gtk_progress_bar_new*(): pointer {.importc, libgtk3.}
 proc gtk_progress_bar_set_fraction*(pbar: pointer, fraction: cdouble) {.importc, libgtk3.}
 
+proc gtk_level_bar_new*(): pointer {.importc, libgtk3.}
+proc gtk_level_bar_set_value*(pbar: pointer, value: cdouble) {.importc, libgtk3.}
+
 # proc gtk_box_new*(orientation: GtkOrientation, spacing: cint): pointer {.importc, libgtk3.}
 proc gtk_box_pack_start*(box, child: pointer, expand, fill: cint, padding: cint) {.importc, libgtk3.}
 
