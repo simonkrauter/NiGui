@@ -1460,7 +1460,9 @@ proc init(comboBox: NativeComboBox) =
   gtk_widget_show(comboBox.fHandle)
 
 method naturalWidth(comboBox: NativeComboBox): int =
-  result = comboBox.fMaxTextWidth.scaleToDpi
+  result = 0
+  for option in comboBox.options:
+    result = max(result, comboBox.getTextWidth(option) + 20.scaleToDpi())
 
 method naturalHeight(comboBox: NativeComboBox): int =
   result = comboBox.getTextLineHeight() + 12.scaleToDpi()
@@ -1470,13 +1472,9 @@ method `options=`(comboBox: NativeComboBox, options: seq[string]) =
   comboBox.fOptions = options
 
   gtk_combo_box_text_remove_all(comboBox.fHandle)
-
-  var maxWidth = 0
   for option in options:
     gtk_combo_box_text_append_text(comboBox.fHandle, option.cstring)
-    maxWidth = max(maxWidth, comboBox.getTextWidth(option))
 
-  comboBox.fMaxTextWidth = maxWidth
   comboBox.triggerRelayout()
 
   if oldIndex < len(options):

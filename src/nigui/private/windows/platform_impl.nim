@@ -1615,7 +1615,9 @@ proc init(comboBox: NativeComboBox) =
   comboBox.ComboBox.init()
 
 method naturalWidth(comboBox: NativeComboBox): int =
-  result = scaleToDpi(comboBox.fMaxTextWidth + 25)
+  result = 0
+  for option in comboBox.options:
+    result = max(result, comboBox.getTextWidth(option) + 25.scaleToDpi())
 
 method naturalHeight(comboBox: NativeComboBox): int =
   result = comboBox.getTextLineHeight() + 8.scaleToDpi()
@@ -1628,15 +1630,12 @@ method `options=`(comboBox: NativeComboBox, options: seq[string]) =
   for _ in countup(0, cast[int](SendMessageW(comboBox.fHandle, CB_GETCOUNT, nil, nil))):
     discard SendMessageA(comboBox.fHandle, CB_DELETESTRING, cast[pointer](0), nil)
 
-  # Add new options and calculate maximum width
-  var maxWidth = 0
+  # Add new options
   for option in options:
-    maxWidth = max(maxWidth, comboBox.getTextWidth(option))
     if cast[int](SendMessageW(comboBox.fHandle, CB_ADDSTRING, nil, cast[pointer](newWideCString(option).toWideCString))) == CB_ERR:
       pRaiseLastOSError()
 
   # Resize box
-  comboBox.fMaxTextWidth = maxWidth
   comboBox.triggerRelayout()
 
   # Restore previous index (removing old options sets comboBox.index to -1)
