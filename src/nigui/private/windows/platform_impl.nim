@@ -1618,7 +1618,7 @@ method naturalWidth(comboBox: NativeComboBox): int =
   result = scaleToDpi(comboBox.fMaxTextWidth + 25)
 
 method naturalHeight(comboBox: NativeComboBox): int =
-  result = scaleToDpi(comboBox.getTextLineHeight() + 8)
+  result = comboBox.getTextLineHeight() + 8.scaleToDpi()
 
 method `options=`(comboBox: NativeComboBox, options: seq[string]) =
   let oldIndex = comboBox.index
