@@ -527,9 +527,10 @@ proc startRepeatingTimer(milliSeconds: int, timerProc: TimerProc, data: pointer 
 
 proc stop(timer: var Timer) =
   if cast[int](timer) != inactiveTimer:
-    let timerEntry = pTimers.getOrDefault(cast[int](timer))
-    pTimers.del(cast[int](timer))
-    discard g_source_remove(timerEntry.timerInternalId)
+    if pTimers.hasKey(cast[int](timer)):
+      let timerEntry = pTimers.getOrDefault(cast[int](timer))
+      discard g_source_remove(timerEntry.timerInternalId)
+      pTimers.del(cast[int](timer))
     timer = cast[Timer](inactiveTimer)
 
 
