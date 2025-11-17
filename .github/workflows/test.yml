@@ -46,14 +46,14 @@ jobs:
 
       - name: Cache choosenim
         id: cache-choosenim
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: ~/.choosenim
           key: ${{ runner.os }}-choosenim-${{ steps.vars.outputs.cache-key }}
         if: runner.os != 'Windows'
       - name: Cache nimble
         id: cache-nimble
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: ~/.nimble
           key: ${{ runner.os }}-nimble-${{ hashFiles('*.nimble') }}
@@ -90,14 +90,14 @@ jobs:
 
       - name: Cache choosenim
         id: cache-choosenim
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: ~/.choosenim
           key: ${{ runner.os }}-choosenim-${{ steps.vars.outputs.cache-key }}
 
       - name: Cache nimble
         id: cache-nimble
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: ~/.nimble
           key: ${{ runner.os }}-nimble-${{ hashFiles('*.nimble') }}
