@@ -1376,6 +1376,7 @@ proc init(button: NativeButton) =
 method `text=`(button: NativeButton, text: string) =
   procCall button.Button.`text=`(text)
   gtk_button_set_label(button.fHandle, text)
+  gtk_widget_set_tooltip_text(button.fHandle, text)
   # Don't let the button expand:
   let list = gtk_container_get_children(button.fHandle)
   if list != nil:
