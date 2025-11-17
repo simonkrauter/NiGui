@@ -292,8 +292,8 @@ const
 #                                   General Gtk Procs
 # ----------------------------------------------------------------------------------------
 
-proc g_slist_length*(list: pointer): int {.importc, libgtk3.}
-proc g_slist_nth_data*(list: pointer, n: int): cstring {.importc, libgtk3.}
+proc g_slist_length*(list: pointer): cint {.importc, libgtk3.}
+proc g_slist_nth_data*(list: pointer, n: cint): cstring {.importc, libgtk3.}
 proc g_object_ref*(`object`: pointer): pointer {.importc, libgtk3.}
 proc g_object_unref*(`object`: pointer) {.importc, libgtk3.}
 
@@ -385,7 +385,7 @@ proc gtk_dialog_add_button*(dialog: pointer, button_text: cstring, response_id: 
 proc gtk_dialog_get_content_area*(dialog: pointer): pointer {.importc, libgtk3.}
 proc gtk_dialog_get_action_area*(dialog: pointer): pointer {.importc, libgtk3.}
 
-proc gtk_file_chooser_dialog_new*(title: cstring, parent: pointer, action: int, text1: cstring, response1: int, text2: cstring, response2: int, ending: pointer): pointer {.importc, libgtk3.}
+proc gtk_file_chooser_dialog_new*(title: cstring, parent: pointer, action: cint, text1: cstring, response1: cint, text2: cstring, response2: cint, ending: pointer): pointer {.importc, libgtk3.}
 proc gtk_file_chooser_set_current_name*(chooser: pointer, name: cstring): bool {.importc, libgtk3.}
 proc gtk_file_chooser_get_filename*(chooser: pointer): cstring {.importc, libgtk3.}
 proc gtk_file_chooser_get_filenames*(chooser: pointer): pointer {.importc, libgtk3.}
