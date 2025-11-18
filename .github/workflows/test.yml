@@ -23,7 +23,7 @@ jobs:
         os:
           - ubuntu-latest
           - macOS-latest
-          - windows-latest
+          - windows-2022
         nim_version:
           - '2.2.6'
           - 'stable'
