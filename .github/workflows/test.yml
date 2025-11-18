@@ -56,7 +56,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nimble
-          key: ${{ runner.os }}-nimble-${{ hashFiles('*.nimble') }}
+          key: ${{ runner.os }}-nimble-v2-${{ hashFiles('*.nimble') }}
         if: runner.os != 'Windows'
       - uses: jiro4989/setup-nim-action@v1
         with:
@@ -100,7 +100,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nimble
-          key: ${{ runner.os }}-nimble-${{ hashFiles('*.nimble') }}
+          key: ${{ runner.os }}-nimble-v2-${{ hashFiles('*.nimble') }}
 
       - uses: jiro4989/setup-nim-action@v2
 
