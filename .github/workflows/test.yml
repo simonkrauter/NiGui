@@ -18,7 +18,7 @@ jobs:
         os:
           - ubuntu-latest
           - macOS-latest
-          - windows-2022
+          - windows-latest
         version:
           - '2.2.6'
     steps:
