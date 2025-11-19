@@ -44,18 +44,12 @@ jobs:
           path: ~/.choosenim
           key: ${{ runner.os }}-choosenim-${{ steps.vars.outputs.cache-key }}
         if: runner.os != 'Windows'
-      - name: Cache nimble
-        id: cache-nimble
-        uses: actions/cache@v4
-        with:
-          path: ~/.nimble
-          key: ${{ runner.os }}-nimble-v2-${{ hashFiles('*.nimble') }}
-        if: runner.os != 'Windows'
+        
       - uses: jiro4989/setup-nim-action@v2
         with:
           nim-version: ${{ matrix.version }}
 
-      - name: Test examples
+      - name: Compile examples
         working-directory: examples
         run: |
           for file in $(ls -v example_*nim); do
