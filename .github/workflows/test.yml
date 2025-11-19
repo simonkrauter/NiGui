@@ -19,7 +19,7 @@ jobs:
           - ubuntu-latest
           - macOS-latest
           - windows-2022
-        nversion:
+        version:
           - '2.2.x'
     steps:
       - uses: actions/checkout@v5
