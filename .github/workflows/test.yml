@@ -20,7 +20,7 @@ jobs:
           - macOS-latest
           - windows-2022
         version:
-          - '2.2.x'
+          - '2.2.6'
     steps:
       - uses: actions/checkout@v5
 
