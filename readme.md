@@ -65,6 +65,7 @@ Run the [Nimble](https://github.com/nim-lang/nimble) install command: `$ nimble 
 
 * To disable the command line window under Windows, add this line to your Nim configuration: `--app:gui`
 * To compile a Windows binary which uses Gtk, add this line to your Nim configuration: `-d:forceGtk`
+* Under MacOS, install gtk3 with homebrew with `brew install gtk+3`
 
 ### How to verify the installation
 

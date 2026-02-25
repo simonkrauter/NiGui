@@ -1,13 +1,26 @@
 # NiGui - minimal GTK+ 3 binding
 
 when defined(windows):
-  const libgtk3Path* = "libgtk-3-0.dll"
+  const libgtk3Path = "libgtk-3-0.dll"
+  {.pragma: libgtk3, cdecl, dynlib: libgtk3Path.}
 elif defined(macosx):
-  const libgtk3Path* = "libgtk-3.0.dylib"
+  import os
+  # Resolved at runtime (inside DatInit) so the binary works on any machine
+  # regardless of where Homebrew is installed.
+  # Priority: HOMEBREW_PREFIX env var → known locations → bare name fallback.
+  proc findGtk3LibPath(): string =
+    let envPrefix = getEnv("HOMEBREW_PREFIX")
+    if envPrefix.len > 0 and fileExists(envPrefix & "/lib/libgtk-3.0.dylib"):
+      return envPrefix & "/lib/libgtk-3.0.dylib"
+    if fileExists("/opt/homebrew/lib/libgtk-3.0.dylib"):
+      return "/opt/homebrew/lib/libgtk-3.0.dylib"
+    if fileExists("/usr/local/lib/libgtk-3.0.dylib"):
+      return "/usr/local/lib/libgtk-3.0.dylib"
+    return "libgtk-3.0.dylib"
+  {.pragma: libgtk3, cdecl, dynlib: findGtk3LibPath().}
 else:
-  const libgtk3Path* = "libgtk-3.so(|.0)"
-
-{.pragma: libgtk3, cdecl, dynlib: libgtk3Path.}
+  const libgtk3Path = "libgtk-3.so(|.0)"
+  {.pragma: libgtk3, cdecl, dynlib: libgtk3Path.}
 
 # ----------------------------------------------------------------------------------------
 #                                       Types
