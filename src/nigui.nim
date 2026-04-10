@@ -2946,3 +2946,4 @@ method `wrap=`(textArea: TextArea, wrap: bool) =
 
 when useWindows(): include "nigui/private/windows/platform_impl"
 when useGtk():     include "nigui/private/gtk3/platform_impl"
+include "nigui/private/genui/genui"
